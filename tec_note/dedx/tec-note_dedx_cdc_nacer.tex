@@ -1,0 +1,467 @@
+%
+%---Beginning of Document---
+%
+\documentclass[12pt]{article}
+%
+\textwidth  6.5in
+\textheight 9.0in
+\topmargin 0.0 in
+\headheight 0.45in
+\headsep 0.25in
+\oddsidemargin 0in
+\evensidemargin 0in
+\parsep 0 in
+%\pagenumbering{arabic}
+%
+\begin{document}
+
+\hfill GlueX-note-01
+
+\hfill Abdennacer Hamdi
+
+\hfill May 24, 2018
+
+\hfill Updated: \today
+
+% \vspace{15pt}
+\vskip 2.0cm
+
+\begin{center}
+{\LARGE Chracterising $dE/dX$ in Central Drift Chamber}\\[10pt]
+\end{center}
+
+\vskip 2.0cm
+
+% \begin{center}
+% \begin{large}
+% Abdennacer Hamdi\\
+% Goethe University Frankfurt, Frankfurt Am Main, Germany\\[0.8ex]
+% GSI Helmholtz Centre, Darmstadt, Germany\\[0.8ex]
+% \today
+% \end{large}
+% \end{center}
+
+% \vskip 1.0cm
+%
+\section{Introduction}
+
+The estimation of the mean and resolution of the $dE/dx$ in Central Drift Chamber ({\tt CDC}) is crucial for a better particle identification, especially for particle that hit mostely the
+{\tt CDC} e.g.: recoiled protons in $\rho$(770) or $\phi$(1020) Photo-productions. Due to the wide spread of the average $dE/dx$ distribution for a charged track, the mean is shifted 
+towards the long tail. In this note we will try to find the optimal truncation on the average $dE/dx$ hits by the truncated mean method.
+
+\section{Central Drift Chamber}
+
+The Central Drift Chamber system ({\tt CDC}) is used to track charged particles coming from the {\tt GlueX} target with polar angles up to 30$^{\circ}$. 
+Due to the spiraling trajectories of the charged particles and the high multiplicity of charged tracks passing through the {\tt FDC}, 
+it is crucial for this system to be able to provide a sufficient number of measurements with appropriate redundancy to enable linking of the hits from the different tracks
+with high accuracy, while providing good spatial resolution with reasonable direction information.  The goal is to design a system with position resolution accuracy of 150~$\mu$m
+for each space point.
+
+In the current detector design, the {\tt FDC}s include four separate but identical disk-shaped planar drift chambers (MWDC's) as shown in Figs.~\ref{gluex_schem} and \ref{fig:fdc-plane}.
+Each 1.2~m diameter package will include six layers of alternating anode and field-shaping wires sandwiched between planes of cathode strips.  The total thickness of each package
+is estimated to be roughly 0.285~gm/cm$^2$~\cite{thick}.  The thickness of each tracking layer (24 layers total from 4 packages with 6 layers per package) is 1.0~cm 
+(cathode plane to cathode plane).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htbp]
+\vspace{7.0cm}
+\special{psfile=detector_view3.eps hscale=47 vscale=47 hoffset=80 voffset=0}
+\caption{\small{Schematic side view of the {\tt GlueX} detector system showing
+the nominal {\tt FDC} setup as currently planned.}}
+\label{gluex_schem}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htbp]
+\vspace{7.0cm}
+\special{psfile=fdc2.eps hscale=85 vscale=85 hoffset=50 voffset=20}
+\caption{\small{A front (a) and side (b) sketch of an {\tt FDC} package. In (a) 
+the wires are schematically indicated as the vertical lines. In (b) a side 
+view of the upper half of a six-chamber package is shown.  The wire planes 
+are shown as the dashed lines, while the cathode planes are shown as the 
+solid lines.}}
+\label{fig:fdc-plane}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Mean ionization energy loss in matter}
+
+Moderately relativistic charged hadrons lose energy in matter primarily through multiple collisions with the atomic electrons of the medium (i.e. via ionization). The mean rate of energy
+loss (also called the stopping power) is given by the Bethe-Bloch formula,
+
+\begin{equation}
+\label{bb_1}
+-\frac{dE}{dX} = 2 \pi N_A r_e^2 m_e c^2 \rho \frac{Z}{A} \frac{z^2}{\beta^2} \left [ \ln \left( \frac{2 m_e \gamma^2 \beta^2 W_{max}}{I^2} \right) - 2 \beta^2 \right ],
+\end{equation}
+
+\noindent
+with $2 \pi N_A r_e^2 m_e c^2 = 0.1535$~MeV$~\!$cm$^2$/gm.  The terms in this expression are defined in Table~\ref{explan}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular} {||l||l||} \hline \hline
+$r_e$ : classical electron radius   & $\rho$ : density of medium \\
+~~~~~~ (2.817$\times$10$^{-13}$~cm) & $ze$ : charge of incident particle \\
+$m_e$ : electron mass               & $\beta$ : $v/c$ of incident particle \\
+$N_A$ : Avogadro's number           & $\gamma$ : $1/\sqrt{1 - \beta^2}$ \\
+$I$  : Mean excitation potential    & $\delta$ : density correction \\
+$Z$ : Atomic number of medium       & $C$ : shell correction \\
+$A$ : Atomic weight of medium       & $W_{max}$ : max. energy transfer \\ \hline
+\end{tabular}
+\end{center}
+\caption{\small{Terms in the Bethe-Bloch formula for stopping power.}}
+\label{explan}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The maximum energy transfer that can be provided in a head-on collision from the incident hadron to an atomic electron in the medium is called $W_{max}$.  For an incident particle
+of mass $M$, this can be computed as:
+
+\begin{equation}
+W_{max} = \frac{2 m_e c^2 \eta}{1 + 2 s \sqrt{1 + \eta^2} + s^2},
+\end{equation}
+
+\noindent
+where $s = m_e/M$ and $\eta = \beta \gamma$.
+
+In practice two corrections are made to this expression to account for density effects ($\delta$) and shell corrections ($C$).  The notion of density effects, which are important
+as the energy of the incident charged particle increases, arises from the fact that the electric field of a charged particle tends to polarize the atoms along its path.  Due to this
+effect, electrons far from the path of the particle are shielded from the full electric field intensity.  The notion of shell effects, which are most important at low energies, 
+is needed to account for effects that arise when the velocity of the incident particle is comparable to the orbital velocity of the atomic electrons in the medium.  In this case the 
+atomic electrons cannot be assumed as stationary.
+
+The modified form of the Bethe-Bloch equation including the density and shell correction terms then becomes~\cite{leo}:
+
+\begin{equation}
+\label{bb_2}
+-\frac{dE}{dX} = 2 \pi N_A r_e^2 m_e c^2 \rho \frac{Z}{A} \frac{z^2}{\beta^2} \left [\ln \left( \frac{2 m_e \gamma^2 \beta^2 W_{max}}{I^2} \right) - 2 \beta^2 - \delta - 2\frac{C}{Z} \right].
+\end{equation}
+
+Fig.~\ref{stop} shows a computation of the stopping power, actually $(1/\rho)dE/dX$, vs. momentum for pions, kaons, and protons in an Argon/CO$_2$ (90-10) gas mixture. The filled bands
+represent the measurement resolution (defined in Section~\ref{sec:studies}).  At non-relativistic energies, $dE/dX$ is dominated by the leading 1/$\beta^2$ factor and decreases with
+increasing velocity until about $v=0.96c$, when a minimum is reached.  Here the particles are referred to as minimum ionizing.  As the momentum increases beyond this point, $dE/dX$
+begins to increase (called the relativistic rise) due to the logarithmic term.
+
+\vfil
+\eject
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htbp]
+\vspace{12.5cm}
+\special{psfile=dedx.ps hscale=65 vscale=50 hoffset=40 voffset=-20}
+\caption{\small{Computation of the stopping power (plotted here as $\rho^{-1}dE/dX$) vs. momentum. The shaded bands represent the measurement resolution computed from eq.(\ref{res_1}).}}
+\label{stop}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Eq.(\ref{bb_2}) gives the average energy loss in a material layer of thickness $x$.  However, there are fluctuations about this mean value, with a long tail toward higher energy loss
+(this is a Landau distribution).  The most probable energy loss can be parameterized as~\cite{talman}:
+
+\begin{equation}
+E_{prob} = \frac{t}{\beta^2} \left[ \ln \left( \frac{2 m_e c^2 \gamma^2 t}{I} \right) - \beta^2 + 0.432 \right],
+\end{equation}
+
+\noindent
+where $t$ is proportional to the layer thickness $x$ and is defined in a gas at pressure $\cal{P}$ by:
+
+\begin{equation}
+t ({\rm MeV}) = 0.1536 \frac{Z \rho}{A \cal{P}} x,
+\end{equation}
+
+\noindent
+with $x$ in units of gm/cm$^2$.  
+For the calculations that follow in this document, however, the form of $dE/dX$ from eq.(\ref{bb_2}) will be employed.
+
+\subsection{Mean Excitation Potential}
+
+The mean excitation potential $I$ for the medium has been estimated from actual $dE/dX$ measurements and a semi-empirical formula for $I$ vs.$\:Z$ fitted to the data.  
+There are several parameterizations available in the literature.  The form employed here is given by~\cite{leo}:
+
+\begin{eqnarray}
+\frac{I ({\rm eV})}{Z} = 12 + \frac{7}{Z} ~~~~~Z < 13, \nonumber \\
+\frac{I ({\rm eV})}{Z} = 9.76 + 58.8 Z^{-1.19} ~~~Z \ge 13.
+\end{eqnarray}
+
+\subsection{Density Correction}
+
+The relativistic rise saturates at higher energies due to the density correction term because the medium becomes polarized, effectively reducing the influence of distant
+electrons.  The density correction has been parameterized and is given by~\cite{stern},
+
+\begin{eqnarray}
+\delta &=& 0 \hskip 6.0cm {\rm for}~X = \ln \beta \gamma < X_0, \nonumber \\
+\delta &=& 4.605 X + C_0 + a(X_1 - X)^m \hskip 1.20cm {\rm for}~ X_0 < X < X_1, \nonumber \\
+\delta &=& 4.605 X + C_0 \hskip 3.92cm {\rm for}~X > X_1.
+\end{eqnarray}
+
+\noindent
+The quantities $X_0$, $X_1$, $C_0$, $a$, and $m$ depend on the absorbing material.  However the parameters for all common gases are very similar. 
+Using values of $X_0$=1.74, $X_1$=4.24, $a$=0.10, and $m$=3.4, which are the constants associated with air~\cite{leo}, along with the form of $C_0$ given by:
+
+\begin{equation}
+C_0 = -\left( 2 \ln \frac{1}{h \nu_p} + 1 \right),
+\end{equation}
+
+\noindent
+where $h\nu_p$ is the so-called plasma energy of the material, i.e.,
+
+\begin{equation}
+\nu_p = \sqrt{\frac{N_e e^2}{\pi m_e}},
+\end{equation}
+
+\noindent
+where $N_e = N_A \rho Z/A$ is the density of electrons, gives a result of $\delta=0$ for the energy range associated with {\tt GlueX}.
+
+\subsection{Shell Correction}
+
+The form of the shell correction can be determined empirically based on the form given in Ref.~\cite{leo} which is valid for $\eta \ge 0.1$,
+
+\begin{eqnarray}
+C(I,\eta) &=& (0.422377 \eta^{-2} + 0.0304043 \eta^{-4} - 0.00038106 \eta^{-6})
+\times 10^{-6} I^2 \\ \nonumber
+&~~& + (3.850190 \eta^{-2} - 0.1667989 \eta^{-4} + 0.00157955 \eta^{-6}) \times 
+10^{-9} I^3,
+\end{eqnarray}
+
+\noindent
+where $\eta = \beta \gamma$ and $I$ is the mean excitation potential in units of eV.  For the range of momenta relevant in {\tt GlueX}, down to 100~MeV/c or so,
+this correction term remains negligible.
+
+\subsection{Mixtures}
+
+The Bethe-Bloch formula as written above is really for pure elements. However it is stll applicable for mixtures such as Ar-CO$_2$ and Ar-CH$_4$ with some minor modifications.
+These changes are to replace $Z$, $A$, $\rho$, $C$, and $I$ with the appropriate values for the mixture under consideration.
+
+\section{dE/dx calibration}
+
+There are several things that affect the measured pulse heights in each
+layer that need to be taken into account during the $dE/dX$ determination.
+The most important is that the path length of a layer can have an
+important impact on the measured $dE/dX$.  Both the track path length
+in the $r - \phi$ plane and the dip angle in the $r - z$ projection affect
+the measured energy loss.  Thus the true track length of the charged
+particle through the chamber layer must be used for optimal resolution.
+
+The various efficiency losses in the charge collection also need to be
+accounted for to optimize resolution.  For example, a track that goes
+directly through a cell near the sense wire will have a larger ionization
+than a track that passes closer to the cell boundary.
+Another efficiency effect concerns the dependence on the $r - \phi$ dip
+angle for tracks that pass near the sense wire.  For tracks at
+90$^{\circ}$ to the sense wire, all of the collected charge deposits itself
+near one point on the wire.  This results in a concentrated build up of
+electrons in one area on the sense wire, which tends to screen the electric
+field.
+
+\section{Optimal truncation}
+\label{sec:studies}
+
+In the computations carried out in this document, the sensitivity to two different gas mixtures has been considered.  These gas mixtures are Argon (90\%) - CO$_2$ (10\%) 
+and Argon (50\%) - CH$_4$ (50\%). These are two representative and typical gas mixtures for drift chamber systems.  They can be used to show typical values for energy loss and resolution.
+
+The $dE/dX$ resolution of a drift chamber system (or a gas-sampling device in general) has been determined empirically to obey the relation \cite{yamamoto,walenta}:
+
+\begin{equation}
+\label{res_1}
+\sigma_{dE/dX} = 0.41 n^{-0.43} (x {\cal{P}})^{-0.32},
+\end{equation}
+
+\noindent
+where $n$ is the number of $dE/dX$ measurements made (which here is given by the number of anode layers in the {\tt FDC} system, i.e. 24), $x$ is the sampling thickness 
+(or the thickness of a single {\tt FDC} chamber layer, i.e. 1~cm), and ${\cal{P}}$ is the pressure of the system (here the {\tt FDC} is assumed to operate at ${\cal{P}}$=1~atm). 
+While this expression is used in the current work to estimate the $dE/dX$ resolution, a better fit can be obtained by replacing $(x{\cal{P}})$ in eq.(\ref{res_1}) with 
+$6.83 N_e x(cm){\cal{P}}(atm)/I(eV)$, where $N_e$ is the number of electrons per molecule~\cite{allison}.
+
+Given the modified Bethe-Bloch expression in eq.(\ref{bb_2}) and the form of the $dE/dX$ resolution in eq.(\ref{res_1}), one can predict the separation of two particles
+ with masses $M_1$ and $M_2$ in terms of the number of standard deviations via:
+
+\begin{equation}
+\label{separation}
+{\cal{R}} = \frac{dE/dX(M_1) - dE/dX(M_2)}{\sigma_{dE/dX}}.
+\end{equation}
+
+Of interest for the current design of the {\tt FDC} system is the region in momentum over which pions and kaons, as well as kaons and protons, can be separated.
+A typical guess-timate is that separation of the different hadron species can be achieved as long as ${\cal{R}} > 2\sigma$.  This assumption is used here as our guide.
+
+The main results of this study are shown in Fig.~\ref{resol} which plots ${\cal{R}}$ vs. momentum $P$ highlighting where $K/\pi$ and $K/p$ separation is possible within the current
+{\tt FDC} system.  For these calculations only the chamber gas medium is considered.  The mixtures considered here are Argon/CO$_2$ (90\%-10\%) and Argon/CH$_4$ (50\%-50\%) at 1~atm.
+Note that resolution considering 24 {\tt FDC} layers of 1~cm thickness is 10.45\%. If we consider an {\tt FDC} system consisting only of 3 6-layer packages, this resolution worsens
+ to 11.83\%.
+
+Measured resolutions in several different detector systems are highlighted in Table~\ref{sys_res}~\cite{yamamoto}.  These different detector packages rely in one way or another
+ on using their gas-filled chambers for $dE/dX$ measurements and particle identification.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular} {||c|c|c|c|c|c||} \hline \hline
+Detector& $n$  & $x(cm)$ & $P$     & Expected resol.  &  Measured resol. \\ \hline 
+Aleph   & 344  & 0.36    & 1 atm   & 4.6\% & 4.5\% \\
+TPC/PEP & 180  & 0.5     & 8.5 atm & 2.8\% & 2.5\% \\
+OPAL    & 159  & 0.5     & 4 atm   & 3.0\% & 3.1\% \\
+MKII/SLC&  72  & 0.833   & 1 atm   & 6.9\% & 7.0\% \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{\small{Measured resolutions are compared to the expected $dE/dX$ resolutions from eq.(\ref{res_1}).}}
+\label{sys_res}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htbp]
+\vspace{12.5cm}
+\special{psfile=dedx3.ps hscale=70 vscale=55 hoffset=20 voffset=-20}
+\caption{\small{Calculation of the separation (in $\sigma$) from eq.(\ref{separation}) between different particle species vs. momentum.The calculations are shown for two different
+ gas mixtures with the current {\tt FDC} system geometry design assuming all 24 layers are used in the measurement.}}
+\label{resol}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The main results of Fig.~\ref{resol} indicate that with the current {\tt FDC}
+system design $K/\pi$ separation is possible below 0.7~GeV/c and above
+1.3~GeV/c.  As well, $K/p$ separation can be achieved below 1.5~GeV/c.
+
+This assumes that all 24 measurement layers in the {\tt FDC} can be employed.
+This might be a reasonable expectation if the electrostatics are such that the 
+fields can be considered as uniform throughout the {\tt FDC} system. However 
+in reality some fraction of the chamber hit pulses are removed from the 
+computation to reduce the high side tail due to Landau fluctuations (up to 
+40-50\% of the hits in some cases) and some fraction of the low pulse heights 
+are removed to reduce noise effects (roughly 5-10\% of the hits).  Thus the 
+results in Fig.~\ref{resol} with $n$=24 are a highly optimistic scenario.
+
+In reality we should consider $dE/dX$ resolution for the {\tt GlueX} {\tt FDC}
+to be closer to 14.1\% using eq.(\ref{res_1}) as a parameterization of the 
+$dE/dX$ resolution with $n$=12.  The resolution for this condition is shown in 
+Fig.~\ref{resol_12}.  This would modify the ranges given above associated with 
+Fig.~\ref{resol} and indicates that $K/\pi$ separation is possible below 
+0.7~GeV/c and above 1.8~GeV/c. As well, $K/p$ separation can be achieved 
+below 1.3~GeV/c.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htbp]
+\vspace{13.5cm}
+\special{psfile=dedx3_12.ps hscale=70 vscale=55 hoffset=20 voffset=-20}
+\caption{\small{Calculation of the separation (in $\sigma$) from 
+eq.(\ref{separation}) between different particle species vs. momentum.
+The calculations are shown for two different gas mixtures with the
+current {\tt FDC} system geometry design assuming only 12 layers are used in
+the measurement.}}
+\label{resol_12}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If each sampling is independent, which should certainly be the case in
+the {\tt FDC} measurement scheme, and there are no other sources of error
+(such as electronics noise), then the resolution will scale as $n^{-0.5}$.
+Since the power on $n$ in eq.(\ref{res_1}) is larger than that on $x$,
+for a fixed total length one obtains a better resolution for finer
+sampling.  However, at some point the number of primary ionizations along
+the incident charged particle path limits the scale on $x$.  Typically,
+the critical sampling size is about a few mm~\cite{yamamoto}.
+
+\section{Particle Identification Approach}
+
+The information from this section has been distilled from the thesis
+by Andrei Gritsan~\cite{gritsan} who discusses particle identification
+via $dE/dX$ from the CLEO experiment at Cornell's CESR facility.  This
+section is designed to introduce how the accumulated information is
+actually used to determine the particle type.
+
+Particle identification using $dE/dX$ begins by summing all of the pulse
+heights associated with the full set of hits for a given track into 
+a single parameter ($\Sigma_{ph}$).  As alluded to in Section~\ref{sec:studies},
+some fraction of the high pulse height hits are typically removed to
+reduce the high-side tail due to Landau fluctuations and some small
+fraction of the low pulse height hits are removed to reduce noise effects.
+Also the individual track hit pulse heights are corrected
+for drift distance and entrance angle broadening.  If one hit is
+a candidate for more than one track, it is not used in the $dE/dX$
+measurement.
+
+Particle identification then proceeds by comparing the measured pulse
+height to that expected for a given particle type using:
+
+\begin{equation}
+\Delta_{xx} = \frac{\Sigma_{ph} - MEAN_{xx}}{\sigma_{xx}},
+\end{equation}
+
+\noindent
+where here $xx$= $e$, $\mu$, $\pi$, $K$, or $p$, and $MEAN_{xx}$ and
+$\sigma_{xx}$ represent the mean and sigma of the ionization loss $dE/dX$ 
+measurements for the specific particle types.  These parameters in general 
+depend upon the charged track parameters, and are typically parameterized 
+in terms of the track momentum and angle for each particle species.  Note
+that the parameter $\Delta_{xx}$ is designed to have a Gaussian
+distribution centered at zero with a width of unity for the correct
+particle identification hypothesis.  The particle type hypothesis
+that best matches $\Delta_{xx}$=0 is the assigned particle type.
+
+The resolution of $\Sigma_{ph}$ depends on the single hit resolution
+and the number of chamber hits used in the $dE/dX$ measurement.  The
+findings from CLEO indicate:
+
+\begin{equation}
+\sigma_{\Sigma_{ph}} = \frac{\sigma_{single~hit}}{(N_{hits})^{0.428}}.
+\end{equation}
+
+\subsection{Corrections}
+
+There are several things that affect the measured pulse heights in each
+layer that need to be taken into account during the $dE/dX$ determination.
+The most important is that the path length of a layer can have an
+important impact on the measured $dE/dX$.  Both the track path length
+in the $r - \phi$ plane and the dip angle in the $r - z$ projection affect
+the measured energy loss.  Thus the true track length of the charged
+particle through the chamber layer must be used for optimal resolution.
+
+The various efficiency losses in the charge collection also need to be
+accounted for to optimize resolution.  For example, a track that goes
+directly through a cell near the sense wire will have a larger ionization
+than a track that passes closer to the cell boundary.
+Another efficiency effect concerns the dependence on the $r - \phi$ dip
+angle for tracks that pass near the sense wire.  For tracks at
+90$^{\circ}$ to the sense wire, all of the collected charge deposits itself
+near one point on the wire.  This results in a concentrated build up of
+electrons in one area on the sense wire, which tends to screen the electric
+field.
+
+\begin{thebibliography}{99}
+
+\bibitem{thick}
+D.S. Carman, ``FDC Thickness Calculation -- v2.0'',\\
+http://www.jlab.org/Hall-D/detector/fdc/design/thick.ps.
+
+\bibitem{leo}
+W.R. Leo, ``Techniques for Nuclear and Particle Physics Experiments'',
+Second Revised Edition, Springer-Verlag, 24 (1994).
+
+\bibitem{talman}
+R. Talman, ``On the Statistics of Particle Identification Using
+Ionization'', Nucl. Inst. and Meth. {\bf 159}, 189 (1979).
+
+\bibitem{stern}
+R.M. Sternheimer {\it et al.}, Atomic Data and Nuclear Data Tables {\bf 30},
+261 (1984).
+
+\bibitem{yamamoto}
+H. Yamamoto, ``dE/dX Particle Identification For Collider Detectors'', 
+hep-ex/9912024, (1999).
+
+\bibitem{walenta}
+A.H. Walenta {\it et al.}, Nucl. Inst. and Meth. {\bf 161}, 45 (1979).
+
+\bibitem{allison}
+W.W.M. Allison and J.H. Cobb, Ann. Rev. Pert. Sci {\bf 30}, 253 (1980).
+
+\bibitem{gritsan}
+A. Gritsan, Ph.D. thesis, University of Colorado (unpublished), (2000).
+
+\end{thebibliography}
+
+\end{document}
+
+
+
+
