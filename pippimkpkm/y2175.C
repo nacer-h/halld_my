@@ -101,8 +101,9 @@ void y2175(TString name, TString cut)
     c_kkmm_Thrown->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kkmm_Thrown.root",name.Data()), "root");
     c_kkmm_Thrown->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kkmm_Thrown.eps",name.Data()), "eps");
   }
-  
-  // ******* Phi(1020) Mass: Measured & KinFit
+
+ 
+  // ********************************* Phi(1020) Mass: Measured & KinFit
   // Precut
   TCanvas *c_PhiMass_precut = new TCanvas("c_PhiMass_precut","c_PhiMass_precut",600,400);
   c_PhiMass_precut->cd();
@@ -149,12 +150,12 @@ void y2175(TString name, TString cut)
   l_PhiMass_postcut->SetTextSize(0.02);                                                                                                                                                 
   l_PhiMass_postcut->SetBorderSize(0); 
   c_PhiMass_postcut->SetGrid();
-  TH1F *h_PhiMass_Measured_postcut = (TH1F*) f->Get("h_PhiMass_mm2cut_Measured");
+  TH1F *h_PhiMass_Measured_postcut = (TH1F*) f->Get("h_PhiMass_chi2cut_Measured");
   cout<<"h_PhiMass_Measured_postcut = "<<h_PhiMass_Measured_postcut<<endl;
   h_PhiMass_Measured_postcut->SetMinimum(0.);
   h_PhiMass_Measured_postcut->SetLineWidth(3);
   h_PhiMass_Measured_postcut->SetLineColor(kBlack);
-  TH1F *h_PhiMass_KinFit_postcut = (TH1F*) f->Get("h_PhiMass_mm2cut_0");
+  TH1F *h_PhiMass_KinFit_postcut = (TH1F*) f->Get("h_PhiMass_chi2cut_0");
   cout<<"h_PhiMass_KinFit_postcut = "<<h_PhiMass_KinFit_postcut<<endl;
   h_PhiMass_KinFit_postcut->SetLineWidth(3);
   h_PhiMass_KinFit_postcut->SetLineColor(kBlue);
@@ -222,12 +223,12 @@ void y2175(TString name, TString cut)
   l_foMass_postcut->SetTextSize(0.02);                                                                                                                                                 
   l_foMass_postcut->SetBorderSize(0); 
   c_foMass_postcut->SetGrid();
-  TH1F *h_foMass_Measured_postcut = (TH1F*) f->Get("h_foMass_mm2cut_Measured");
+  TH1F *h_foMass_Measured_postcut = (TH1F*) f->Get("h_foMass_chi2cut_Measured");
   cout<<"h_foMass_Measured_postcut = "<<h_foMass_Measured_postcut<<endl;
   h_foMass_Measured_postcut->SetMinimum(0.);
   h_foMass_Measured_postcut->SetLineWidth(3);
   h_foMass_Measured_postcut->SetLineColor(kBlack);
-  TH1F *h_foMass_KinFit_postcut = (TH1F*) f->Get("h_foMass_mm2cut_0");
+  TH1F *h_foMass_KinFit_postcut = (TH1F*) f->Get("h_foMass_chi2cut_0");
   cout<<"h_foMass_KinFit_postcut = "<<h_foMass_KinFit_postcut<<endl;
   h_foMass_KinFit_postcut->SetLineWidth(3);
   h_foMass_KinFit_postcut->SetLineColor(kBlue);
@@ -295,12 +296,12 @@ void y2175(TString name, TString cut)
   l_YMass_postcut->SetTextSize(0.02);                                                                                                                                                 
   l_YMass_postcut->SetBorderSize(0); 
   c_YMass_postcut->SetGrid();
-  TH1F *h_YMass_Measured_postcut = (TH1F*) f->Get("h_YMass_mm2cut_Measured");
+  TH1F *h_YMass_Measured_postcut = (TH1F*) f->Get("h_YMass_chi2cut_Measured");
   cout<<"h_YMass_Measured_postcut = "<<h_YMass_Measured_postcut<<endl;
   h_YMass_Measured_postcut->SetMinimum(0.);
   h_YMass_Measured_postcut->SetLineWidth(3);
   h_YMass_Measured_postcut->SetLineColor(kBlack);
-  TH1F *h_YMass_KinFit_postcut = (TH1F*) f->Get("h_YMass_mm2cut_0");
+  TH1F *h_YMass_KinFit_postcut = (TH1F*) f->Get("h_YMass_chi2cut_0");
   cout<<"h_YMass_KinFit_postcut = "<<h_YMass_KinFit_postcut<<endl;
   h_YMass_KinFit_postcut->SetLineWidth(3);
   h_YMass_KinFit_postcut->SetLineColor(kBlue);
@@ -322,4 +323,70 @@ void y2175(TString name, TString cut)
   // c_YMass_nobeambunchcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_%scut_nobeambunchcut.root",name.Data(),cut.Data()), "root");
   // c_YMass_nobeambunchcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_%scut_nobeambunchcut.eps",name.Data(),cut.Data()), "eps");
 
+  // ******** Phi vs. fo
+  TCanvas *c_h2_PhiVsfoMass_Measured = new TCanvas("c_h2_PhiVsfoMass_Measured","c_h2_PhiVsfoMass_Measured",600,400);
+  c_h2_PhiVsfoMass_Measured->cd();
+  TH2D *h2_PhiVsfoMass_Measured = (TH2D*) f->Get("h2_PhiVsfoMass_Measured");
+  h2_PhiVsfoMass_Measured->Draw("colz");
+  c_h2_PhiVsfoMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_Measured.root",name.Data()), "root");
+  c_h2_PhiVsfoMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_Measured.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_PhiVsfoMass_KinFit = new TCanvas("c_h2_PhiVsfoMass_KinFit","c_h2_PhiVsfoMass_KinFit",600,400);
+  c_h2_PhiVsfoMass_KinFit->cd();
+  TH2D *h2_PhiVsfoMass_KinFit = (TH2D*) f->Get("h2_PhiVsfoMass_KinFit");
+  h2_PhiVsfoMass_KinFit->Draw("colz");
+  c_h2_PhiVsfoMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_KinFit.root",name.Data()), "root");
+  c_h2_PhiVsfoMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_KinFit.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_PhiVsfoMass_postcut = new TCanvas("c_h2_PhiVsfoMass_postcut","c_h2_PhiVsfoMass_postcut",600,400);
+  c_h2_PhiVsfoMass_postcut->cd();
+  TH2D *h2_PhiVsfoMass_postcut = (TH2D*) f->Get("h2_PhiVsfoMass_postcut");
+  h2_PhiVsfoMass_postcut->Draw("colz");
+  c_h2_PhiVsfoMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_postcut.root",name.Data()), "root");
+  c_h2_PhiVsfoMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsfoMass_postcut.eps",name.Data()), "eps");
+
+  // ******** Phi vs. Y
+  TCanvas *c_h2_PhiVsYMass_Measured = new TCanvas("c_h2_PhiVsYMass_Measured","c_h2_PhiVsYMass_Measured",600,400);
+  c_h2_PhiVsYMass_Measured->cd();
+  TH2D *h2_PhiVsYMass_Measured = (TH2D*) f->Get("h2_PhiVsYMass_Measured");
+  h2_PhiVsYMass_Measured->Draw("colz");
+  c_h2_PhiVsYMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_Measured.root",name.Data()), "root");
+  c_h2_PhiVsYMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_Measured.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_PhiVsYMass_KinFit = new TCanvas("c_h2_PhiVsYMass_KinFit","c_h2_PhiVsYMass_KinFit",600,400);
+  c_h2_PhiVsYMass_KinFit->cd();
+  TH2D *h2_PhiVsYMass_KinFit = (TH2D*) f->Get("h2_PhiVsYMass_KinFit");
+  h2_PhiVsYMass_KinFit->Draw("colz");
+  c_h2_PhiVsYMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_KinFit.root",name.Data()), "root");
+  c_h2_PhiVsYMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_KinFit.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_PhiVsYMass_postcut = new TCanvas("c_h2_PhiVsYMass_postcut","c_h2_PhiVsYMass_postcut",600,400);
+  c_h2_PhiVsYMass_postcut->cd();
+  TH2D *h2_PhiVsYMass_postcut = (TH2D*) f->Get("h2_PhiVsYMass_postcut");
+  h2_PhiVsYMass_postcut->Draw("colz");
+  c_h2_PhiVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_postcut.root",name.Data()), "root");
+  c_h2_PhiVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_PhiVsYMass_postcut.eps",name.Data()), "eps");
+
+
+  // ******** fo vs. Y
+  TCanvas *c_h2_foVsYMass_Measured = new TCanvas("c_h2_foVsYMass_Measured","c_h2_foVsYMass_Measured",600,400);
+  c_h2_foVsYMass_Measured->cd();
+  TH2D *h2_foVsYMass_Measured = (TH2D*) f->Get("h2_foVsYMass_Measured");
+  h2_foVsYMass_Measured->Draw("colz");
+  c_h2_foVsYMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_Measured.root",name.Data()), "root");
+  c_h2_foVsYMass_Measured->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_Measured.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_foVsYMass_KinFit = new TCanvas("c_h2_foVsYMass_KinFit","c_h2_foVsYMass_KinFit",600,400);
+  c_h2_foVsYMass_KinFit->cd();
+  TH2D *h2_foVsYMass_KinFit = (TH2D*) f->Get("h2_foVsYMass_KinFit");
+  h2_foVsYMass_KinFit->Draw("colz");
+  c_h2_foVsYMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_KinFit.root",name.Data()), "root");
+  c_h2_foVsYMass_KinFit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_KinFit.eps",name.Data()), "eps");
+
+  TCanvas *c_h2_foVsYMass_postcut = new TCanvas("c_h2_foVsYMass_postcut","c_h2_foVsYMass_postcut",600,400);
+  c_h2_foVsYMass_postcut->cd();
+  TH2D *h2_foVsYMass_postcut = (TH2D*) f->Get("h2_foVsYMass_postcut");
+  h2_foVsYMass_postcut->Draw("colz");
+  c_h2_foVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_postcut.root",name.Data()), "root");
+  c_h2_foVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_postcut.eps",name.Data()), "eps");
 }
