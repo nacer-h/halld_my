@@ -60,10 +60,10 @@ using namespace RooStats;
 
 void significance(TString cut)
 {
-  // TFile *fsim = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/pippimkpkm__B4_sim_recon17_1v03_%scut.root",cut.Data()));
-  TFile *fsim = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/pippimkpkm__B4_sig_17v03_%scut.root",cut.Data()));
-  TFile *fdata = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/pippimkpkm__B4_17v21_%scut.root",cut.Data()));
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_significance/significance.root","UPDATE");
+  // TFile *fsim = new TFile(Form("/Users/nacer/halld_my/pippimkpkm/pippimkpkm__B4_sim_recon17_1v03_%scut.root",cut.Data()));
+  TFile *fsim = new TFile(Form("/Users/nacer/halld_my/pippimkpkm/input/pippimkpkm__B4_genr8_17v03_%scut.root",cut.Data()));
+  TFile *fdata = new TFile(Form("/Users/nacer/halld_my/pippimkpkm/input/pippimkpkm__B4_17v21_%scut.root",cut.Data()));
+  TFile *outputfig = new TFile("/Users/nacer/halld_my/pippimkpkm/fig_significance/significance.root","UPDATE");
 
   // gStyle->SetLabelSize(0.07,"xyz"); // size of axis values
   // gStyle->SetTitleSize(0.07,"XYZ"); // size of axis titles
@@ -72,8 +72,8 @@ void significance(TString cut)
   
   // RooWorkspace w("w",kTRUE);
   // RooFitResult* result = NULL;
-  double cuts[15] = {0.06, 0.05, 0.04, 0.03, 0.02, 0.018, 0.016, 0.014, 0.012, 0.010, 0.008, 0.006, 0.004, 0.002, 0.0008};
-  // double cuts_chi2[15] = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 4, 2, 1, 0.5};
+  // double cuts_mm2[15] = {0.06, 0.05, 0.04, 0.03, 0.02, 0.018, 0.016, 0.014, 0.012, 0.010, 0.008, 0.006, 0.004, 0.002, 0.0008};
+  double cuts[15] = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 3, 2, 1, 0.5};
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    Data   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,17 +85,17 @@ void significance(TString cut)
   TH1F *hdata_precut = (TH1F*) fdata->Get(Form("h_%s_precut",cut.Data()));
   cout<<"hdata_precut = "<<hdata_precut<<endl;
   hdata_precut->Draw();
-  cdata_precut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_precut.root",cut.Data()), "root");
-  cdata_precut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_precut.eps",cut.Data()), "eps");
+  cdata_precut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_precut.root",cut.Data()), "root");
+  cdata_precut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_precut.eps",cut.Data()), "eps");
 
   TCanvas *cdata_postcut = new TCanvas("cdata_postcut","cdata_postcut",600,400);
   cdata_postcut->cd();
   TH1F *hdata_postcut = (TH1F*) fdata->Get(Form("h_%s_postcut",cut.Data()));
   cout<<"hdata_postcut = "<<hdata_postcut<<endl;
-  hdata_postcut->Rebin(5);
+  // hdata_postcut->Rebin(5);
   hdata_postcut->Draw();
-  cdata_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_postcut.root",cut.Data()), "root");
-  cdata_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_postcut.eps",cut.Data()), "eps");
+  cdata_postcut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_postcut.root",cut.Data()), "root");
+  cdata_postcut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_%s_postcut.eps",cut.Data()), "eps");
 
   // ********************************* Phi(1020) *********************************
     
@@ -170,8 +170,8 @@ void significance(TString cut)
   // h_PhiMass->SetMarkerStyle(20);
   // h_PhiMass->SetMarkerSize(0.7);
   // h_PhiMass->Draw("e");
-  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.root",cut.Data()), "root");
-  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.eps",cut.Data()), "eps");
+  cdata_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.root",cut.Data()), "root");
+  cdata_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.eps",cut.Data()), "eps");
 
   // cgrdata->cd();
   // grdata->Draw("AP");
@@ -183,8 +183,8 @@ void significance(TString cut)
 
   // grdata->Write();
   // grdata->SetTitle("Significance #phi(1020) Vs selection (data); cut; Significance");
-  // cgrdata->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_%scut.root",cut.Data()),"root");
-  // cgrdata->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_%scut.eps",cut.Data()),"eps");
+  // cgrdata->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_%scut.root",cut.Data()),"root");
+  // cgrdata->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_%scut.eps",cut.Data()),"eps");
   
 
   // ********************************* fo(980) *********************************
@@ -207,8 +207,8 @@ void significance(TString cut)
       hdata_foMass->Draw("e");
     }
 
-  cdata_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.root",cut.Data()), "root");
-  cdata_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.eps",cut.Data()), "eps");
+  cdata_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.root",cut.Data()), "root");
+  cdata_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.eps",cut.Data()), "eps");
 
   // ********************************* Y(2175) *********************************
 
@@ -251,8 +251,8 @@ void significance(TString cut)
       // grphiy->Fit(fmodel_phiy,"","mR",1.46,3.20);
     }
 
-  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.root",cut.Data()), "root");
-  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.eps",cut.Data()), "eps");
+  cdata_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.root",cut.Data()), "root");
+  cdata_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.eps",cut.Data()), "eps");
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    MC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,16 +264,16 @@ void significance(TString cut)
   TH1F *hsim_precut = (TH1F*) fsim->Get(Form("h_%s_precut",cut.Data()));
   cout<<"hsim_precut = "<<hsim_precut<<endl;
   hsim_precut->Draw();
-  csim_precut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_precut.root",cut.Data()), "root");
-  csim_precut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_precut.eps",cut.Data()), "eps");
+  csim_precut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_precut.root",cut.Data()), "root");
+  csim_precut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_precut.eps",cut.Data()), "eps");
 
   TCanvas *csim_postcut = new TCanvas("csim_postcut","csim_postcut",600,400);
   csim_postcut->cd();
   TH1F *hsim_postcut = (TH1F*) fsim->Get(Form("h_%s_postcut",cut.Data()));
   cout<<"hsim_postcut = "<<hsim_postcut<<endl;
   hsim_postcut->Draw();
-  csim_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_postcut.root",cut.Data()), "root");
-  csim_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_postcut.eps",cut.Data()), "eps");
+  csim_postcut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_postcut.root",cut.Data()), "root");
+  csim_postcut->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_%s_postcut.eps",cut.Data()), "eps");
 
  // ********************************* Phi(1020) *********************************
 
@@ -352,8 +352,8 @@ void significance(TString cut)
       // hsim_PhiMass->Write();	       
   }
 
-  csim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.root",cut.Data()), "root");
-  csim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.eps",cut.Data()), "eps");
+  csim_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.root",cut.Data()), "root");
+  csim_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.eps",cut.Data()), "eps");
 
   // cgrsim_PhiMass->cd();
   // grsim_PhiMass->Draw("AP");
@@ -366,8 +366,8 @@ void significance(TString cut)
   // //result->Print();
   // grsim_PhiMass->Write();
   // grsim_PhiMass->SetTitle("Significance #phi(1020) Vs selection (MC); cut; Significance");
-  // cgrsim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.root",cut.Data()),"root");
-  // cgrsim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.eps",cut.Data()),"eps");
+  // cgrsim_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.root",cut.Data()),"root");
+  // cgrsim_PhiMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.eps",cut.Data()),"eps");
   
   // for (int i = 0; i < nbins; i++) source[i]=hsim_PhiMass->GetBinContent(i+1);
   // s->Background(source,nbins,70,TSpectrum::kBackDecreasingWindow,TSpectrum::kBackOrder2,kFALSE,TSpectrum::kBackSmoothing3,kFALSE);
@@ -455,8 +455,8 @@ void significance(TString cut)
       // hsim_foMass->Write();	       
   }
 
-  csim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.root",cut.Data()), "root");
-  csim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.eps",cut.Data()), "eps");
+  csim_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.root",cut.Data()), "root");
+  csim_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.eps",cut.Data()), "eps");
 
   // cgrsim_foMass->cd();
   // grsim_foMass->Draw("AP");
@@ -469,8 +469,8 @@ void significance(TString cut)
   // // result->Print();
   // grsim_foMass->Write();
   // grsim_foMass->SetTitle("Significance #f_{0}(980) Vs selection (MC); cut; Significance");
-  // cgrsim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.root",cut.Data()),"root");
-  // cgrsim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.eps",cut.Data()),"eps");
+  // cgrsim_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.root",cut.Data()),"root");
+  // cgrsim_foMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.eps",cut.Data()),"eps");
 
  // ********************************* Y(2175) *********************************
 
@@ -567,8 +567,8 @@ void significance(TString cut)
       // hsim_YMass->Write();	       
   }
 
-  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.root",cut.Data()), "root");
-  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.eps",cut.Data()), "eps");
+  csim_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.root",cut.Data()), "root");
+  csim_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.eps",cut.Data()), "eps");
 
   // cgrsim_YMass->cd();
   // grsim_YMass->Draw("AP");
@@ -581,7 +581,7 @@ void significance(TString cut)
   // // result->Print();
   // grsim_YMass->Write();
   // grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC); cut; Significance");
-  // cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
-  // cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
+  // cgrsim_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
+  // cgrsim_YMass->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
 
 }
