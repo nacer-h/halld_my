@@ -51,6 +51,66 @@ class DSelector_pippimkpkm : public DSelector
 		TH1I* dHist_MissingMassSquared;
 		TH1I* dHist_BeamEnergy;
 
+		/* // Monte Carlo Truth masses: Phi(1020), fo(980), Y(2175) */
+		/* TH1F* h_PhiMass_Thrown; */
+		/* TH1F* h_foMass_Thrown; */
+ 		/* TH1F* h_YMass_Thrown; */
+
+		// Measured masses: Phi(1020), fo(980), Y(2175)
+		TH1F* h_PhiMass_Measured;
+		TH1F* h_foMass_Measured;
+ 		TH1F* h_YMass_Measured;		
+	       		
+		// P4 & Vertex kinematic fit masses: Phi(1020), fo(980), Y(2175)
+		TH1F* h_PhiMass_KinFit;
+		TH1F* h_foMass_KinFit;
+ 		TH1F* h_YMass_KinFit;
+
+		// Beam Accidentals subtracted: Phi(1020), fo(980), Y(2175)
+		TH1F* h_PhiMass_beambunchcut;
+		TH1F* h_foMass_beambunchcut;
+		TH1F* h_YMass_beambunchcut;
+
+		// 2D
+		// Measured
+		TH2D* h2_PhiVsfoMass_Measured;
+		TH2D* h2_PhiVsYMass_Measured;
+		TH2D* h2_foVsYMass_Measured;
+		// KinFit
+		TH2D* h2_PhiVsfoMass_KinFit;
+		TH2D* h2_PhiVsYMass_KinFit;
+		TH2D* h2_foVsYMass_KinFit;
+		// // after cuts
+		// TH2D* h2_PhiVsfoMass_postcut;
+		// TH2D* h2_PhiVsYMass_postcut;
+		// TH2D* h2_foVsYMass_postcut;
+
+		// cuts
+		TH1F* h_TaggerAccidentals;
+		TH1F* h_TaggerAccidentals_postcut;
+		TH1F* h_mm2_precut;		
+		TH1F* h_mm2_postcut;
+		TH1F* h_chi2_precut;
+		TH1F* h_chi2_postcut;
+		TH1F* h_KinFitCL;
+		TH2D* h2_DeltaTp;
+		TH2D* h2_mm2Vschi2;
+
+		// TH1F* h_KinFitCL; 
+		double chi2ndf_min = 1000;
+
+		int ncuts = 20;
+		double cutsmin, cutsmax, cutsstep, cutscut;
+
+		// ######## Phi(1020) #############
+		TH1F* h_PhiMass_cuts[20];
+
+		// ######## fo(980) #############
+		TH1F* h_foMass_cuts[20];
+
+		// ######## Y(2175) #############
+		TH1F* h_YMass_cuts[20];
+
 		// TOOL FOR FLAT TREE OUTPUT
 		DComboTreeHelper *dComboTreeHelper;
 
