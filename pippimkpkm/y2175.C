@@ -293,7 +293,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_p_dttof = new TCanvas("c_p_dttof", "c_p_dttof", 600, 400);
   c_p_dttof->cd();
   TH2D *h_p_dttof = new TH2D("h_p_dttof", "proton; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.6, 0.6);
-  t->Project("h_p_dttof", "p_dttof:p_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_p_dttof", "p_dttof:p_p4_kin.P()","");
   cout << "h_p_dttof = " << h_p_dttof << endl;
   h_p_dttof->Draw("colz");
   c_p_dttof->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dttof.root",name.Data()), "root");
@@ -302,7 +302,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_p_dtbcal = new TCanvas("c_p_dtbcal", "c_p_dtbcal", 600, 400);
   c_p_dtbcal->cd();
   TH2D *h_p_dtbcal = new TH2D("h_p_dtbcal", "proton; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-1.0, 1.0);
-  t->Project("h_p_dtbcal", "p_dtbcal:p_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_p_dtbcal", "p_dtbcal:p_p4_kin.P()","");
   cout << "h_p_dtbcal = " << h_p_dtbcal << endl;
   h_p_dtbcal->Draw("colz");
   c_p_dtbcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtbcal.root",name.Data()), "root");
@@ -311,7 +311,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_p_dtfcal = new TCanvas("c_p_dtfcal", "c_p_dtfcal", 600, 400);
   c_p_dtfcal->cd();
   TH2D *h_p_dtfcal = new TH2D("h_p_dtfcal", "proton; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_p_dtfcal", "p_dtfcal:p_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_p_dtfcal", "p_dtfcal:p_p4_kin.P()","");
   cout << "h_p_dtfcal = " << h_p_dtfcal << endl;
   h_p_dtfcal->Draw("colz");
   c_p_dtfcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtfcal.root",name.Data()), "root");
@@ -322,7 +322,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pip_dttof = new TCanvas("c_pip_dttof", "c_pip_dttof", 600, 400);
   c_pip_dttof->cd();
   TH2D *h_pip_dttof = new TH2D("h_pip_dttof", "#pi^{+}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.5, 0.5);
-  t->Project("h_pip_dttof", "pip_dttof:pip_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pip_dttof", "pip_dttof:pip_p4_kin.P()","");
   cout << "h_pip_dttof = " << h_pip_dttof << endl;
   h_pip_dttof->Draw("colz");
   c_pip_dttof->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dttof.root",name.Data()), "root");
@@ -331,7 +331,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pip_dtbcal = new TCanvas("c_pip_dtbcal", "c_pip_dtbcal", 600, 400);
   c_pip_dtbcal->cd();
   TH2D *h_pip_dtbcal = new TH2D("h_pip_dtbcal", "#pi^{+}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-1.0, 1.0);
-  t->Project("h_pip_dtbcal", "pip_dtbcal:pip_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pip_dtbcal", "pip_dtbcal:pip_p4_kin.P()","");
   cout << "h_pip_dtbcal = " << h_pip_dtbcal << endl;
   h_pip_dtbcal->Draw("colz");
   c_pip_dtbcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtbcal.root",name.Data()), "root");
@@ -340,7 +340,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pip_dtfcal = new TCanvas("c_pip_dtfcal", "c_pip_dtfcal", 600, 400);
   c_pip_dtfcal->cd();
   TH2D *h_pip_dtfcal = new TH2D("h_pip_dtfcal", "#pi^{+}; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_pip_dtfcal", "pip_dtfcal:pip_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pip_dtfcal", "pip_dtfcal:pip_p4_kin.P()","");
   cout << "h_pip_dtfcal = " << h_pip_dtfcal << endl;
   h_pip_dtfcal->Draw("colz");
   c_pip_dtfcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtfcal.root",name.Data()), "root");
@@ -351,7 +351,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pim_dttof = new TCanvas("c_pim_dttof", "c_pim_dttof", 600, 400);
   c_pim_dttof->cd();
   TH2D *h_pim_dttof = new TH2D("h_pim_dttof", "#pi^{-}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.5, 0.5);
-  t->Project("h_pim_dttof", "pim_dttof:pim_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pim_dttof", "pim_dttof:pim_p4_kin.P()","");
   cout << "h_pim_dttof = " << h_pim_dttof << endl;
   h_pim_dttof->Draw("colz");
   c_pim_dttof->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dttof.root",name.Data()), "root");
@@ -360,7 +360,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pim_dtbcal = new TCanvas("c_pim_dtbcal", "c_pim_dtbcal", 600, 400);
   c_pim_dtbcal->cd();
   TH2D *h_pim_dtbcal = new TH2D("h_pim_dtbcal", "#pi^{-}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-1.0, 1.0);
-  t->Project("h_pim_dtbcal", "pim_dtbcal:pim_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pim_dtbcal", "pim_dtbcal:pim_p4_kin.P()","");
   cout << "h_pim_dtbcal = " << h_pim_dtbcal << endl;
   h_pim_dtbcal->Draw("colz");
   c_pim_dtbcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtbcal.root",name.Data()), "root");
@@ -369,7 +369,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_pim_dtfcal = new TCanvas("c_pim_dtfcal", "c_pim_dtfcal", 600, 400);
   c_pim_dtfcal->cd();
   TH2D *h_pim_dtfcal = new TH2D("h_pim_dtfcal", "#pi^{-}; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_pim_dtfcal", "pim_dtfcal:pim_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_pim_dtfcal", "pim_dtfcal:pim_p4_kin.P()","");
   cout << "h_pim_dtfcal = " << h_pim_dtfcal << endl;
   h_pim_dtfcal->Draw("colz");
   c_pim_dtfcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtfcal.root",name.Data()), "root");
@@ -380,7 +380,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_kp_dttof = new TCanvas("c_kp_dttof", "c_kp_dttof", 600, 400);
   c_kp_dttof->cd();
   TH2D *h_kp_dttof = new TH2D("h_kp_dttof", "K^{+}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.3, 0.3);
-  t->Project("h_kp_dttof", "kp_dttof:kp_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_kp_dttof", "kp_dttof:kp_p4_kin.P()","");
   cout << "h_kp_dttof = " << h_kp_dttof << endl;
   h_kp_dttof->Draw("colz");
   c_kp_dttof->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dttof.root",name.Data()), "root");
@@ -389,7 +389,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_kp_dtbcal = new TCanvas("c_kp_dtbcal", "c_kp_dtbcal", 600, 400);
   c_kp_dtbcal->cd();
   TH2D *h_kp_dtbcal = new TH2D("h_kp_dtbcal", "K^{+}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-0.75, 0.75);
-  t->Project("h_kp_dtbcal", "kp_dtbcal:kp_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_kp_dtbcal", "kp_dtbcal:kp_p4_kin.P()","");
   cout << "h_kp_dtbcal = " << h_kp_dtbcal << endl;
   h_kp_dtbcal->Draw("colz");
   c_kp_dtbcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtbcal.root",name.Data()), "root");
@@ -398,7 +398,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_kp_dtfcal = new TCanvas("c_kp_dtfcal", "c_kp_dtfcal", 600, 400);
   c_kp_dtfcal->cd();
   TH2D *h_kp_dtfcal = new TH2D("h_kp_dtfcal", "K^{+}; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.5, 2.5);
-  t->Project("h_kp_dtfcal", "kp_dtfcal:kp_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_kp_dtfcal", "kp_dtfcal:kp_p4_kin.P()","");
   cout << "h_kp_dtfcal = " << h_kp_dtfcal << endl;
   h_kp_dtfcal->Draw("colz");
   c_kp_dtfcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtfcal.root",name.Data()), "root");
@@ -409,7 +409,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_km_dttof = new TCanvas("c_km_dttof", "c_km_dttof", 600, 400);
   c_km_dttof->cd();
   TH2D *h_km_dttof = new TH2D("h_km_dttof", "K^{-}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.3, 0.3);
-  t->Project("h_km_dttof", "km_dttof:km_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_km_dttof", "km_dttof:km_p4_kin.P()","");
   cout << "h_km_dttof = " << h_km_dttof << endl;
   h_km_dttof->Draw("colz");
   c_km_dttof->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dttof.root",name.Data()), "root");
@@ -418,7 +418,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_km_dtbcal = new TCanvas("c_km_dtbcal", "c_km_dtbcal", 600, 400);
   c_km_dtbcal->cd();
   TH2D *h_km_dtbcal = new TH2D("h_km_dtbcal", "K^{-}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-0.75, 0.75);
-  t->Project("h_km_dtbcal", "km_dtbcal:km_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_km_dtbcal", "km_dtbcal:km_p4_kin.P()","");
   cout << "h_km_dtbcal = " << h_km_dtbcal << endl;
   h_km_dtbcal->Draw("colz");
   c_km_dtbcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtbcal.root",name.Data()), "root");
@@ -427,7 +427,7 @@ void y2175(TString name)//, TString cut)
   TCanvas *c_km_dtfcal = new TCanvas("c_km_dtfcal", "c_km_dtfcal", 600, 400);
   c_km_dtfcal->cd();
   TH2D *h_km_dtfcal = new TH2D("h_km_dtfcal", "K^{-}; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.5, 2.5);
-  t->Project("h_km_dtfcal", "km_dtfcal:km_p4_kin.P()", "kin_chisq<30 && abs(mm2)<0.06");
+  t->Project("h_km_dtfcal", "km_dtfcal:km_p4_kin.P()","");
   cout << "h_km_dtfcal = " << h_km_dtfcal << endl;
   h_km_dtfcal->Draw("colz");
   c_km_dtfcal->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtfcal.root",name.Data()), "root");
@@ -513,8 +513,8 @@ void y2175(TString name)//, TString cut)
 */
   // +++ Post cut
   TCanvas *c_foMass_postcuts = new TCanvas("c_foMass_postcuts","c_foMass_postcuts",600,400);
-  TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 0.3, 1.3);
-  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni)");
+  TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 0.3, 1.2);
+  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)");
   c_foMass_postcuts->cd();
   h_foMass_postcuts->Draw("e");
   c_foMass_postcuts->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_foMass_postcuts.root",name.Data()), "root");
@@ -555,7 +555,7 @@ void y2175(TString name)//, TString cut)
   // +++ Post cut
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts","c_YMass_postcuts",600,400);
   TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", ";m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
-  t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni)");
+  t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)");
   // TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", ";m_{#phif_{0}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
   // t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.99)<0.1)"); 
   c_YMass_postcuts->cd();
@@ -723,5 +723,31 @@ void y2175(TString name)//, TString cut)
   c_kmpipp->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpipp.root",name.Data()), "root");
   c_kmpipp->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpipp.eps",name.Data()), "eps");
 */
-                                          
+  // +++ kppim vs. kmpip
+  TH2D *h2_kppimvskmpip = new TH2D("h2_kppimvskmpip", ";m_{K^{+}#pi^{-}} [GeV/c^{2}];m_{K^{-}#pi^{+}} [GeV/c^{2}];Counts", 200, 0.6, 2, 200, 0.6, 2);
+  t->Project("h2_kppimvskmpip", "kppim_mf:kmpip_mf", "w8*(kppim_uni || kmpip_uni)"); 
+  TCanvas *c_kppimvskmpip = new TCanvas("c_kppimvskmpip","c_kppimvskmpip",600,400);
+  c_kppimvskmpip->cd();
+  h2_kppimvskmpip->Draw("colz");
+  c_kppimvskmpip->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppimvskmpip.root",name.Data()), "root");
+  c_kppimvskmpip->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppimvskmpip.eps",name.Data()), "eps");
+ 
+  // +++ K*K*
+  TH1F *h_2kstar = new TH1F("h_2kstar", ";m_{K^{*} #bar{K}^{*}} [GeV/c^{2}];Counts", 200, 1.7, 3.0);
+  t->Project("h_2kstar", "kpkmpippim_mf", "w8*(kpkmpippim_uni && abs(kppim_mf-0.891)<0.05 && abs(kmpip_mf-0.891)<0.05)"); 
+  TCanvas *c_2kstar = new TCanvas("c_2kstar","c_2kstar",600,400);
+  c_2kstar->cd();
+  h_2kstar->Draw("colz");
+  c_2kstar->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_2kstar.root",name.Data()), "root");
+  c_2kstar->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_2kstar.eps",name.Data()), "eps");
+
+  // +++ kpkmpip vs. kpkmpim
+  TH2D *h2_kpkmpipvskpkmpim = new TH2D("h2_kpkmpipvskpkmpim", ";m_{K^{+}K^{-}#pi^{+}} [GeV/c^{2}];m_{K^{+}K^{-}#pi^{-}} [GeV/c^{2}];Counts", 200, 0.9, 3, 200, 0.9, 3);
+  t->Project("h2_kpkmpipvskpkmpim", "kpkmpip_mf:kpkmpim_mf", "w8*(kpkmpip_uni || kpkmpim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)"); 
+  TCanvas *c_kpkmpipvskpkmpim = new TCanvas("c_kpkmpipvskpkmpim","c_kpkmpipvskpkmpim",600,400);
+  c_kpkmpipvskpkmpim->cd();
+  h2_kpkmpipvskpkmpim->Draw("colz");
+  c_kpkmpipvskpkmpim->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpipvskpkmpim.root",name.Data()), "root");
+  c_kpkmpipvskpkmpim->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpipvskpkmpim.eps",name.Data()), "eps");
+ 
 }

@@ -41,7 +41,7 @@
 using namespace RooFit;
 using namespace RooStats;
 
-void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
+void scany(int nkk=100, int n2pi2k=50, int ne=1, int nt=1, TString cut="&& kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
   TFile *fdata = new TFile("/Users/nacer/halld_my/pippimkpkm/input/pippimkpkm_17v21.root");
   TTree *tdata = (TTree*)fdata->Get("ntp");
@@ -49,6 +49,8 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
   TTree *tmc = (TTree *)fmc->Get("ntp");
   TFile *fps = new TFile("/Users/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");  
   TFile *outputfig = new TFile("/Users/nacer/halld_my/pippimkpkm/fig_scany/scany.root","UPDATE");
+
+  ofstream ofs_scany("tableau_y.txt", ofstream::out);
 
   RooWorkspace w("w", kTRUE);
 
@@ -58,16 +60,22 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
   // ======================================== Y vs. Eg ===============================================
 
   TCanvas *cphiye=new TCanvas("cphiye","cphiye",1500, 800);
-  // cphiye->Divide(3,4);
+  // cphiye->Divide(2,2);
 
   TCanvas *cphiye1[ne];
+  TCanvas *cphiye2[ne];
+  TCanvas *cphiye3[ne];
+  TCanvas *cphiye4[ne];
 
   TCanvas *cgphiye=new TCanvas("cgphiye","cgphiye",1500, 800);
-  // cgphiye->Divide(3,4);
+  // cgphiye->Divide(2,2);
   TGraphErrors *gphiye[ne];
 
   TCanvas *cgnophiye=new TCanvas("cgnophiye","cgnophiye",1500, 800);
-  TGraphErrors *gnophiye;
+  TGraphErrors *gnophiye= new TGraphErrors(n2pi2k);
+  gnophiye->SetMarkerStyle(20);
+  gnophiye->SetMarkerSize(1.0);
+  gnophiye->SetMarkerColor(2);
 
   // tdata->SetAlias("w4","((abs(delta_t)<2.004)*1.25-0.25)");
 
@@ -84,31 +92,36 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
     cout << "########  j = " << j << " | Eg1[" << j << "] = " << Eg1[j] << " | Eg2[" << j << "] = " << Eg2[j] << endl;
 
     cphiye->cd();//j);
-    TH2F *h1d2 = new TH2F("h1d2", Form("%f<E_{#gamma}<%f (Data);m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", Eg1[j], Eg2[j]), n2pi2k, m2pi2k_min, m2pi2k_max, nkk, mkk_min, mkk_max);
+    TH2F *h1d2 = new TH2F("h1d2", Form("%.2f<E_{#gamma}<%.2f (Data);m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", Eg1[j], Eg2[j]), n2pi2k, m2pi2k_min, m2pi2k_max, nkk, mkk_min, mkk_max);
     tdata->Project("h1d2", "kpkm_mf:kpkmpippim_mf", Form("w8*((kpkm_uni || kpkmpippim_uni)" + cut + "&& beam_p4_kin.E()>%f && beam_p4_kin.E()<%f)", Eg1[j], Eg2[j]));
     h1d2->Draw("colz");
 
     cphiye1[j] = new TCanvas(Form("cphiye1_%d", j), Form("cphiye1_%d", j), 1500, 800);
-    cphiye1[j]->Divide(5, 4);
+    cphiye1[j]->Divide(5, 5);
+    cphiye2[j] = new TCanvas(Form("cphiye2_%d", j), Form("cphiye2_%d", j), 1500, 800);
+    cphiye2[j]->Divide(5, 5);
+    cphiye3[j] = new TCanvas(Form("cphiye3_%d", j), Form("cphiye3_%d", j), 1500, 800);
+    cphiye3[j]->Divide(5, 5);
+    cphiye4[j] = new TCanvas(Form("cphiye4_%d", j), Form("cphiye4_%d", j), 1500, 800);
+    cphiye4[j]->Divide(5, 5);
 
     gphiye[j] = new TGraphErrors(n2pi2k);
     gphiye[j]->SetMarkerStyle(20);
     gphiye[j]->SetMarkerSize(1.0);
     gphiye[j]->SetMarkerColor(1);
-    gphiye[j]->SetTitle(Form("%f<E_{#gamma}<%f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}", Eg1[j], Eg2[j]));
+    gphiye[j]->SetTitle(Form("%.2f<E_{#gamma}<%.2f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}", Eg1[j], Eg2[j]));
 
-    gnophiye = new TGraphErrors(n2pi2k);
-    gnophiye->SetMarkerStyle(20);
-    gnophiye->SetMarkerSize(1.0);
-    gnophiye->SetMarkerColor(1);
-    gnophiye->SetTitle(Form("%f<E_{#gamma}<%f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{NO #phi}", Eg1[j], Eg2[j]));
+    gnophiye->SetTitle(Form("%.2f<E_{#gamma}<%.2f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{NO #phi}", Eg1[j], Eg2[j]));
 
 
     for (int i = 1; i <= n2pi2k; ++i)
     {
-      cout << i << " " << flush;
+      // cout << i << " " << flush;
 
-      cphiye1[j]->cd(i);
+      if(i < 26) cphiye1[j]->cd(i);
+      if(i > 25 && i<51) cphiye2[j]->cd(i-25);
+      if(i > 50 && i<76) cphiye3[j]->cd(i-50);
+      if(i > 75) cphiye4[j]->cd(i-75);
 
       TH1D *hphiye_py = h1d2->ProjectionY(Form("_hphiye_py_%d_%d", j, i), i, i);
 
@@ -120,7 +133,7 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
       // fb2->Draw("same");
 
       //w.factory(Form("Voigtian::sig_phiye(m_phiye[%f,%f],mean_phiye[1.016,1.022],width_phiye[0.004],sigma_phiye[0.001,0.6])", mkk_min, mkk_max)); //1.018,1.022
-      w.factory(Form("Voigtian::sig_phiye(m_phiye[%f,%f],mean_phiye[1.01,1.025],width_phiye[0.004],sigma_phiye[0.0001,0.01])", mkk_min, mkk_max)); //mean_phiye[1.01,1.025], sigma_phiye[0.001,0.01]
+      w.factory(Form("Voigtian::sig_phiye(m_phiye[%f,%f],mean_phiye[1.01,1.025],width_phiye[0.004],sigma_phiye[0.0001,0.01])", mkk_min, mkk_max)); //50:mean_phiye[1.01,1.025],sigma_phiye[0.0001,0.01],100:mean_phiye[1.018,1.022] 
       w.factory("Chebychev::bkg_phiye(m_phiye,{c0_phiye[-1,1], c1_phiye[-1,1], c2_phiye[-1,1]})");//, c2_phiye[-1,1]
       w.factory("SUM:::model_phiye(nsig_phiye[0,100000000]*sig_phiye, nbkg_phiye[0,100000000]*bkg_phiye)"); //nsig[0,100000000]*sig2,
       w.var("m_phiye")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
@@ -158,10 +171,17 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
       gphiye[j]->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), N2);
       gphiye[j]->SetPointError(i - 1, 0, dN2);
 
-      double Nbkg2 = w.var("nbkg_phiye")->getVal();
-      double dNbkg2 = w.var("nbkg_phiye")->getError();    
-      gnophiye->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), Nbkg2);
-      gnophiye->SetPointError(i - 1, 0, dNbkg2);
+      // Integrate normalized pdf over subrange
+      w.var("m_phiye")->setRange("sigregion",1.005,1.035);
+      // RooAbsReal* igx_sig = gx.createIntegral(x,NormSet(x),Range("signal")) ;
+      RooAbsReal* fbkg = w.pdf("bkg_phiye")->createIntegral(*w.var("m_phiye"),NormSet(*w.var("m_phiye")),Range("sigregion"));
+      RooAbsReal* fsig = w.pdf("sig_phiye")->createIntegral(*w.var("m_phiye"),NormSet(*w.var("m_phiye")),Range("sigregion"));
+      // double Nbkg = -fbkg->getVal()*(w.var("nsig_phiye")->getVal()+w.var("nbkg_phiye")->getVal())+fsig->getVal()*w.var("nsig_phiye")->getVal();       
+      double Nbkg = fbkg->getVal()*w.var("nbkg_phiye")->getVal();
+      double dNbkg = 0;//fbkg->getError(); // w.var("nbkg_phiye")->getError();
+      gnophiye->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), Nbkg);
+      gnophiye->SetPointError(i - 1, 0, dNbkg);
+      ofs_scany << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
 
       cgphiye->Update();
       // c2->Update();
@@ -173,14 +193,21 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
     cgphiye->cd();//j);
     gphiye[j]->Draw("AP");
 
-    cgnophiye->cd();//j);
-    gnophiye->Draw("AP");
+    // cgnophiye->cd();//j);
+    gnophiye->Draw("Psame");
 
     // int j =1;
     // gphiye->Write(Form("grphiye_%d", j), TObject::kWriteDelete);
 
     cphiye1[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c1_phiye_%d.root", j), "root");
     cphiye1[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c1_phiye_%d.eps", j), "eps");
+    cphiye2[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c2_phiye_%d.root", j), "root");
+    cphiye2[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c2_phiye_%d.eps", j), "eps");
+    cphiye3[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c3_phiye_%d.root", j), "root");
+    cphiye3[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c3_phiye_%d.eps", j), "eps");
+    cphiye4[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c4_phiye_%d.root", j), "root");
+    cphiye4[j]->Print(Form("/Users/nacer/halld_my/pippimkpkm/fig_scany/c4_phiye_%d.eps", j), "eps");
+  
   }
 
   cphiye->Print("/Users/nacer/halld_my/pippimkpkm/fig_scany/c_phiye.root", "root");
@@ -214,7 +241,7 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
     cout << "########  j = " << j << " | t1[" << j << "] = " << t1[j] << " | t2[" << j << "] = " << t2[j] << endl;
 
     cphiyt->cd(j);
-    TH2F *h1d2 = new TH2F("h1d2", Form("%f<-t<%f (Data);m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", t1[j], t2[j]), n2pi2k, m2pi2k_min, m2pi2k_max, nkk, mkk_min, mkk_max);
+    TH2F *h1d2 = new TH2F("h1d2", Form("%.2f<-t<%.2f (Data);m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", t1[j], t2[j]), n2pi2k, m2pi2k_min, m2pi2k_max, nkk, mkk_min, mkk_max);
     tdata->Project("h1d2", "kpkm_mf:kpkmpippim_mf", Form("w8*((kpkm_uni || kpkmpippim_uni)" + cut + "&& beam_p4_kin.E()>6.3 && beam_p4_kin.E()<11.6 && -t_kin>%f && -t_kin<%f)", t1[j], t2[j]));
     h1d2->Draw("colz");
 
@@ -225,7 +252,7 @@ void scany(int n2pi2k=50, int nkk=100, int ne=1, int nt=1, TString cut="&& kin_c
     gphiyt[j]->SetMarkerStyle(20);
     gphiyt[j]->SetMarkerSize(1.0);
     gphiyt[j]->SetMarkerColor(1);
-    gphiyt[j]->SetTitle(Form("%f<-t<%f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}", t1[j], t2[j]));
+    gphiyt[j]->SetTitle(Form("%.2f<-t<%.2f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}", t1[j], t2[j]));
 
     for (int i = 1; i <= n2pi2k; ++i)
     {
