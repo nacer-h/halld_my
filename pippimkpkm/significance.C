@@ -828,11 +828,19 @@ void significance(TString cut)
   grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC); cut; S/#sqrt{B}");
   cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
   cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
+<<<<<<< HEAD
 
+=======
+*/
+>>>>>>> 6bc33be609be75c56e1820a9aebf93b5a9d6bea1
   ofs_PhiMass.close();
   ofs_YMass.close();
   outputfig->Print();
   // outputfig->Close();
 
 }
+<<<<<<< HEAD
 */
+=======
+
+>>>>>>> 6bc33be609be75c56e1820a9aebf93b5a9d6bea1
