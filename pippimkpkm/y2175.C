@@ -37,7 +37,7 @@ void y2175(TString name)//, TString cut)
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/y2175.root","UPDATE");
   TTree *t=(TTree*)f->Get("ntp");
 
-  // gStyle->SetMarkerStyle(20);
+  // gStyle->SetMarkerStyle(20);xxx
   // gStyle->SetMarkerSize(0.5);
   gStyle->SetMarkerStyle(8);
   // gStyle->SetMarkerSize(1);
