@@ -1,4 +1,4 @@
-//  File: y2175.C # Author: Nacer # Date: 2.9.2018 # Email: a.hamdi@gsi.de # Description: Macro to study Y(2175).                                                                                                                                                                                  
+// File: y2175.C # Author: Nacer # Date: 2.9.2018 # Email: a.hamdi@gsi.de # Description: Macro to study Y(2175).                                                                                                                                                                                  
 #include "TCanvas.h"                                                                                                                                                               
 #include "TFile.h"                                                                                                                                                                 
 #include "TGraph.h"                                                                                                                                                                
