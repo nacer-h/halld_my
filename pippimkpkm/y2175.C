@@ -1,28 +1,28 @@
 // File: y2175.C # Author: Nacer # Date: 2.9.2018 # Email: a.hamdi@gsi.de # Description: Macro to study Y(2175).                                                                                                                                                                                  
-#include "TCanvas.h"                                                                                                                                                               
-#include "TFile.h"                                                                                                                                                                 
-#include "TGraph.h"                                                                                                                                                                
-#include "TString.h"                                                                                                                                                               
-#include "TTree.h"                                                                                                                                                                 
-#include "TH1.h"                                                                                                                                                                   
-#include "TH2.h"                                                                                                                                                                   
-#include "THStack.h"                                                                                                                                                               
-#include "TMath.h"                                                                                                                                                                 
-#include "TStyle.h"                                                                                                                                                                
-#include "vector"                                                                                                                                                                  
-#include "TF1.h"                                                                                                                                                                   
-#include "TFormula.h"                                                                                                                                                              
-#include "TLatex.h"                                                                                                                                                                
-#include "TLegend.h"                                                                                                                                                               
-#include "TLegendEntry.h"                                                                                                                                                          
-#include "iostream"                                                                                                                                                                
-#include "iomanip"                                                                                                                                                                 
-#include "TLorentzVector.h"                                                                                                                                                        
-#include "TGraphErrors.h"                                                                                                                                                          
-#include "TAxis.h"                                                                                                                                                                 
-#include "TROOT.h"                                                                                                                                                                 
-#include "TSystem.h"                                                                                                                                                               
-#include "TApplication.h"                                                                                                                                                          
+#include "TCanvas.h"
+#include "TFile.h"                                                                                                                                                         
+#include "TGraph.h"                                                                                                                                                        
+#include "TString.h"                                                                                                                                                       
+#include "TTree.h"
+#include "TH1.h"
+#include "TH2.h"                                                                                                                                                           
+#include "THStack.h"                                                                                                                                                       
+#include "TMath.h"                                                                                                                                                         
+#include "TStyle.h"
+#include "vector"
+#include "TF1.h"
+#include "TFormula.h"
+#include "TLatex.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
+#include "iostream"
+#include "iomanip"
+#include "TLorentzVector.h"
+#include "TGraphErrors.h"
+#include "TAxis.h"
+#include "TROOT.h"
+#include "TSystem.h"
+#include "TApplication.h"
 #include "TPaveStats.h"
 #include "TBox.h"
 #include "TList.h"                                                                                                                            
@@ -37,7 +37,7 @@ void y2175(TString name)//, TString cut)
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/y2175.root","UPDATE");
   TTree *t=(TTree*)f->Get("ntp");
 
-  // gStyle->SetMarkerStyle(20);xxx
+  // gStyle->SetMarkerStyle(20);
   // gStyle->SetMarkerSize(0.5);
   gStyle->SetMarkerStyle(8);
   // gStyle->SetMarkerSize(1);
@@ -304,7 +304,7 @@ if(name == "data")
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.root",name.Data()), "root");
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.eps",name.Data()), "eps"); 
 */
-/*
+
   // ********  Beam Energy
   TCanvas *c_beam_e = new TCanvas("c_beam_e", "c_beam_e", 900, 600);
   c_beam_e->cd();
@@ -328,14 +328,24 @@ if(name == "data")
   TCanvas *c_t_kin = new TCanvas("c_t_kin","c_t_kin",900,600);
   c_t_kin->cd();
   c_t_kin->SetLogy();
-  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV^{2}/c^{2});Counts",name.Data()), 300, 0, 10);
+  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV^{2});Counts",name.Data()), 300, 0, 10);
   t->Project("h_t_kin","-t_kin","w8*(kpkm_mf>1.005 && kpkm_mf<1.035)");
-  // h_t_kin->Fit("expo", "R", "", 0.5, 3);
+  // h_t_kin->Fit("expo", "R", "", 0.5, 4);
   h_t_kin->Draw("e");
   h_t_kin->Write(Form("h%s_t_kin",name.Data()),TObject::kWriteDelete);
   c_t_kin->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_t_kin.root", name.Data()), "root");
   c_t_kin->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_t_kin.eps",name.Data()), "eps");
-*/
+ 
+  // ********  Eg vs. -t
+  TCanvas *c_beamevst = new TCanvas("c_beamevst", "c_beamevst", 900, 600);
+  c_beamevst->cd();
+  TH2D *h_beamevst = new TH1F("h_beamevst", Form("%s;Beam Energy (GeV);Counts",name.Data()), 100, 3.0, 11.6, 100, 0, 10);
+  t->Project("h_beamevst","beam_p4_kin.E()","w8");
+  h_beam_e->Draw("hist");
+  h_beam_e->Write(Form("h%s_beamevst",name.Data()),TObject::kWriteDelete);
+  c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.root", name.Data()), "root");
+  c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.eps",name.Data()), "eps");
+
 /*
   // ********  Missing mass squared with Pions as Kions hypothesis
   TCanvas *c_mm2_piask = new TCanvas("c_mm2_piask","c_mm2_piask",600,400);
@@ -722,7 +732,7 @@ if(name == "data")
   l_YMass->Draw();
   c_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass.root",name.Data()), "root");
   c_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass.eps",name.Data()), "eps");
-
+*/
 /*
   // ******** Phi vs. fo
 
@@ -866,7 +876,7 @@ if(name == "data")
 
   c_foMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_foMass_postcuts.root", name.Data()), "root");
   c_foMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_foMass_postcuts.eps", name.Data()), "eps");
-*/
+
   // +++ Y Mass
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts", "c_YMass_postcuts", 900, 600);
   TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", Form("%s;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
@@ -909,154 +919,154 @@ if(name == "data")
 
   c_YMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_postcuts.root", name.Data()), "root");
   c_YMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_postcuts.eps", name.Data()), "eps");
-
+*/
 /*
   //3 +++ kppim
   TH1F *h_kppim = new TH1F("h_kppim", ";m_{K^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 0.6, 2);
   t->Project("h_kppim", "kppim_mf", "w8*(kppim_uni)");  
-  TCanvas *c_kppim = new TCanvas("c_kppim","c_kppim",600,400);
+  TCanvas *c_kppim = new TCanvas("c_kppim","c_kppim",900,600);
   c_kppim->cd();
-  h_kppim->Draw("hist");
+  h_kppim->Draw();
   c_kppim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppim.root",name.Data()), "root");
   c_kppim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppim.eps",name.Data()), "eps");
  
   //4 +++ kppip
   TH1F *h_kppip = new TH1F("h_kppip", ";m_{K^{+}#pi^{+}} [GeV/c^{2}];Counts", 200, 0.6, 2);
   t->Project("h_kppip", "kppip_mf", "w8*(kppip_uni)");  
-  TCanvas *c_kppip = new TCanvas("c_kppip","c_kppip",600,400);
+  TCanvas *c_kppip = new TCanvas("c_kppip","c_kppip",900,600);
   c_kppip->cd();
-  h_kppip->Draw("hist");
+  h_kppip->Draw();
   c_kppip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppip.root",name.Data()), "root");
   c_kppip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppip.eps",name.Data()), "eps");
 
   //5 +++ kpp
-  TH1F *h_kpp = new TH1F("h_kpp", ";m_{K^{+}p} [GeV/c^{2}];Counts", 200, 1.4, 3.2);
+  TH1F *h_kpp = new TH1F("h_kpp", ";m_{K^{+}p} [GeV/c^{2}];Counts", 200, 1.4, 3.);//1.4, 3.2
   t->Project("h_kpp", "kpp_mf", "w8*(kpp_uni)");  
-  TCanvas *c_kpp = new TCanvas("c_kpp","c_kpp",600,400);
+  TCanvas *c_kpp = new TCanvas("c_kpp","c_kpp",900,600);
   c_kpp->cd();
-  h_kpp->Draw("hist");
+  h_kpp->Draw();//"hist"
   c_kpp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpp.root",name.Data()), "root");
   c_kpp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpp.eps",name.Data()), "eps");
 
   //6 +++ kmpim
   TH1F *h_kmpim = new TH1F("h_kmpim", ";m_{K^{-}#pi^{-}} [GeV/c^{2}];Counts", 200, 0.6, 2);
   t->Project("h_kmpim", "kmpim_mf", "w8*(kmpim_uni)");  
-  TCanvas *c_kmpim = new TCanvas("c_kmpim","c_kmpim",600,400);
+  TCanvas *c_kmpim = new TCanvas("c_kmpim","c_kmpim",900,600);
   c_kmpim->cd();
-  h_kmpim->Draw("hist");
+  h_kmpim->Draw();
   c_kmpim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpim.root",name.Data()), "root");
   c_kmpim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpim.eps",name.Data()), "eps");
 
   //7 +++ kmpip
   TH1F *h_kmpip = new TH1F("h_kmpip", ";m_{K^{-}#pi^{+}} [GeV/c^{2}];Counts", 200, 0.6, 2);
   t->Project("h_kmpip", "kmpip_mf", "w8*(kmpip_uni)");  
-  TCanvas *c_kmpip = new TCanvas("c_kmpip","c_kmpip",600,400);
+  TCanvas *c_kmpip = new TCanvas("c_kmpip","c_kmpip",900,600);
   c_kmpip->cd();
-  h_kmpip->Draw("hist");
+  h_kmpip->Draw();
   c_kmpip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpip.root",name.Data()), "root");
   c_kmpip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpip.eps",name.Data()), "eps");
 
   //8 +++ kmp
   TH1F *h_kmp = new TH1F("h_kmp", ";m_{K^{-}p} [GeV/c^{2}];Counts", 200, 1.4, 3);
   t->Project("h_kmp", "kmp_mf", "w8*(kmp_uni)");  
-  TCanvas *c_kmp = new TCanvas("c_kmp","c_kmp",600,400);
+  TCanvas *c_kmp = new TCanvas("c_kmp","c_kmp",900,600);
   c_kmp->cd();
-  h_kmp->Draw("hist");
+  h_kmp->Draw();
   c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp.root",name.Data()), "root");
   c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp.eps",name.Data()), "eps");
 
   //9 +++ pipp
   TH1F *h_pipp = new TH1F("h_pipp", ";m_{#pi^{+}p} [GeV/c^{2}];Counts", 200, 0.9, 2.5);
   t->Project("h_pipp", "pipp_mf", "w8*(pipp_uni)");  
-  TCanvas *c_pipp = new TCanvas("c_pipp","c_pipp",600,400);
+  TCanvas *c_pipp = new TCanvas("c_pipp","c_pipp",900,600);
   c_pipp->cd();
-  h_pipp->Draw("hist");
+  h_pipp->Draw();
   c_pipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pipp.root",name.Data()), "root");
   c_pipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pipp.eps",name.Data()), "eps");
 
   //10 +++ pimp
   TH1F *h_pimp = new TH1F("h_pimp", ";m_{#pi^{-}p} [GeV/c^{2}];Counts", 200, 0.9, 2.5);
   t->Project("h_pimp", "pimp_mf", "w8*(pimp_uni)");  
-  TCanvas *c_pimp = new TCanvas("c_pimp","c_pimp",600,400);
+  TCanvas *c_pimp = new TCanvas("c_pimp","c_pimp",900,600);
   c_pimp->cd();
-  h_pimp->Draw("hist");
+  h_pimp->Draw();
   c_pimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pimp.root",name.Data()), "root");
   c_pimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pimp.eps",name.Data()), "eps");
 
   //11 +++ kpkmp
   TH1F *h_kpkmp = new TH1F("h_kpkmp", ";m_{K^{+}K^{-}p} [GeV/c^{2}];Counts", 200, 2, 4);
   t->Project("h_kpkmp", "kpkmp_mf", "w8*(kpkmp_uni)");  
-  TCanvas *c_kpkmp = new TCanvas("c_kpkmp","c_kpkmp",600,400);
+  TCanvas *c_kpkmp = new TCanvas("c_kpkmp","c_kpkmp",900,600);
   c_kpkmp->cd();
-  h_kpkmp->Draw("hist");
+  h_kpkmp->Draw();
   c_kpkmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmp.root",name.Data()), "root");
   c_kpkmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmp.eps",name.Data()), "eps");
 
   //12 +++ kpkmpip
   TH1F *h_kpkmpip = new TH1F("h_kpkmpip", ";m_{K^{+}K^{-}#pi^{+}} [GeV/c^{2}];Counts", 200, 1.2, 3.2);
   t->Project("h_kpkmpip", "kpkmpip_mf", "w8*(kpkmpip_uni)");  
-  TCanvas *c_kpkmpip = new TCanvas("c_kpkmpip","c_kpkmpip",600,400);
+  TCanvas *c_kpkmpip = new TCanvas("c_kpkmpip","c_kpkmpip",900,600);
   c_kpkmpip->cd();
-  h_kpkmpip->Draw("hist");
+  h_kpkmpip->Draw();
   c_kpkmpip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpip.root",name.Data()), "root");
   c_kpkmpip->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpip.eps",name.Data()), "eps");
 
   //13 +++ kpkmpim
   TH1F *h_kpkmpim = new TH1F("h_kpkmpim", ";m_{K^{+}K^{-}#pi^{-}} [GeV/c^{2}];Counts", 200, 1.2, 3.2);
   t->Project("h_kpkmpim", "kpkmpim_mf", "w8*(kpkmpim_uni)");  
-  TCanvas *c_kpkmpim = new TCanvas("c_kpkmpim","c_kpkmpim",600,400);
+  TCanvas *c_kpkmpim = new TCanvas("c_kpkmpim","c_kpkmpim",900,600);
   c_kpkmpim->cd();
-  h_kpkmpim->Draw("hist");
+  h_kpkmpim->Draw();
   c_kpkmpim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpim.root",name.Data()), "root");
   c_kpkmpim->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpim.eps",name.Data()), "eps");
 
   //14 +++ pippimp
   TH1F *h_pippimp = new TH1F("h_pippimp", ";m_{#pi^{+}#pi^{-}p} [GeV/c^{2}];Counts", 200, 1.3, 3.2);
   t->Project("h_pippimp", "pippimp_mf", "w8*(pippimp_uni)");  
-  TCanvas *c_pippimp = new TCanvas("c_pippimp","c_pippimp",600,400);
+  TCanvas *c_pippimp = new TCanvas("c_pippimp","c_pippimp",900,600);
   c_pippimp->cd();
-  h_pippimp->Draw("hist");
+  h_pippimp->Draw();
   c_pippimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimp.root",name.Data()), "root");
   c_pippimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimp.eps",name.Data()), "eps");
 
   //15 +++ pippimkp
   TH1F *h_pippimkp = new TH1F("h_pippimkp", ";m_{#pi^{+}#pi^{-}K^{+}} [GeV/c^{2}];Counts", 200, 0.9, 2.7);
   t->Project("h_pippimkp", "pippimkp_mf", "w8*(pippimkp_uni)");  
-  TCanvas *c_pippimkp = new TCanvas("c_pippimkp","c_pippimkp",600,400);
+  TCanvas *c_pippimkp = new TCanvas("c_pippimkp","c_pippimkp",900,600);
   c_pippimkp->cd();
-  h_pippimkp->Draw("hist");
+  h_pippimkp->Draw();
   c_pippimkp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimkp.root",name.Data()), "root");
   c_pippimkp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimkp.eps",name.Data()), "eps");
 
   //16 +++ pippimkm
   TH1F *h_pippimkm = new TH1F("h_pippimkm", ";m_{#pi^{+}#pi^{-}K^{-}} [GeV/c^{2}];Counts", 200, 0.9, 2.7);
   t->Project("h_pippimkm", "pippimkm_mf", "w8*(pippimkm_uni)");  
-  TCanvas *c_pippimkm = new TCanvas("c_pippimkm","c_pippimkm",600,400);
+  TCanvas *c_pippimkm = new TCanvas("c_pippimkm","c_pippimkm",900,600);
   c_pippimkm->cd();
-  h_pippimkm->Draw("hist");
+  h_pippimkm->Draw();
   c_pippimkm->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimkm.root",name.Data()), "root");
   c_pippimkm->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pippimkm.eps",name.Data()), "eps");
 
   //17 +++ kppimp
   TH1F *h_kppimp = new TH1F("h_kppimp", ";m_{K^{+}#pi^{-}p} [GeV/c^{2}];Counts", 200, 1.6, 3.5);
   t->Project("h_kppimp", "kppimp_mf", "w8*(kppimp_uni)");  
-  TCanvas *c_kppimp = new TCanvas("c_kppimp","c_kppimp",600,400);
+  TCanvas *c_kppimp = new TCanvas("c_kppimp","c_kppimp",900,600);
   c_kppimp->cd();
-  h_kppimp->Draw("hist");
+  h_kppimp->Draw();
   c_kppimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppimp.root",name.Data()), "root");
   c_kppimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kppimp.eps",name.Data()), "eps");
 
   //18 +++ kmpipp
   TH1F *h_kmpipp = new TH1F("h_kmpipp", ";m_{K^{-}#pi^{+}p} [GeV/c^{2}];Counts", 200, 1.6, 3.5);
   t->Project("h_kmpipp", "kmpipp_mf", "w8*(kmpipp_uni)");  
-  TCanvas *c_kmpipp = new TCanvas("c_kmpipp","c_kmpipp",600,400);
+  TCanvas *c_kmpipp = new TCanvas("c_kmpipp","c_kmpipp",900,600);
   c_kmpipp->cd();
-  h_kmpipp->Draw("hist");
+  h_kmpipp->Draw();
   c_kmpipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpipp.root",name.Data()), "root");
   c_kmpipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpipp.eps",name.Data()), "eps");
 
 */
-  
+/*  
   // Daltz analysis phipip vs. phipim
 
   TH2D *h2_phipipvsphipim_tot = new TH2D("h2_phipipvsphipim_tot", ";m^{2}_{#phi#pi^{+}} [GeV/c^{2}];m^{2}_{#phi#pi^{-}} [GeV/c^{2}]", 200, 0.9, 8, 200, 0.9, 8);
@@ -1090,7 +1100,7 @@ if(name == "data")
   h2_phipipvsphipim_3->Draw("colz");
   c_phipipvsphipim_3->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_3.root",name.Data()), "root");
   c_phipipvsphipim_3->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_3.eps",name.Data()), "eps");
-
+*/
 /*
   // Nine tiles analysis
   // +++ kppim vs. kmpip
