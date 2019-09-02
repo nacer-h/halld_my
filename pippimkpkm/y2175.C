@@ -328,7 +328,7 @@ if(name == "data")
   TCanvas *c_t_kin = new TCanvas("c_t_kin","c_t_kin",900,600);
   c_t_kin->cd();
   c_t_kin->SetLogy();
-  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV^{2});Counts",name.Data()), 300, 0, 10);
+  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV/c)^{2});Counts",name.Data()), 300, 0, 10);
   t->Project("h_t_kin","-t_kin","w8*(kpkm_mf>1.005 && kpkm_mf<1.035)");
   // h_t_kin->Fit("expo", "R", "", 0.5, 4);
   h_t_kin->Draw("e");
@@ -339,10 +339,10 @@ if(name == "data")
   // ********  Eg vs. -t
   TCanvas *c_beamevst = new TCanvas("c_beamevst", "c_beamevst", 900, 600);
   c_beamevst->cd();
-  TH2D *h_beamevst = new TH1F("h_beamevst", Form("%s;Beam Energy (GeV);Counts",name.Data()), 100, 3.0, 11.6, 100, 0, 10);
-  t->Project("h_beamevst","beam_p4_kin.E()","w8");
-  h_beam_e->Draw("hist");
-  h_beam_e->Write(Form("h%s_beamevst",name.Data()),TObject::kWriteDelete);
+  TH2D *h_beamevst = new TH2D("h_beamevst", Form("%s;E_{#gamma} [GeV];-t [GeV/c)^{2}]",name.Data()), 100, 3.0, 12, 100, 0, 10);
+  t->Project("h_beamevst","-t_kin:beam_p4_kin.E()","");//w8*(kpkm_mf>1.005 && kpkm_mf<1.035)
+  h_beamevst->Draw("colz");
+  h_beamevst->Write(Form("h%s_beamevst",name.Data()),TObject::kWriteDelete);
   c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.root", name.Data()), "root");
   c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.eps",name.Data()), "eps");
 

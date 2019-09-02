@@ -61,7 +61,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   // gROOT->ForceStyle();
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
-/*
+
   // *********************** Phi(1020) MC *********************************
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 1000, 600);
   TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "MC signal; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.005, 1.035);
@@ -101,8 +101,10 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   lat_PhiMass_mc.DrawLatex(0.65, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
   lat_PhiMass_mc.DrawLatex(0.65, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
 
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_PhiMass_postcuts_fitted.root", "root");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_PhiMass_postcuts_fitted.eps", "eps");
+
   //cout<<"=============================  no problem up to here ! ========================"<<endl;
-*/
  
   // TF1 *phi_model = new TF1("phi_model", "[0]*TMath::Voigt(x - [1], [2], [3]) ", 1.005, 1.035);//+ pol2(4)
   // // TF1 *phi_model = new TF1("phi_model", "gaus(0) + gaus(3)", 1.0, 1.05);
@@ -631,7 +633,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 */
 
 // ======================================== fo vs. (E,-t) ===============================================
-
+/*
   TCanvas *cphifo = new TCanvas("cphifo", "cphifo", 10, 10, 1500, 800); //1500, 800
   cphifo->Divide(3,2);
 
@@ -790,6 +792,6 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   cphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo.eps", "eps");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.root", "root");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.eps", "eps");
-
+*/
   outputfig->Print();
 }
