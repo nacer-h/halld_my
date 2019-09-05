@@ -31,8 +31,14 @@ using namespace std;
 void y2175(TString name)//, TString cut)
 {
   TFile *f = NULL;
-  if(name == "mc") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/phifo_genr8_17v3.root");
-  if(name == "data") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/pippimkpkm_17v21.root");
+  if(name == "mc_phifo") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phifo_genr8_17v3_flat.root");
+  if(name == "mc_phi2pi") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phi2pi_genr8_17v3_flat.root");
+  if(name == "mc_kkpipi") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_kkpipi_genr8_17v3_flat.root");
+  if(name == "mc_bggen") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_bggen_genr8_17v3_flat.root");
+  if(name == "data_16") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_16_flat.root");
+  if(name == "data_17") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_17_flat.root");
+  if(name == "data_18") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_18_flat.root");
+  if(name == "data_all") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_all_flat.root");
   // TFile *fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/y2175.root","UPDATE");
   TTree *t=(TTree*)f->Get("ntp");
@@ -44,28 +50,28 @@ void y2175(TString name)//, TString cut)
   // gStyle->SetLineWidth(1);
   // gStyle->SetHistLineWidth(3);
   TString cutlist = "(abs(kp_dttof)<0.135 || kp_dttof == -999) && (abs(kp_dtbcal)<0.4125 || kp_dtbcal == -999) && (abs(kp_dtfcal)<1 || kp_dtfcal == -999) && (abs(pip_dttof)<0.15 || pip_dttof == -999) && (abs(pip_dtbcal)<0.85 || pip_dtbcal == -999) && (abs(p_dttof)<0.27 || p_dttof == -999) && abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50";// abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50 &&
-/*
-  // Van Hove
-  TCanvas *c_vhthetaphi = new TCanvas("c_vhthetaphi", "c_vhthetaphi", 900,600);
-  c_vhthetaphi->cd();
-  TH2D *h2_vhthetaphi = new TH2D("h2_vhthetaphi", Form("Great Circle Plot (%s); #phi (rad) ;#theta (rad)",name.Data()), 260, 0.0, 6.3, 130, 0.0, 3.25);
-  t->Project("h2_vhthetaphi", "vhtheta:vhphi", "");//vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2
-  cout << "h2_vhthetaphi = " << h2_vhthetaphi << endl;
-  h2_vhthetaphi->Draw("colz");
-  TF1 *gc_one = new TF1("gc_one", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x)))", 0, 6.3);
-  gc_one->Draw("same");
-  TF1 *gc_two = new TF1("gc_two", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x-((2*TMath::Pi())/3))))", 0, 6.3);
-  gc_two->Draw("same");
-  TF1 *gc_three = new TF1("gc_three", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x-((4*TMath::Pi())/3))))", 0, 6.3);
-  gc_three->Draw("same");
-  TLine *gc_four = new TLine(0, 1.5708, 6.3, 1.5708);
-  gc_four->SetLineColor(2);
-  gc_four->SetLineWidth(2);
-  gc_four->Draw("same");
-  h2_vhthetaphi->Write(Form("h%s_vhthetaphi",name.Data()),TObject::kWriteDelete);
-  c_vhthetaphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_vhthetaphi.root",name.Data()), "root");
-  c_vhthetaphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_vhthetaphi.eps",name.Data()), "eps");
-*/
+
+  // // Van Hove
+  // TCanvas *c_vhthetaphi = new TCanvas("c_vhthetaphi", "c_vhthetaphi", 900,600);
+  // c_vhthetaphi->cd();
+  // TH2D *h2_vhthetaphi = new TH2D("h2_vhthetaphi", Form("Great Circle Plot (%s); #phi (rad) ;#theta (rad)",name.Data()), 260, 0.0, 6.3, 130, 0.0, 3.25);
+  // t->Project("h2_vhthetaphi", "vhtheta:vhphi", "vhtheta>0.4 && vhtheta<1.5 && vhphi>1.55 && vhphi<2.2");//vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2   //vhphi>1.55
+  // cout << "h2_vhthetaphi = " << h2_vhthetaphi << endl;
+  // h2_vhthetaphi->Draw("colz");
+  // TF1 *gc_one = new TF1("gc_one", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x)))", 0, 6.3);
+  // gc_one->Draw("same");
+  // TF1 *gc_two = new TF1("gc_two", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x-((2*TMath::Pi())/3))))", 0, 6.3);
+  // gc_two->Draw("same");
+  // TF1 *gc_three = new TF1("gc_three", "TMath::ATan2(1,((2*TMath::Sqrt(2))*TMath::Sin(x-((4*TMath::Pi())/3))))", 0, 6.3);
+  // gc_three->Draw("same");
+  // TLine *gc_four = new TLine(0, 1.5708, 6.3, 1.5708);
+  // gc_four->SetLineColor(2);
+  // gc_four->SetLineWidth(2);
+  // gc_four->Draw("same");
+  // h2_vhthetaphi->Write(Form("h%s_vhthetaphi",name.Data()),TObject::kWriteDelete);
+  // c_vhthetaphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_vhthetaphi.root",name.Data()), "root");
+  // c_vhthetaphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_vhthetaphi.eps",name.Data()), "eps");
+
 /*  
 if(name == "data")
 {
@@ -652,7 +658,7 @@ if(name == "data")
   TH1F *h_PhiMass_beambunchcut = new TH1F("h_PhiMass_beambunchcut", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 200, 0.98, 1.2);
   t->Project("h_PhiMass_beambunchcut", "kpkm_mf", "w8*(kpkm_uni && abs(mm2)<0.06 && kin_chisq<100)");
   h_PhiMass_beambunchcut->SetLineColor(kRed);
-  
+
   TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 200, 0.98, 1.2);
   t->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni && abs(mm2)<0.015 && kin_chisq<30)");
   h_PhiMass_postcuts->SetLineColor(kMagenta);
@@ -783,7 +789,7 @@ if(name == "data")
   // c_h2_foVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_postcut.root",name.Data()), "root");
   // c_h2_foVsYMass_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_h2_foVsYMass_postcut.eps",name.Data()), "eps");
 */
-/*
+
   // +++ Phi Mass
   TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", Form("%s;m_{K^{+}K^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 0.98, 1.2);
   t->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni)");//+cutlist+" && kin_chisq<25)"
@@ -799,17 +805,17 @@ if(name == "data")
   // lphicutmin->Draw("same");
   // lphicutmax->Draw("same");
   
-  // Van Hove cut
-  TH1F *h_PhiMass_vhcut = new TH1F("h_PhiMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2];m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 0.98, 1.2);
-  h_PhiMass_vhcut->SetMarkerColor(kRed);
-  t->Project("h_PhiMass_vhcut", "kpkm_mf", "w8*(kpkm_uni && vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
-  h_PhiMass_vhcut->Draw("same");  
-  TLegend *l_PhiMass = new TLegend(0.55, 0.75, 0.85, 0.88);
-  l_PhiMass->SetFillColor(kWhite);
-  l_PhiMass->SetLineColor(kWhite);
-  l_PhiMass->AddEntry(h_PhiMass_postcuts, "#chi^{2}<25", "p");
-  l_PhiMass->AddEntry(h_PhiMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2]", "p");
-  l_PhiMass->Draw("same");
+  // // Van Hove cut
+  // TH1F *h_PhiMass_vhcut = new TH1F("h_PhiMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2];m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 0.98, 1.2);
+  // h_PhiMass_vhcut->SetMarkerColor(kRed);
+  // t->Project("h_PhiMass_vhcut", "kpkm_mf", "w8*(kpkm_uni && vhtheta>0.4 && vhtheta<1.5 && vhphi>1.55 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
+  // h_PhiMass_vhcut->Draw("same");  
+  // TLegend *l_PhiMass = new TLegend(0.55, 0.75, 0.85, 0.88);
+  // l_PhiMass->SetFillColor(kWhite);
+  // l_PhiMass->SetLineColor(kWhite);
+  // l_PhiMass->AddEntry(h_PhiMass_postcuts, "#chi^{2}<25", "p");
+  // l_PhiMass->AddEntry(h_PhiMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2]", "p");
+  // l_PhiMass->Draw("same");
 
   // // Chi2pi cut
   // TH1F *h_PhiMass_05chi2pi = new TH1F("h_PhiMass_05chi2pi", "#chi^{2}_{K^{+}K^{-}#pi^{+}#pi^{-}}<0.5*#chi^{2}_{#pi^{+}#pi^{-}#pi^{+}#pi^{-}};m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 0.98, 1.2);
@@ -845,17 +851,17 @@ if(name == "data")
   c_foMass_postcuts->cd();
   h_foMass_postcuts->Draw("e");
 
-  // Van Hove cut
-  TH1F *h_foMass_vhcut = new TH1F("h_foMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2];m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 0.3, 1.2);
-  h_foMass_vhcut->SetMarkerColor(kRed);
-  t->Project("h_foMass_vhcut", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
-  h_foMass_vhcut->Draw("same");  
-  TLegend *l_foMass = new TLegend(0.55, 0.75, 0.85, 0.88);
-  l_foMass->SetFillColor(kWhite);
-  l_foMass->SetLineColor(kWhite);
-  l_foMass->AddEntry(h_foMass_postcuts, "#chi^{2}<25", "p");
-  l_foMass->AddEntry(h_foMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2]", "p");
-  l_foMass->Draw("same");
+  // // Van Hove cut
+  // TH1F *h_foMass_vhcut = new TH1F("h_foMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2];m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 0.3, 1.2);
+  // h_foMass_vhcut->SetMarkerColor(kRed);
+  // t->Project("h_foMass_vhcut", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1.55 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
+  // h_foMass_vhcut->Draw("same");  
+  // TLegend *l_foMass = new TLegend(0.55, 0.75, 0.85, 0.88);
+  // l_foMass->SetFillColor(kWhite);
+  // l_foMass->SetLineColor(kWhite);
+  // l_foMass->AddEntry(h_foMass_postcuts, "#chi^{2}<25", "p");
+  // l_foMass->AddEntry(h_foMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2]", "p");
+  // l_foMass->Draw("same");
 
   // // Chi2 side band subtraction
   // TH1F *h_foMass_sideband = new TH1F("h_foMass_sideband", "50<#chi^{2}<70;m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 0.3, 1.2);
@@ -887,15 +893,15 @@ if(name == "data")
   h_YMass_postcuts->Draw("e"); //"hist"
 
   // // Van Hove cut
-  // TH1F *h_YMass_vhcut = new TH1F("h_YMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
+  // TH1F *h_YMass_vhcut = new TH1F("h_YMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
   // h_YMass_vhcut->SetMarkerColor(kRed);
-  // t->Project("h_YMass_vhcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
+  // t->Project("h_YMass_vhcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1.55 && vhphi<2.2)"); // && "+cutlist+" && kin_chisq>50 && kin_chisq<70
   // h_YMass_vhcut->Draw("same");  
   // TLegend *l_YMass = new TLegend(0.55, 0.75, 0.85, 0.88);
   // l_YMass->SetFillColor(kWhite);
   // l_YMass->SetLineColor(kWhite);
   // l_YMass->AddEntry(h_YMass_postcuts, "#chi^{2}<25", "p");
-  // l_YMass->AddEntry(h_YMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1,2.2]", "p");
+  // l_YMass->AddEntry(h_YMass_vhcut, "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2]", "p");
   // l_YMass->Draw("same");
 
 
@@ -919,7 +925,7 @@ if(name == "data")
 
   c_YMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_postcuts.root", name.Data()), "root");
   c_YMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_YMass_postcuts.eps", name.Data()), "eps");
-*/
+
 /*
   //3 +++ kppim
   TH1F *h_kppim = new TH1F("h_kppim", ";m_{K^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 0.6, 2);
@@ -1238,23 +1244,22 @@ if(name == "data")
   c_2kstar_sub->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_2kstar_sub.eps",name.Data()), "eps");  
 */
 
-/*
-  // +++ kpkmpippim vs. pipp
-  TH2D *h2_kpkmpippimvspipp = new TH2D("h2_kpkmpippimvspipp", Form("%s;m_{#pi^{+}p} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]",name.Data()), 100, 1.0, 3, 100, 1.6, 3.2);
-  t->Project("h2_kpkmpippimvspipp", "kpkmpippim_mf:pipp_mf", "w8*((kpkmpippim_uni || pipp_uni) && kpkm_mf>1.005 && kpkm_mf<1.035)"); 
-  TCanvas *c_kpkmpippimvspipp = new TCanvas("c_kpkmpippimvspipp","c_kpkmpippimvspipp",900,600);
-  c_kpkmpippimvspipp->cd();
-  h2_kpkmpippimvspipp->Draw("colz");
-  c_kpkmpippimvspipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp.root",name.Data()), "root");
-  c_kpkmpippimvspipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp.eps",name.Data()), "eps");
+  // // +++ kpkmpippim vs. pipp
+  // TH2D *h2_kpkmpippimvspipp = new TH2D("h2_kpkmpippimvspipp", Form("%s;m_{#pi^{+}p} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]",name.Data()), 100, 1.0, 3, 100, 1.6, 3.2);
+  // t->Project("h2_kpkmpippimvspipp", "kpkmpippim_mf:pipp_mf", "w8*((kpkmpippim_uni || pipp_uni) && kpkm_mf>1.005 && kpkm_mf<1.035)"); 
+  // TCanvas *c_kpkmpippimvspipp = new TCanvas("c_kpkmpippimvspipp","c_kpkmpippimvspipp",900,600);
+  // c_kpkmpippimvspipp->cd();
+  // h2_kpkmpippimvspipp->Draw("colz");
+  // c_kpkmpippimvspipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp.root",name.Data()), "root");
+  // c_kpkmpippimvspipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp.eps",name.Data()), "eps");
 
-  // After VanHove cut
-  TH2D *h2_kpkmpippimvspipp_vhcut = new TH2D("h2_kpkmpippimvspipp_vhcut", Form("%s;m_{#pi^{+}p} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]",name.Data()), 100, 1.0, 3, 100, 1.6, 3.2);
-  t->Project("h2_kpkmpippimvspipp_vhcut", "kpkmpippim_mf:pipp_mf", "w8*((kpkmpippim_uni || pipp_uni) && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1 && vhphi<2.2)"); 
-  TCanvas *c_kpkmpippimvspipp_vhcut = new TCanvas("c_kpkmpippimvspipp_vhcut","c_kpkmpippimvspipp_vhcut",900,600);
-  c_kpkmpippimvspipp_vhcut->cd();
-  h2_kpkmpippimvspipp_vhcut->Draw("colz");
-  c_kpkmpippimvspipp_vhcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp_vhcut.root",name.Data()), "root");
-  c_kpkmpippimvspipp_vhcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp_vhcut.eps",name.Data()), "eps");
-*/
+  // // After VanHove cut
+  // TH2D *h2_kpkmpippimvspipp_vhcut = new TH2D("h2_kpkmpippimvspipp_vhcut", Form("%s;m_{#pi^{+}p} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]",name.Data()), 100, 1.0, 3, 100, 1.6, 3.2);
+  // t->Project("h2_kpkmpippimvspipp_vhcut", "kpkmpippim_mf:pipp_mf", "w8*((kpkmpippim_uni || pipp_uni) && kpkm_mf>1.005 && kpkm_mf<1.035 && vhtheta>0.4 && vhtheta<1.5 && vhphi>1.55 && vhphi<2.2)"); 
+  // TCanvas *c_kpkmpippimvspipp_vhcut = new TCanvas("c_kpkmpippimvspipp_vhcut","c_kpkmpippimvspipp_vhcut",900,600);
+  // c_kpkmpippimvspipp_vhcut->cd();
+  // h2_kpkmpippimvspipp_vhcut->Draw("colz");
+  // c_kpkmpippimvspipp_vhcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp_vhcut.root",name.Data()), "root");
+  // c_kpkmpippimvspipp_vhcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmpippimvspipp_vhcut.eps",name.Data()), "eps");
+
 }
