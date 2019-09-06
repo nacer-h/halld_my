@@ -34,7 +34,8 @@ void y2175(TString name)//, TString cut)
   if(name == "mc_phifo") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phifo_genr8_17v3_flat.root");
   if(name == "mc_phi2pi") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phi2pi_genr8_17v3_flat.root");
   if(name == "mc_kkpipi") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_kkpipi_genr8_17v3_flat.root");
-  if(name == "mc_bggen") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_bggen_genr8_17v3_flat.root");
+  if(name == "mc_bggen") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_bggen_17v3_flat.root");
+  if(name == "mc_all") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_sim_17v3_flat.root");
   if(name == "data_16") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_16_flat.root");
   if(name == "data_17") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_17_flat.root");
   if(name == "data_18") f = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_18_flat.root");
@@ -370,7 +371,7 @@ if(name == "data")
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.root",name.Data()), "root");
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.eps",name.Data()), "eps");     
 */
-/*
+
   // **************** P vs. theta
   // proton
   TCanvas *c_p_ptheta = new TCanvas("c_p_ptheta", "c_p_ptheta", 600, 400);
@@ -426,7 +427,7 @@ if(name == "data")
   h_km_ptheta->Write(Form("h%s_km_ptheta",name.Data()),TObject::kWriteDelete);
   c_km_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_ptheta.root",name.Data()), "root");
   c_km_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_ptheta.eps",name.Data()), "eps");
-*/
+
 /*
   // **************** dt vs. p
   // proton

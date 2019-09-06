@@ -133,6 +133,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   // phi_model->Draw("same");
   // // phi_sig->Draw("same");
   // // phi_bkg->Draw("same");
+/*  
  // ======================================== fo vs. Phi(1020) ===============================================
  // root -l 'scanfo.C+(100,50,1,1)'
  
@@ -206,49 +207,6 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
       hphifo_all_py->Draw();
       // fb2->Draw("same");
  
-      // // w.factory(Form("Voigtian::sig_phifo_all(m_phifo_all[%f,%f],mean_phifo_all[1.016,1.022],width_phifo_all[0.004],sigma_phifo_all[0.0001,0.01])", mkk_min, mkk_max)); //sigma_phifo[0.001,0.01], mean_phifo[1.016,1.022],50:mean_phifo_all[1.016,1.032]
-      // w.factory(Form("BreitWigner::sig_phifo_all(m_phifo_all[%f,%f],mean_phifo_all[1.018,1.021],width_phifo_all[0.008, 0.010])", mkk_min, mkk_max));
-      // w.factory("Chebychev::bkg_phifo_all(m_phifo_all,{c0_phifo_all[-10,10], c1_phifo_all[-10,10], c2_phifo_all[-1,1]})");
-      // w.factory("SUM:::model_phifo_all(nsig_phifo_all[0,100000000]*sig_phifo_all, nbkg_phifo_all[0,100000000]*bkg_phifo_all)"); //nsig[0,100000000]*sig2,
-      // w.var("m_phifo_all")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
-      // RooDataHist dh_phifo_all("dh_phifo_all", "dh_phifo_all", *w.var("m_phifo_all"), Import(*hphifo_all_py));
-      // RooPlot *fr_phifo_all = w.var("m_phifo_all")->frame(Title(" "));
-      // // fr_phifo_all->SetTitleOffset(0.90, "X");
-      // // fr_phifo_all->SetTitleSize(0.06, "XYZ");
-      // // fr_phifo_all->SetLabelSize(0.06, "xyz");
-      // w.pdf("model_phifo_all")->fitTo(dh_phifo_all);
-      // //cout<<"=========  no problem up to here ! =========="<<endl;
-
-      // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-      // dh_phifo_all.plotOn(fr_phifo_all, RooFit::Name("ldh_phifo_all"));
-      // w.pdf("model_phifo_all")->plotOn(fr_phifo_all, Components(*w.pdf("sig_phifo_all")), LineColor(kRed), RooFit::Name("lsig_phifo_all"));
-      // w.pdf("model_phifo_all")->plotOn(fr_phifo_all, Components(*w.pdf("bkg_phifo_all")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phifo_all"));
-      // w.pdf("model_phifo_all")->plotOn(fr_phifo_all, RooFit::Name("lmodel_phifo_all"));
-      // // w.pdf("model_phifo_all")->paramOn(fr_phifo_all, Layout(0.4, 0.90, 0.99), Parameters(RooArgSet(*w.var("nsig_phifo_all"), *w.var("nbkg_phifo_all")))); //,*w.var("mean_phifo_all"),*w.var("width_phifo_all"),*w.var("sigma_phifo_all"))));
-      // fr_phifo_all->Draw();
-
-      // TLegend *l_phifo_all = new TLegend(0.5, 0.7, 0.8, 0.9);
-      // l_phifo_all->SetFillColor(kWhite);
-      // l_phifo_all->SetLineColor(kWhite);
-      // // l_phifo_all->AddEntry(fr_phifo_all->findObject("ldh_phifo_all"), "Data", "p");
-      // // l_phifo_all->AddEntry(fr_phifo_all->findObject("lmodel_phifo_all"), "total", "l");
-      // l_phifo_all->AddEntry(fr_phifo_all->findObject("lsig_phifo_all"), Form("N_{Sig} = %.2f", w.var("nsig_phifo_all")->getVal()), "l");
-      // l_phifo_all->AddEntry(fr_phifo_all->findObject("lbkg_phifo_all"), Form("N_{Bkg} = %.2f", w.var("nbkg_phifo_all")->getVal()), "l");
-      // l_phifo_all->Draw();
-
-      // double N2 = w.var("nsig_phifo_all")->getVal();
-      // double dN2 = w.var("nsig_phifo_all")->getError();
-
-      // // // Integrate normalized pdf over subrange
-      // // w.var("m_phifo_all")->setRange("sigregion",1.005,1.035);
-      // // // RooAbsReal* igx_sig = gx.createIntegral(x,NormSet(x),Range("signal")) ;
-      // // RooAbsReal* fbkg = w.pdf("bkg_phifo_all")->createIntegral(*w.var("m_phifo_all"),NormSet(*w.var("m_phifo_all")),Range("sigregion"));
-      // // RooAbsReal* fsig = w.pdf("sig_phifo_all")->createIntegral(*w.var("m_phifo_all"),NormSet(*w.var("m_phifo_all")),Range("sigregion"));
-      // // // double Nbkg = -fbkg->getVal()*(w.var("nsig_phifo_all")->getVal()+w.var("nbkg_phifo_all")->getVal())+fsig->getVal()*w.var("nsig_phifo_all")->getVal();
-      // // double Nbkg = fbkg->getVal()*w.var("nbkg_phifo_all")->getVal();
-      // // double dNbkg = 0;//fbkg->getError();
-
-
       TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol2(4)", mkk_min, mkk_max);
       // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
       fsb->SetLineColor(2);
@@ -376,7 +334,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.root", "root");
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.eps", "eps");
-
+*/
 /*
   // ======================================== fo vs. Eg ===============================================
   // root -l 'scanfo.C+(50,50,4,4)'
@@ -875,8 +833,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   cgphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifot.eps", "eps");
 */
 
-    // ======================================== fo vs. (E,-t) ===============================================
-    /*
+  // ======================================== fo vs. (E,-t) ===============================================
   TCanvas *cphifo = new TCanvas("cphifo", "cphifo", 10, 10, 1500, 800); //1500, 800
   cphifo->Divide(3,2);
 
@@ -1035,6 +992,6 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   cphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo.eps", "eps");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.root", "root");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.eps", "eps");
-*/
+
     outputfig->Print();
 }

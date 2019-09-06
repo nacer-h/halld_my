@@ -42,11 +42,11 @@
 using namespace RooFit;
 using namespace RooStats;
 
-void scany(int nkk=100, int n2pi2k=100, int ne=1, int nt=1) // , TString cut="&& kin_chisq<30 && abs(mm2)<0.015"
+void scany(int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TString cut="&& kin_chisq<30 && abs(mm2)<0.015"
 {
-  TFile *fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/pippimkpkm_17v21.root");
+  TFile *fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_all_flat.root");
   TTree *tdata = (TTree*)fdata->Get("ntp");
-  TFile *fmc = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/phifo_genr8_17v3.root");
+  TFile *fmc = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phifo_genr8_17v3_flat.root");
   TTree *tmc = (TTree *)fmc->Get("ntp");
   // TFile *fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");  
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_scany/scany.root","UPDATE");
@@ -61,6 +61,177 @@ void scany(int nkk=100, int n2pi2k=100, int ne=1, int nt=1) // , TString cut="&&
   // gROOT->ForceStyle();
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
+/*
+  // ======================================== Y vs. Phi(1020) ===============================================
+  // root -l 'scany.C+(100,50,1,1)'
+
+  TCanvas *cphiy_all=new TCanvas("cphiy_all","cphiy_all",900, 600);//1500, 800
+
+  TCanvas *cphiy_all1 = new TCanvas("cphiy_all1","cphiy_all1", 1500, 800);//1500, 800
+  cphiy_all1->Divide(5, 5);
+  TCanvas *cphiy_all2 = new TCanvas("cphiy_all2", "cphiy_all2", 1500, 800);
+  cphiy_all2->Divide(5, 5);
+
+  TCanvas *cgphiy_all=new TCanvas("cgphiy_all","cgphiy_all",900, 600);//1500, 800
+  TGraphErrors *gphiy_all;
+
+  // TCanvas *cgnophiy_all=new TCanvas("cgnophiy_all","cgnophiy_all",1500, 800);
+  // TGraphErrors *gnophiy_all= new TGraphErrors;//(n2pi2k)
+  // gnophiy_all->SetMarkerStyle(20);
+  // gnophiy_all->SetMarkerSize(1.0);
+  // gnophiy_all->SetMarkerColor(2);
+
+  // tdata->SetAlias("w4","((abs(delta_t)<2.004)*1.25-0.25)");
+
+  cphiy_all->cd();
+  TH2F *h1d2 = new TH2F("h1d2","(Data);m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n2pi2k, m2pi2k_min, m2pi2k_max, nkk, mkk_min, mkk_max);
+  tdata->Project("h1d2", "kpkm_mf:kpkmpippim_mf", "w8*(kpkm_uni || kpkmpippim_uni)");
+
+  h1d2->Draw("colz");
+
+  gphiy_all = new TGraphErrors(); //n2pi2k
+  gphiy_all->SetMarkerStyle(20);
+  gphiy_all->SetMarkerSize(1.0);
+  gphiy_all->SetMarkerColor(1);
+  gphiy_all->SetTitle("(Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}");
+
+  // gnophiy_all->SetTitle(Form("%.2f<E_{#gamma}<%.2f (Data);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];N_{NO #phi}", Eg1, Eg2));
+
+  for (int i = 1; i <= n2pi2k; ++i) //n2pi2k
+  {
+    // cout << i << " " << flush;
+
+    if (i < 26)
+      cphiy_all1->cd(i); //i
+    if (i > 25 && i < 51)
+      cphiy_all2->cd(i - 25);
+    // if(i > 50 && i<76) cphiy_all3->cd(i-50);
+    // if(i > 75) cphiy_all4->cd(i-75);
+
+    TH1D *hphiy_all_py = h1d2->ProjectionY(Form("_hphiy_all_py_%d", i), i, i);
+
+    // hphiy_all_py->Draw();
+    // if (hphiy_all_py->Integral(1, 50) < 100)
+    //   continue;
+
+    // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
+    TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol2(4)", 0.98, 1.2);
+    fsb->SetLineColor(2);
+    fsb->SetParameters(1433, 1.019, 0.004, 0.002, 1, 1, 1);
+    fsb->SetParLimits(0, 0, 10000);
+    fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
+    fsb->FixParameter(2, 0.004);        //fsb->SetParLimits(2, 0.008, 0.010);
+    fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+
+    // TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+    TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", 0.98, 1.2);
+    fs->SetLineColor(4);
+
+    TF1 *fb = new TF1("fb", "pol2(4)", mkk_min, mkk_max); //3
+    fb->SetLineColor(28);
+    fb->SetLineStyle(2);
+
+    hphiy_all_py->Fit("fsb", "", "", mkk_min, mkk_max);
+    double par[7]; //6
+    fsb->GetParameters(&par[0]);
+    fs->SetParameters(&par[0]);
+    fb->SetParameters(&par[4]); //3
+
+    fs->Draw("same");
+    fb->Draw("same");
+
+    double N1 = fs->Integral(mkk_min, mkk_max) / hphiy_all_py->GetBinWidth(1);
+    double dN1 = N1 * fsb->GetParError(0) / fsb->GetParameter(0);
+
+    if (N1 <= 0)
+      gphiy_all->RemovePoint(i - 1);
+
+    gphiy_all->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), N1);
+    gphiy_all->SetPointError(i - 1, 0, dN1);
+
+    // gnophiy_all->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), Nbkg);
+    // gnophiy_all->SetPointError(i - 1, 0, dNbkg);
+    // ofs_scany << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
+
+    TLatex lat_phiy_all;
+    lat_phiy_all.SetTextSize(0.09);
+    lat_phiy_all.SetTextAlign(13); //align at top
+    lat_phiy_all.SetNDC();
+    lat_phiy_all.SetTextColor(kBlue);
+    lat_phiy_all.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
+    lat_phiy_all.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N1, dN1));
+    lat_phiy_all.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
+    lat_phiy_all.DrawLatex(0.45, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
+    lat_phiy_all.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
+
+    // lat.DrawLatex(0.6, 0.65, Form("N1 = %f",N1));
+
+    hphiy_all_py->Write();
+    cgphiy_all->Update();
+    // c2->Update();
+    //sleep(1);
+    }
+
+    // cout << endl;
+
+    cgphiy_all->cd();
+    gphiy_all->Draw("AP");
+
+    // cgnophiy_all->cd();//j);
+    // gnophiy_all->Draw("AP");
+
+    TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", 1.71, 2.06);
+    //  TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol2(4)", 0.98, 1.2);
+    fsb->SetLineColor(2);
+    fsb->SetParameters(68, 1.8, 0.09, 1, 1);
+    fsb->SetParLimits(0, 0, 10000);
+    fsb->SetParLimits(1, 1.75, 1.85); // 1.018, 1.021
+    fsb->SetParLimits(2, 0.03, 0.3); //fsb->SetParLimits(2, 0.008, 0.010);
+                                     //  fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+
+    TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", 1.71, 2.06);
+    //  TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", 0.98, 1.2);
+    fs->SetLineColor(4);
+
+    TF1 *fb = new TF1("fb", "pol2(3)", 1.71, 2.06); //3
+    fb->SetLineColor(28);
+    fb->SetLineStyle(2);
+
+    gphiy_all->Fit("fsb", "", "", 1.71, 2.06);
+    double par[7]; //6
+    fsb->GetParameters(&par[0]);
+    fs->SetParameters(&par[0]);
+    fb->SetParameters(&par[3]); //3
+
+    fs->Draw("same");
+    fb->Draw("same");
+
+    TLatex lat_phiye;
+    lat_phiye.SetTextSize(0.04);
+    lat_phiye.SetTextAlign(13); //align at top
+    lat_phiye.SetNDC();
+    lat_phiye.SetTextColor(kBlue);
+    lat_phiye.DrawLatex(0.68, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
+    lat_phiye.DrawLatex(0.68, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", fs->Integral(1.71, 2.06), fs->Integral(1.71, 2.06) * fsb->GetParError(0) / fsb->GetParameter(0)));
+    lat_phiye.DrawLatex(0.68, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
+    lat_phiye.DrawLatex(0.68, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
+    //  lat_phiye.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
+
+    // int j =1;
+    // gphiy_all->Write(Form("grphiy_all_%d", j), TObject::kWriteDelete);
+
+    cphiy_all1->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiy_all.root", "root");
+    cphiy_all1->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiy_all.eps", "eps");
+    cphiy_all2->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiy_all.root", "root");
+    cphiy_all2->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiy_all.eps", "eps");
+
+    cphiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiy_all.root", "root");
+    cphiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiy_all.eps", "eps");
+    cgphiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiy_all.root", "root");
+    cgphiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiy_all.eps", "eps");
+    // cgnophiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiy_all.root", "root");
+    // cgnophiy_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiy_all.eps", "eps");
+*/
 /*
   // ======================================== Y vs. Eg ===============================================
   // root -l 'scany.C+(50,50,4,4)'
@@ -316,7 +487,7 @@ void scany(int nkk=100, int n2pi2k=100, int ne=1, int nt=1) // , TString cut="&&
   // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiye.root", "root");
   // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiye.eps", "eps");
 */
-/*
+    /*
   // ======================================== Y vs. -t ===============================================
 
   TCanvas *cphiyt=new TCanvas("cphiyt","cphiyt", 10, 10, 1500, 800);
@@ -524,7 +695,7 @@ void scany(int nkk=100, int n2pi2k=100, int ne=1, int nt=1) // , TString cut="&&
 
   // ======================================== Y vs. (Eg,-t) ===============================================
 
-  TCanvas *cphiy=new TCanvas("cphiy","cphiy", 10, 10, 1500, 800);
+  TCanvas *cphiy = new TCanvas("cphiy", "cphiy", 10, 10, 1500, 800);
   cphiy->Divide(3,2);
 
   TCanvas *cphiy1[ne*nt];
@@ -608,7 +779,7 @@ void scany(int nkk=100, int n2pi2k=100, int ne=1, int nt=1) // , TString cut="&&
       // fs->SetParameters(fsb->GetParameters());
       // fb2->SetParameters(fsb->GetParameters());
       hphiy_py->Draw();
-      if(hphiy_py->Integral(1,50)<100)
+      if(hphiy_py->Integral(1,100)<100)
         continue;
       // fb2->Draw("same");
 
