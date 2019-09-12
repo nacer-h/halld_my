@@ -337,7 +337,7 @@ if(name == "data")
   c_t_kin->SetLogy();
   TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV/c)^{2});Counts",name.Data()), 300, 0, 10);
   t->Project("h_t_kin","-t_kin","w8*(kpkm_mf>1.005 && kpkm_mf<1.035)");
-  // h_t_kin->Fit("expo", "R", "", 0.5, 4);
+  h_t_kin->Fit("expo", "R", "", 0.5, 3);
   h_t_kin->Draw("e");
   h_t_kin->Write(Form("h%s_t_kin",name.Data()),TObject::kWriteDelete);
   c_t_kin->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_t_kin.root", name.Data()), "root");
@@ -371,7 +371,7 @@ if(name == "data")
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.root",name.Data()), "root");
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.eps",name.Data()), "eps");     
 */
-
+/*
   // **************** P vs. theta
   // proton
   TCanvas *c_p_ptheta = new TCanvas("c_p_ptheta", "c_p_ptheta", 600, 400);
@@ -427,7 +427,7 @@ if(name == "data")
   h_km_ptheta->Write(Form("h%s_km_ptheta",name.Data()),TObject::kWriteDelete);
   c_km_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_ptheta.root",name.Data()), "root");
   c_km_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_ptheta.eps",name.Data()), "eps");
-
+*/
 /*
   // **************** dt vs. p
   // proton
