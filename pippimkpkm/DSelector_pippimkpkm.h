@@ -10,6 +10,8 @@
 
 #include "TH1I.h"
 #include "TH2I.h"
+#include "TString.h"
+#include "TObjString.h"
 
 class DSelector_pippimkpkm : public DSelector
 {
@@ -107,6 +109,10 @@ class DSelector_pippimkpkm : public DSelector
 		// ######## Y(2175) #############
 		TH1F *h_YMass_postcuts;
 		// TH1F *h_YMass_cuts[20];
+
+        // *************** bggen ***************
+		TH1F* dHistThrownTopologies;
+		map<TString, TH1I*> dHistInvariantMass_ThrownTopology;
 
 		// TOOL FOR FLAT TREE OUTPUT
 		DComboTreeHelper *dComboTreeHelper;
