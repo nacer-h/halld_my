@@ -67,73 +67,93 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
 
   // *********************** Y(2175) MC *********************************
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts", "c_YMass_postcuts", 900, 600);
-  TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", Form("%s;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, m2pi2k_min, m2pi2k_max);
+  TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", Form("%s;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 2.0, 2.5);
   tmc->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)");
   // TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", ";m_{#phif_{0}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
   // t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.99)<0.1)");
   c_YMass_postcuts->cd();
   h_YMass_postcuts->Draw("e"); //"hist"
 
-  // w.factory("BreitWigner::sig_YMass_mc(m_YMass_mc[1.7, 3.2],mean_YMass_mc[2.0,2.5],width_YMass_mc[0.079])");
-  w.factory("Voigtian::sig_YMass_mc(m_YMass_mc[1.7, 3.2],mean_YMass_mc[2.0,2.5],width_YMass_mc[0.079],sigma_YMass_mc[0.001,0.01])"); //sigma_YMass_mc[0.001,0.01], mean_YMass_mc[1.015,1.022]
-  w.factory("Chebychev::bkg_YMass_mc(m_YMass_mc,{c0_YMass_mc[-10,10], c1_YMass_mc[-10,10]})");
-  // w.factory("ArgusBG::bkg_Phi_mc(m_Phi_mc, 1.04, c0_Phi_mc[-50,-10])");
-  w.factory("SUM:::model_YMass_mc(nsig_YMass_mc[0,100000000]*sig_YMass_mc, nbkg_YMass_mc[0,100000000]*bkg_YMass_mc)");//, nbkg_YMass_mc[0,100000000]*bkg_YMass_mc)"); //nsig[0,100000000]*sig2,
-  w.var("m_YMass_mc")->SetTitle("m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]");
-  RooDataHist dh_YMass_mc("dh_YMass_mc", "dh_YMass_mc", *w.var("m_YMass_mc"), Import(*h_YMass_postcuts));
-  RooPlot *fr_YMass_mc = w.var("m_YMass_mc")->frame(Title("K^{+}K^{-}"));
-  // fr_YMass_mc->SetTitleOffset(0.90, "X");
-  // fr_YMass_mc->SetTitleSize(0.06, "XYZ");
-  // fr_YMass_mc->SetLabelSize(0.06, "xyz");
-  w.pdf("model_YMass_mc")->fitTo(dh_YMass_mc);
+  // // w.factory("BreitWigner::sig_YMass_mc(m_YMass_mc[1.7, 3.2],mean_YMass_mc[2.0,2.5],width_YMass_mc[0.079])");
+  // // w.factory("Voigtian::sig_YMass_mc(m_YMass_mc[1.7, 3.2],mean_YMass_mc[2.0,2.5],width_YMass_mc[0.03,0.1],sigma_YMass_mc[0.001,0.01])"); //width:0.079 sigma_YMass_mc[0.001,0.01], mean_YMass_mc[1.015,1.022]
+  // w.factory("Gaussian::sig_YMass_mc1(m_YMass_mc[1.7, 3.2],mean_YMass_mc1[2.0,2.2],sigma_YMass_mc1[0.01,0.1])"); //width:0.079 sigma_YMass_mc[0.001,0.01], mean_YMass_mc[1.015,1.022]
+  // w.factory("Gaussian::sig_YMass_mc2(m_YMass_mc,mean_YMass_mc2[2.2,2.5],sigma_YMass_mc2[0.01,0.1])"); //width:0.079 sigma_YMass_mc[0.001,0.01], mean_YMass_mc[1.015,1.022]
+  // w.factory("Chebychev::bkg_YMass_mc(m_YMass_mc,{c0_YMass_mc[-10,10], c1_YMass_mc[-10,10]})");
+  // // w.factory("ArgusBG::bkg_Phi_mc(m_Phi_mc, 1.04, c0_Phi_mc[-50,-10])");
+  // w.factory("SUM:::model_YMass_mc(nsig_YMass_mc[0,100000000]*sig_YMass_mc1,nsig_YMass_mc[0,100000000]*sig_YMass_mc2, nbkg_YMass_mc[0,100000000]*bkg_YMass_mc)");//, nbkg_YMass_mc[0,100000000]*bkg_YMass_mc)"); //nsig[0,100000000]*sig2,
+  // w.var("m_YMass_mc")->SetTitle("m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]");
+  // RooDataHist dh_YMass_mc("dh_YMass_mc", "dh_YMass_mc", *w.var("m_YMass_mc"), Import(*h_YMass_postcuts));
+  // RooPlot *fr_YMass_mc = w.var("m_YMass_mc")->frame(Title("K^{+}K^{-}"));
+  // // fr_YMass_mc->SetTitleOffset(0.90, "X");
+  // // fr_YMass_mc->SetTitleSize(0.06, "XYZ");
+  // // fr_YMass_mc->SetLabelSize(0.06, "xyz");
+  // w.pdf("model_YMass_mc")->fitTo(dh_YMass_mc);
 
-  // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-  dh_YMass_mc.plotOn(fr_YMass_mc, RooFit::Name("ldh_YMass_mc"));
-  w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, Components(*w.pdf("sig_YMass_mc")), LineColor(kRed), RooFit::Name("lsig_YMass_mc"));
-  w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, Components(*w.pdf("bkg_YMass_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_YMass_mc"));
-  w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, RooFit::Name("lmodel_YMass_mc"));
-  // w.pdf("model_YMass_mc")->paramOn(fr_YMass_mc, Layout(0.5, 0.90, 0.99));//, Parameters(RooArgSet(*w.var("nsig_YMass_mc"), *w.var("nbkg_YMass_mc")))); //,*w.var("mean_YMass_mc"),*w.var("width_YMass_mc"),*w.var("sigma_YMass_mc"))));
-  fr_YMass_mc->Draw();
+  // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
+  // dh_YMass_mc.plotOn(fr_YMass_mc, RooFit::Name("ldh_YMass_mc"));
+  // w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, Components(*w.pdf("sig_YMass_mc1")), LineColor(kRed), RooFit::Name("lsig_YMass_mc1"));
+  // w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, Components(*w.pdf("sig_YMass_mc2")), LineColor(kRed), RooFit::Name("lsig_YMass_mc2"));
+  // w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, Components(*w.pdf("bkg_YMass_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_YMass_mc"));
+  // w.pdf("model_YMass_mc")->plotOn(fr_YMass_mc, RooFit::Name("lmodel_YMass_mc"));
+  // // w.pdf("model_YMass_mc")->paramOn(fr_YMass_mc, Layout(0.5, 0.90, 0.99));//, Parameters(RooArgSet(*w.var("nsig_YMass_mc"), *w.var("nbkg_YMass_mc")))); //,*w.var("mean_YMass_mc"),*w.var("width_YMass_mc"),*w.var("sigma_YMass_mc"))));
+  // fr_YMass_mc->Draw();
 
-  TLatex lat_YMass_mc;
-  lat_YMass_mc.SetTextSize(0.05);
-  lat_YMass_mc.SetTextAlign(13); //align at top
-  lat_YMass_mc.SetNDC();
-  lat_YMass_mc.SetTextColor(kBlue);
-  lat_YMass_mc.DrawLatex(0.65, 0.88, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_YMass_mc")->getVal(), w.var("nsig_YMass_mc")->getError()));
-  lat_YMass_mc.DrawLatex(0.65, 0.78, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_YMass_mc")->getVal(), w.var("nbkg_YMass_mc")->getError()));
-  lat_YMass_mc.DrawLatex(0.65, 0.68, Form("#mu = %0.3f#pm%0.3f", w.var("mean_YMass_mc")->getVal(), w.var("mean_YMass_mc")->getError()));
-  lat_YMass_mc.DrawLatex(0.65, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_YMass_mc")->getVal(), w.var("width_YMass_mc")->getError()));
-  lat_YMass_mc.DrawLatex(0.65, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_YMass_mc")->getVal(), w.var("sigma_YMass_mc")->getError()));
+  // TLatex lat_YMass_mc;
+  // lat_YMass_mc.SetTextSize(0.05);
+  // lat_YMass_mc.SetTextAlign(13); //align at top
+  // lat_YMass_mc.SetNDC();
+  // lat_YMass_mc.SetTextColor(kBlue);
+  // lat_YMass_mc.DrawLatex(0.65, 0.88, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_YMass_mc")->getVal(), w.var("nsig_YMass_mc")->getError()));
+  // lat_YMass_mc.DrawLatex(0.65, 0.78, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_YMass_mc")->getVal(), w.var("nbkg_YMass_mc")->getError()));
+  // lat_YMass_mc.DrawLatex(0.65, 0.68, Form("#mu = %0.3f#pm%0.3f", w.var("mean_YMass_mc1")->getVal(), w.var("mean_YMass_mc1")->getError()));
+  // // lat_YMass_mc.DrawLatex(0.65, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_YMass_mc")->getVal(), w.var("width_YMass_mc")->getError()));
+  // lat_YMass_mc.DrawLatex(0.65, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_YMass_mc1")->getVal(), w.var("sigma_YMass_mc1")->getError()));
 
-  // TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", 1.005, 1.035);
-  // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
-  // fsb->SetLineColor(2);
-  // fsb->SetParameters(1433, 1.019, 0.004, 0.002, 1, 1, 1, 1, 1);
-  // fsb->SetParLimits(0, 0, 10000);
-  // fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
-  // fsb->FixParameter(2, 0.004);        //fsb->SetParLimits(2, 0.008, 0.010);
-  // fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+  TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", 2.0, 2.5); // + pol2(4)
+  // TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
+  fsb_mc->SetLineColor(2);
+  fsb_mc->SetParameters(700, 2.175, 0.004, 0.002, 1, 1,1,1,1);//, 1, 1,1
+  fsb_mc->SetParLimits(0, 0, 10000);
+  fsb_mc->SetParLimits(1, 2.0, 2.2); // 1.018, 1.021
+  fsb_mc->SetParLimits(2, 0.01, 0.1); 
+  // fsb_mc->FixParameter(2, 0.079);
+  fsb_mc->SetParLimits(3, 0.01,0.1);
+  //fsb_mc->FixParameter(3, 0.002);
 
-  // TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", 1.005, 1.035);
-  // TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
-  // fs->SetLineColor(4);
+  // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+  TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Voigt(x - [1], [2], [3])", 2.0, 2.5);
+  fs_mc->SetLineColor(4);
 
-  // TF1 *fb = new TF1("fb", "pol4(4)", 1.005, 1.035); //pol2(3)
-  // fb->SetLineColor(28);
-  // fb->SetLineStyle(2);
+  TF1 *fb_mc = new TF1("fb_mc", "pol4(4)", 2.0, 2.5); //pol2(3)
+  fb_mc->SetLineColor(28);
+  fb_mc->SetLineStyle(2);
 
-  // h_PhiMass_postcuts->Fit("fsb", "", "", 1.005, 1.035);
-  // double par[8]; //6
-  // fsb->GetParameters(&par[0]);
-  // fs->SetParameters(&par[0]);
-  // fb->SetParameters(&par[4]); //3
+  h_YMass_postcuts->Fit("fsb_mc", "", "", 2.0, 2.5);
+  double par_mc[8]; //6
+  fsb_mc->GetParameters(&par_mc[0]);
+  fs_mc->SetParameters(&par_mc[0]);
+  fb_mc->SetParameters(&par_mc[4]); //3
 
-  // fs->Draw("same");
-  // fb->Draw("same");
+  fs_mc->Draw("same");
+  fb_mc->Draw("same");
 
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_YMass_postcuts_fitted.root", "root");
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_YMass_postcuts_fitted.eps", "eps");
+  double N_mc = fs_mc->Integral(2.0, 2.5) / h_YMass_postcuts->GetBinWidth(1);
+  double dN_mc = N_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
+  
+  TLatex lat_mc;
+  lat_mc.SetTextSize(0.04);
+  lat_mc.SetTextAlign(13); //align at top
+  lat_mc.SetNDC();
+  lat_mc.SetTextColor(kBlue);
+  lat_mc.DrawLatex(0.6, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
+  lat_mc.DrawLatex(0.6, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N_mc, dN_mc));
+  lat_mc.DrawLatex(0.6, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
+  lat_mc.DrawLatex(0.6, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
+  lat_mc.DrawLatex(0.6, 0.48, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
+  // lat_mc.Draw("same");
+
+  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_YMass_postcuts_fitted.root", "root");
+  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_YMass_postcuts_fitted.eps", "eps");
 
   // cout<<"=============================  no problem up to here ! ========================"<<endl;
 
@@ -293,41 +313,43 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
     //  lat_phiye.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
 
     // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol4(3)", 1.71, 2.06);
-     TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)",  1.7, 3.2);
-    fsb->SetLineColor(2);
-    fsb->SetParameters(800, 2.198, 0.079, 1, 1,1,1);
-    fsb->SetParLimits(0, 0, 10000);
-    fsb->SetParLimits(1, 2.0, 2.5); // 1.018, 1.021
-    fsb->FixParameter(2, 0.079); //fsb->SetParLimits(2, 0.008, 0.010);
-    fsb->FixParameter(3, 0.010); //fsb->SetParLimits(2, 0.008, 0.010);
-                                     //  fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+    TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)",  1.7, 3.2);
+    fsb_data->SetLineColor(2);
+    fsb_data->SetParameters(800, 2.198, 0.079, 1, 1,1,1);
+    fsb_data->SetParLimits(0, 0, 10000);
+    fsb_data->SetParLimits(1, 2.0, 2.5); // 1.018, 1.021
+    fsb_data->FixParameter(2, 0.022); //0.079
+    fsb_data->FixParameter(3, 0.065); //0.010
 
-    TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", 1.7, 3.2);
-    //  TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", 0.98, 1.2);
-    fs->SetLineColor(4);
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::BreitWigner(x,[1],[2])", 1.7, 3.2);
+    TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Voigt(x - [1], [2], [3])", 1.7, 3.2);// 2.0, 2.5
+    fs_data->SetLineColor(4);
 
-    TF1 *fb = new TF1("fb", "pol2(3)",  1.7, 3.2); //3
-    fb->SetLineColor(28);
-    fb->SetLineStyle(2);
+    TF1 *fb_data = new TF1("fb_data", "pol2(3)",  1.7, 3.2); //3
+    fb_data->SetLineColor(28);
+    fb_data->SetLineStyle(2);
 
-    gphiyall->Fit("fsb", "", "",  1.7, 3.2);
-    double par[7]; //6
-    fsb->GetParameters(&par[0]);
-    fs->SetParameters(&par[0]);
-    fb->SetParameters(&par[3]); //3
+    gphiyall->Fit("fsb_data", "", "",  1.7, 3.2);
+    double par_data[7]; //6
+    fsb_data->GetParameters(&par_data[0]);
+    fs_data->SetParameters(&par_data[0]);
+    fb_data->SetParameters(&par_data[3]); //3
 
-    fs->Draw("same");
-    fb->Draw("same");
+    double N_data = fs_data->Integral(1.7, 3.2);
+    double dN_data = N_data * fsb_data->GetParError(0) / fsb_data->GetParameter(0);
+
+    fs_data->Draw("same");
+    fb_data->Draw("same");
 
     TLatex lat_phiye;
     lat_phiye.SetTextSize(0.04);
     lat_phiye.SetTextAlign(13); //align at top
     lat_phiye.SetNDC();
     lat_phiye.SetTextColor(kBlue);
-    lat_phiye.DrawLatex(0.68, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
-    lat_phiye.DrawLatex(0.68, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", fs->Integral(1.7, 3.2), fs->Integral(1.7, 3.2) * fsb->GetParError(0) / fsb->GetParameter(0)));
-    lat_phiye.DrawLatex(0.68, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
-    lat_phiye.DrawLatex(0.68, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
+    lat_phiye.DrawLatex(0.68, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
+    lat_phiye.DrawLatex(0.68, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N_data, dN_data));
+    lat_phiye.DrawLatex(0.68, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb_data->GetParameter(1), fsb_data->GetParError(1)));
+    lat_phiye.DrawLatex(0.68, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb_data->GetParameter(2), fsb_data->GetParError(2)));
 
     // int j =1;
     // gphiyall->Write(Form("grphiyall_%d", j), TObject::kWriteDelete);
