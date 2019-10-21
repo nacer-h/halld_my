@@ -310,7 +310,7 @@ if(name == "data")
   h_pt->Write(Form("h%s_pt",name.Data()),TObject::kWriteDelete);
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.root",name.Data()), "root");
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.eps",name.Data()), "eps"); 
-*/
+
 
   // ********  Beam Energy
   TCanvas *c_beam_e = new TCanvas("c_beam_e", "c_beam_e", 900, 600);
@@ -353,7 +353,7 @@ if(name == "data")
   c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.root", name.Data()), "root");
   c_beamevst->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_beamevst.eps",name.Data()), "eps");
 
-/*
+
   // ********  Missing mass squared with Pions as Kions hypothesis
   TCanvas *c_mm2_piask = new TCanvas("c_mm2_piask","c_mm2_piask",600,400);
   c_mm2_piask->cd();
@@ -848,7 +848,7 @@ if(name == "data")
   // +++ fo Mass
   TCanvas *c_foMass_postcuts = new TCanvas("c_foMass_postcuts", "c_foMass_postcuts", 900, 600);
   TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", Form("%s;m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 0.3, 1.2);
-  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.97)<0.1)");
+  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)"); // && abs(pippim_mf-0.97)<0.1
   c_foMass_postcuts->cd();
   h_foMass_postcuts->Draw("e");
 
@@ -890,14 +890,14 @@ if(name == "data")
   TH1F *h_YMass_focut = new TH1F("h_YMass_focut", Form("%s;m_{#phi f_{0}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
   // TH1F *h_YMass_deltacut = new TH1F("h_YMass_deltacut", Form("%s 1<#Delta^{++}<1.4;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
   t->Project("h_YMass_postcuts", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)");
-  t->Project("h_YMass_focut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.97)<0.1)");
+  // t->Project("h_YMass_focut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.97)<0.1)");
   // t->Project("h_YMass_deltacut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pipp_mf-1.2)>0.2)");
   // TH1F *h_YMass_postcuts = new TH1F("h_YMass_postcuts", ";m_{#phif_{0}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
   // t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.99)<0.1)");
   c_YMass_postcuts->cd();
   h_YMass_postcuts->Draw("e"); //"hist"
-  h_YMass_focut->SetLineColor(kBlue);
-  h_YMass_focut->Draw("same"); //"hist"
+  // h_YMass_focut->SetLineColor(kBlue);
+  // h_YMass_focut->Draw("same"); //"hist"
 
   // // Van Hove cut
   // TH1F *h_YMass_vhcut = new TH1F("h_YMass_vhcut", "#theta_{VH} #in [0.4,1.5] & #phi_{VH} #in [1.55,2.2];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
@@ -981,12 +981,13 @@ if(name == "data")
 
   //8 +++ kmp
   TH1F *h_kmp = new TH1F("h_kmp", ";m_{K^{-}p} [GeV/c^{2}];Counts", 200, 1.4, 3);
-  t->Project("h_kmp", "kmp_mf", "w8*(kmp_uni)");  
+  t->Project("h_kmp", "kmp_mf", "w8*(kmp_uni)");  // && kpkm_mf>1.005 && kpkm_mf<1.035
   TCanvas *c_kmp = new TCanvas("c_kmp","c_kmp",900,600);
   c_kmp->cd();
   h_kmp->Draw();
   c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp.root",name.Data()), "root");
-  c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp.eps",name.Data()), "eps");
+  c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp_postcut.eps",name.Data()), "eps");
+  c_kmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmp.png",name.Data()), "png");
 
   // 9 +++ pipp
   TH1F *h_pipp = new TH1F("h_pipp", ";m_{#pi^{+}p} [GeV/c^{2}];Counts", 200, 0.9, 2.5);
@@ -1005,16 +1006,17 @@ if(name == "data")
   h_pimp->Draw();
   c_pimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pimp.root",name.Data()), "root");
   c_pimp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pimp.eps",name.Data()), "eps");
-
+*/
   //11 +++ kpkmp
   TH1F *h_kpkmp = new TH1F("h_kpkmp", ";m_{K^{+}K^{-}p} [GeV/c^{2}];Counts", 200, 2, 4);
-  t->Project("h_kpkmp", "kpkmp_mf", "w8*(kpkmp_uni)");  
+  t->Project("h_kpkmp", "kpkmp_mf", "w8*(kpkmp_uni)");//   && kpkm_mf>1.005 && kpkm_mf<1.035
   TCanvas *c_kpkmp = new TCanvas("c_kpkmp","c_kpkmp",900,600);
   c_kpkmp->cd();
   h_kpkmp->Draw();
   c_kpkmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmp.root",name.Data()), "root");
   c_kpkmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmp.eps",name.Data()), "eps");
-
+  c_kpkmp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kpkmp.png",name.Data()), "png");
+/*
   //12 +++ kpkmpip
   TH1F *h_kpkmpip = new TH1F("h_kpkmpip", ";m_{K^{+}K^{-}#pi^{+}} [GeV/c^{2}];Counts", 200, 1.2, 3.2);
   t->Project("h_kpkmpip", "kpkmpip_mf", "w8*(kpkmpip_uni)");  
@@ -1079,7 +1081,7 @@ if(name == "data")
   c_kmpipp->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kmpipp.eps",name.Data()), "eps");
 
 */
-/*  
+ 
   // Daltz analysis phipip vs. phipim
 
   TH2D *h2_phipipvsphipim_tot = new TH2D("h2_phipipvsphipim_tot", ";m^{2}_{#phi#pi^{+}} [GeV/c^{2}];m^{2}_{#phi#pi^{-}} [GeV/c^{2}]", 200, 0.9, 8, 200, 0.9, 8);
@@ -1089,6 +1091,7 @@ if(name == "data")
   h2_phipipvsphipim_tot->Draw("colz");
   c_phipipvsphipim_tot->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_tot.root",name.Data()), "root");
   c_phipipvsphipim_tot->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_tot.eps",name.Data()), "eps");
+  c_phipipvsphipim_tot->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_tot.png",name.Data()), "png");
 
   TH2D *h2_phipipvsphipim_1 = new TH2D("h2_phipipvsphipim_1", "1.6<m_{#phi#pi^{+}#pi^{-}}<2 GeV/c^{2};m^{2}_{#phi#pi^{+}} [GeV/c^{2}];m^{2}_{#phi#pi^{-}} [GeV/c^{2}]", 200, 0.9, 8, 200, 0.9, 8);
   t->Project("h2_phipipvsphipim_1", "kpkmpip_mf^2:kpkmpim_mf^2", "w8*((kpkmpip_uni || kpkmpim_uni) && kpkm_mf>1.005 && kpkm_mf<1.035 && kpkmpippim_mf>1.6 && kpkmpippim_mf<2)"); 
@@ -1097,6 +1100,7 @@ if(name == "data")
   h2_phipipvsphipim_1->Draw("colz");
   c_phipipvsphipim_1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_1.root",name.Data()), "root");
   c_phipipvsphipim_1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_1.eps",name.Data()), "eps"); 
+  c_phipipvsphipim_1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_1.png",name.Data()), "png"); 
 
   TH2D *h2_phipipvsphipim_2 = new TH2D("h2_phipipvsphipim_2", "2<m_{#phi#pi^{+}#pi^{-}}<2.5 GeV/c^{2};m^{2}_{#phi#pi^{+}} [GeV/c^{2}];m^{2}_{#phi#pi^{-}} [GeV/c^{2}]", 200, 0.9, 8, 200, 0.9, 8);
   t->Project("h2_phipipvsphipim_2", "kpkmpip_mf^2:kpkmpim_mf^2", "w8*((kpkmpip_uni || kpkmpim_uni) && kpkm_mf>1.005 && kpkm_mf<1.035 && kpkmpippim_mf>2 && kpkmpippim_mf<2.5)"); 
@@ -1105,6 +1109,7 @@ if(name == "data")
   h2_phipipvsphipim_2->Draw("colz");
   c_phipipvsphipim_2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_2.root",name.Data()), "root");
   c_phipipvsphipim_2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_2.eps",name.Data()), "eps");
+  c_phipipvsphipim_2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_2.png",name.Data()), "png");
 
   TH2D *h2_phipipvsphipim_3 = new TH2D("h2_phipipvsphipim_3", "2.5<m_{#phi#pi^{+}#pi^{-}}<3.2 GeV/c^{2};m^{2}_{#phi#pi^{+}} [GeV/c^{2}];m^{2}_{#phi#pi^{-}} [GeV/c^{2}]", 200, 0.9, 8, 200, 0.9, 8);
   t->Project("h2_phipipvsphipim_3", "kpkmpip_mf^2:kpkmpim_mf^2", "w8*((kpkmpip_uni || kpkmpim_uni) && kpkm_mf>1.005 && kpkm_mf<1.035 && kpkmpippim_mf>2.5 && kpkmpippim_mf<3.2)"); 
@@ -1113,7 +1118,8 @@ if(name == "data")
   h2_phipipvsphipim_3->Draw("colz");
   c_phipipvsphipim_3->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_3.root",name.Data()), "root");
   c_phipipvsphipim_3->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_3.eps",name.Data()), "eps");
-*/
+  c_phipipvsphipim_3->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_phipipvsphipim_3.png",name.Data()), "png");
+
 /*
   // Nine tiles analysis
   // +++ kppim vs. kmpip

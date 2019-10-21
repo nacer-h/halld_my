@@ -61,30 +61,39 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TFile *ftru = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_thrown_phifo_17v3.root");
   TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/scanphi.root", "UPDATE");
-
-  ofstream ofs_scanphi("tableau_phi.txt", ofstream::out);
   
-  ofstream table_phi("table_phi.tex", ofstream::out);
-  table_phi <<"\\documentclass{article}" << endl;
-  table_phi <<"\\usepackage[margin=0.5in]{geometry}" << endl; 
-  table_phi <<"\\usepackage{tabularx}" << endl;
-  table_phi <<"\\begin{document}" << endl;
-  table_phi <<"\\begin{table}[!htbp]" << endl;
-  table_phi <<"\\begin{center}" << endl;
-  table_phi <<"\\caption{Total cross-sections in photon energy bins.} "<< endl;
-  // table_phi <<"\\label{tab : table1}" << endl;
-  table_phi <<"\\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}" << endl;
-  table_phi <<"\\hline" << endl;
-  table_phi <<"$E_{\\gamma} [GeV]$ & $N_{generated}$ & $N_{observed}$ & $N_{measured}$ & $\\epsilon$ [\\%]& $\\sigma [nb]$ \\\\" << endl;
-  // table_phi << "\\alpha & \\beta & \\gamma \\" << endl;
-  table_phi <<"\\hline" << endl;
+  // ofstream table_phi("table_phi.tex", ofstream::out);
+  // table_phi <<"\\documentclass[8pt]{extarticle}" << endl;
+  // table_phi <<"\\usepackage[margin=0.1in]{geometry}" << endl; 
+  // table_phi <<"\\usepackage{tabularx}" << endl;
+  // table_phi <<"\\begin{document}" << endl;
+  // table_phi <<"\\begin{table}[!htbp]" << endl;
+  // table_phi <<"\\begin{minipage}{\\textwidth}" << endl;
+  // table_phi <<"\\begin{center}" << endl;
+  // table_phi <<"\\caption{Total cross-sections in photon energy bins} "<< endl;
+  // // table_phi <<"\\label{tab : table1}" << endl;
+  // table_phi <<"\\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}" << endl;
+  // table_phi <<"\\hline" << endl;
+  // table_phi <<"$E_{\\gamma}[ GeV^{2}]$ & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [\\%]& $\\sigma [nb]$ \\\\" << endl;
+  // // table_phi << "\\alpha & \\beta & \\gamma \\" << endl;
+  // table_phi <<"\\hline" << endl;
 
   RooWorkspace w("w", kTRUE);
 
-  double mkk_min = 0.98, mkk_max = 1.2;
+  double mkk_min = 0.98, mkk_max = 1.2; //mkk_min = 0.98, mkk_max = 1.2;
 
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
+
+  // ======================================== Phi vs. Eg ===============================================
+
+  //root -l 'scanphi.C+("data_17",100,10,1)'
+
+  FILE *table_phi2pi = fopen("table_phi2pi.tex","w");
+  fprintf(table_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections in photon energy bins}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
+
+  FILE *table_phi2pi_sys = fopen("table_phi2pi_sys.tex","w");
+  fprintf(table_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors in beam energy bins}\n \\begin{tabularx}{\\textwidth}{|X|X|X|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
 
   // +++ PS flux
   TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
@@ -93,7 +102,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   cout << "h_tagged_flux" << h_tagged_flux << endl;
   h_tagged_flux->Rebin(10);
   h_tagged_flux->SetMarkerStyle(20);
-  h_tagged_flux->SetMarkerSize(1.0);
+  h_tagged_flux->SetMarkerSize(1.5);
   h_tagged_flux->Draw("e");
 
   // +++ Thrown Beam Energy
@@ -104,16 +113,15 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   cout << "h_beame_tru" << h_beame_tru << endl;
   // h_beame_tru->Rebin(10);
   h_beame_tru->SetMarkerStyle(20);
-  h_beame_tru->SetMarkerSize(1.0);
+  h_beame_tru->SetMarkerSize(1.5);
   h_beame_tru->Draw("e");
 
-  // ======================================== Phi vs. Eg ===============================================
-  // root -l 'scanphi.C+(100,20,20)'
   // Data
   TCanvas *cphie = new TCanvas("cphie", "cphie", 900, 600);
   cphie->cd();
-  TH2D *h2phie = new TH2D("h2phie", "Data; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, 0.98, 1.2);
+  TH2D *h2phie = new TH2D("h2phie", "Data; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, mkk_min, mkk_max);
   tdata->Project("h2phie", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");
+
   h2phie->Draw("colz");
 
   TCanvas *cphie1 = new TCanvas("cphie1", "cphie1", 1500, 600);
@@ -121,7 +129,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cgphie = new TCanvas("cgphie", "cgphie", 900, 600);
   TGraphErrors *gphie = new TGraphErrors();
   gphie->SetMarkerStyle(20);
-  gphie->SetMarkerSize(1.0);
+  gphie->SetMarkerSize(1.5);
   gphie->SetMarkerColor(1);
   gphie->SetMinimum(0.0);
   gphie->SetTitle("#phi(1020) Yield vs. E_{#gamma} (data); E_{#gamma} [GeV]; N_{#phi}");
@@ -129,7 +137,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   // Monte Carlo
   TCanvas *cphie_mc = new TCanvas("cphie_mc", "cphie_mc", 900, 600);
   cphie_mc->cd();
-  TH2D *h2phie_mc = new TH2D("h2phie_mc", "MC; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, 0.98, 1.2);
+  TH2D *h2phie_mc = new TH2D("h2phie_mc", "MC; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, mkk_min, mkk_max);//0.98, 1.2
   tmc->Project("h2phie_mc", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");
   h2phie_mc->Draw("colz");
 
@@ -138,7 +146,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cgphie_mc = new TCanvas("cgphie_mc", "cgphie_mc", 900, 600);
   TGraphErrors *gphie_mc = new TGraphErrors();
   gphie_mc->SetMarkerStyle(20);
-  gphie_mc->SetMarkerSize(1.0);
+  gphie_mc->SetMarkerSize(1.5);
   gphie_mc->SetMarkerColor(1);
   gphie_mc->SetMinimum(0.0);
   gphie_mc->SetTitle("#phi(1020) Yield vs. E_{#gamma} (MC); E_{#gamma} [GeV]; N_{#phi}");
@@ -147,8 +155,8 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cgphieeff = new TCanvas("cgphieeff", "cgphieeff", 900, 600);
   TGraphErrors *gphieeff = new TGraphErrors();
   gphieeff->SetMarkerStyle(20);
-  gphieeff->SetMarkerSize(1.0);
-  gphieeff->SetMarkerColor(1);
+  gphieeff->SetMarkerSize(1.5);
+  gphieeff->SetMarkerColor(kBlue);
   gphieeff->SetMinimum(0.0);
   gphieeff->SetTitle("#phi(1020) Effeciency vs. E_{#gamma}; E_{#gamma} [GeV]; #epsilon [%]");
 
@@ -156,7 +164,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cgphiexsec = new TCanvas("cgphiexsec", "cgphiexsec", 900, 600);
   TGraphErrors *gphiexsec = new TGraphErrors();
   gphiexsec->SetMarkerStyle(20);
-  gphiexsec->SetMarkerSize(1.0);
+  gphiexsec->SetMarkerSize(1.5);
   gphiexsec->SetMarkerColor(1);
   gphiexsec->SetMinimum(0.0);
   gphiexsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. E_{#gamma}; E_{#gamma} [GeV]; #sigma [nb]"); //#phi(1020) flux normalized yield, Yield_{#phi}
@@ -165,10 +173,89 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   {
     cout << i << " " << flush;
 
+    // ++++++++++++++++++++++++++++ mc  +++++++++++++++++++++++
+    cphie1_mc->cd(i);
+    TH1D *hphie_mc_py = h2phie_mc->ProjectionY(Form("hphie_mc_py_%d", i), i, i);
+    hphie_mc_py->SetTitle(Form("E_{#gamma} = %.2f [GeV]",h2phie_mc->GetXaxis()->GetBinCenter(i)));
+    hphie_mc_py->Draw("e");
+
+    // w.factory(Form("Voigtian::sig_phie_mc(m_phie_mc[%f,%f],mean_phie_mc[1.015,1.022],width_phie_mc[0.004],sigma_phie_mc[0.002])", mkk_min, mkk_max)); //sigma_phie_mc[0.0001,0.01], mean_phie_mc[1.011,1.030]
+    // // w.factory(Form("BreitWigner::sig_phie_mc(m_phie_mc[%f,%f],mean_phie_mc[1.018,1.021],width_phie_mc[0.004])", mkk_min, mkk_max));
+    // w.factory("Chebychev::bkg_phie_mc(m_phie_mc,{c0_phie_mc[-10,10], c1_phie_mc[-10,10], c2_phie_mc[-10,10]})");
+    // w.factory("SUM:::model_phie_mc(nsig_phie_mc[0,100000000]*sig_phie_mc, nbkg_phie_mc[0,100000000]*bkg_phie_mc)"); //nsig[0,100000000]*sig2,
+    // w.var("m_phie_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
+    // RooDataHist dh_phie_mc("dh_phie_mc", "dh_phie_mc", *w.var("m_phie_mc"), Import(*hphie_mc_py));
+    // RooPlot *fr_phie_mc = w.var("m_phie_mc")->frame(Title(Form("E_{#gamma} = %f",h2phie_mc->GetXaxis()->GetBinCenter(i))));
+    // w.pdf("model_phie_mc")->fitTo(dh_phie_mc);
+
+    // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
+    // dh_phie_mc.plotOn(fr_phie_mc, RooFit::Name("ldh_phie_mc"));
+    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, Components(*w.pdf("sig_phie_mc")), LineColor(kRed), RooFit::Name("lsig_phie_mc"));
+    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, Components(*w.pdf("bkg_phie_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phie_mc"));
+    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, RooFit::Name("lmodel_phie_mc"));
+    // // w.pdf("model_phie_mc")->paramOn(fr_phie_mc, Layout(0.4, 0.90, 0.99), Parameters(RooArgSet(*w.var("nsig_phie_mc"), *w.var("nbkg_phie_mc")))); //,*w.var("mean_phie_mc"),*w.var("width_phie_mc"),*w.var("sigma_phie_mc"))));
+    // fr_phie_mc->Draw();
+
+    // TLegend *l_phie_mc = new TLegend(0.5, 0.7, 0.8, 0.9);
+    // l_phie_mc->SetFillColor(kWhite);
+    // l_phie_mc->AddEntry(fr_phie_mc->findObject("lsig_phie_mc"), Form("N_{Sig} = %.2f", w.var("nsig_phie_mc")->getVal()), "l");
+    // l_phie_mc->AddEntry(fr_phie_mc->findObject("lbkg_phie_mc"), Form("N_{Bkg} = %.2f", w.var("nbkg_phie_mc")->getVal()), "l");
+    // l_phie_mc->Draw();
+
+    // double N_phie_mc = w.var("nsig_phie_mc")->getVal();
+    // double dN_phie_mc = w.var("nsig_phie_mc")->getError();
+
+    // TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::BreitWigner(x,[1],[2]) + pol4(3)", mkk_min, mkk_max);
+    // fsb_mc->SetParameters(1433, 1.019, 0.005, 1,1,1,1,1); // breitwigner
+    // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+    // TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5]) + pol4(6)", mkk_min, mkk_max);
+    // fsb_mc->SetParameters(1433, 1.019, 0.003, 1433, 1.023, 0.005, 1,1,1,1,1); // double gaus
+    // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5])", mkk_min, mkk_max);
+   
+    TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
+    fsb_mc->SetLineColor(2);
+    fsb_mc->SetParameters(1433, 1.019, 0.003, 0.0042, 1,1,1,1,1); // voigt
+    fsb_mc->SetParLimits(1, 1.015, 1.022); //fsb_mc->FixParameter(1, 1.019);
+    // fsb_mc->FixParameter(2, 0.0028);   //fsb->SetParLimits(2, 0.008, 0.010);
+    fsb_mc->FixParameter(3, 0.0042);   //0.0042   //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+
+    TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    fs_mc->SetLineColor(4);
+
+    TF1 *fb_mc = new TF1("fb_mc", "pol4(4)", mkk_min, mkk_max);
+    fb_mc->SetLineColor(28);
+    fb_mc->SetLineStyle(2);
+
+    hphie_mc_py->Fit("fsb_mc", "", "", mkk_min, mkk_max);
+    double par_mc[10]; //6
+    fsb_mc->GetParameters(&par_mc[0]);
+    fs_mc->SetParameters(&par_mc[0]);
+    fb_mc->SetParameters(&par_mc[4]); //4
+
+    fs_mc->Draw("same");
+    fb_mc->Draw("same");
+
+    double N_phie_mc = fs_mc->Integral(mkk_min, mkk_max) / hphie_mc_py->GetBinWidth(1);
+    double dN_phie_mc = N_phie_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
+
+    TLatex lat_phie_mc;
+    lat_phie_mc.SetTextSize(0.06);
+    lat_phie_mc.SetTextAlign(13); //align at top
+    lat_phie_mc.SetNDC();
+    lat_phie_mc.SetTextColor(kBlue);
+    lat_phie_mc.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
+    lat_phie_mc.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phie_mc, dN_phie_mc));
+    lat_phie_mc.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
+    lat_phie_mc.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
+    lat_phie_mc.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
+
+    gphie_mc->SetPoint(i - 1, h2phie_mc->GetXaxis()->GetBinCenter(i), N_phie_mc);
+    gphie_mc->SetPointError(i - 1, 0, dN_phie_mc);
+
     // +++++++++++++++++++++++++ data  ++++++++++++++++++++
     cphie1->cd(i);
     TH1D *hphie_py = h2phie->ProjectionY(Form("hphie_py_%d", i), i, i);
-    // hphie_py->SetTitle(Form("E_{#gamma} = %f",h2phie->GetXaxis()->GetBinCenter(i)));
+    hphie_py->SetTitle(Form("E_{#gamma} = %.2f [GeV]",h2phie->GetXaxis()->GetBinCenter(i)));
     hphie_py->Draw("e");
 
     // w.factory(Form("Voigtian::sig_phie(m_phie[%f,%f],mean_phie[1.015, 1.022],width_phie[0.004],sigma_phie[0.002])", mkk_min, mkk_max)); //sigma_phie[0.0001,0.01], mean_phie[1.016,1.022 or 1.010,1.030]
@@ -199,128 +286,140 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     // double N_phie = w.var("nsig_phie")->getVal();
     // double dN_phie = w.var("nsig_phie")->getError();
 
-    TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
-    // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
-    fsb->SetLineColor(2);
-    fsb->SetParameters(1433, 1.019, 0.004, 0.002, 1, 1, 1, 1, 1);
-    fsb->SetParLimits(0, 0, 10000);
-    fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
-    fsb->FixParameter(2, 0.004);        //fsb->SetParLimits(2, 0.008, 0.010);
-    fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+    // //+++++++++ BreitWigner + pol4
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::BreitWigner(x,[1],[2]) + pol4(3)", mkk_min, mkk_max);
+    // fsb_data->SetParameters(1433, 1.019, 0.005, 1,1,1,1,1);  // breiwigner
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1));
+    // // fsb_data->FixParameter(2, fsb_mc->GetParameter(3));
+    
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
 
-    TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
-    // TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
-    fs->SetLineColor(4);
+    // TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
 
-    TF1 *fb = new TF1("fb", "pol4(4)", mkk_min, mkk_max); //pol2(3)
-    fb->SetLineColor(28);
-    fb->SetLineStyle(2);
+    // hphie_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[3]);
 
-    hphie_py->Fit("fsb", "", "", mkk_min, mkk_max);
-    double par[8]; //6
-    fsb->GetParameters(&par[0]);
-    fs->SetParameters(&par[0]);
-    fb->SetParameters(&par[4]); //3
+    // //+++++++++ Double Gaus + pol4
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5]) + pol4(6)", mkk_min, mkk_max);
+    // fsb_data->SetParameters(1433, 1.019, 0.003, 1433, 1.023, 0.005, 1,1,1,1,1);  // double gaus
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1));
+    // // fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); // double gaus
+    // fsb_data->SetParLimits(4, 1.19, 1.023);
+    // // fsb_data->FixParameter(5, fsb_mc->GetParameter(3)); // double gaus
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
 
-    fs->Draw("same");
-    fb->Draw("same");
+    // TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
 
-    double N_phie = fs->Integral(mkk_min, mkk_max) / hphie_py->GetBinWidth(1);
-    double dN_phie = N_phie * fsb->GetParError(0) / fsb->GetParameter(0);
+    // hphie_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[6]);
 
-    TLatex lat_phie;
-    lat_phie.SetTextSize(0.06);
-    lat_phie.SetTextAlign(13); //align at top
-    lat_phie.SetNDC();
-    lat_phie.SetTextColor(kBlue);
-    lat_phie.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
-    lat_phie.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phie, dN_phie));
-    lat_phie.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
-    lat_phie.DrawLatex(0.45, 0.66, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
-    lat_phie.DrawLatex(0.45, 0.59, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
+    // //+++++++++ Voigt + |x-a|^b*|x-c|^d
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + [4]*(x>[5])*(x<[6])*abs(x-[5])^[7]*abs([6]-x)^[8]", mkk_min, mkk_max);
+    // fsb_data->SetLineColor(2);
+    // fsb_data->SetParameters(1433, 1.019, 0.003, 0.0042, 1,0.98,1.2,0.5,4);  // voigt 1,0.98,1.2,0.5,4
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1)); //fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
+    // fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); //fsb->SetParLimits(2, 0.008, 0.010);
+    // fsb_data->FixParameter(3, fsb_mc->GetParameter(3)); //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+    // // fsb_data->SetParLimits(5, 0.97, 0.99);
+    // fsb_data->FixParameter(4, 19);
+    // fsb_data->FixParameter(5, 0.98);
+    // fsb_data->FixParameter(6, 2.82); //2.82
+    // fsb_data->FixParameter(7, 0.67);
+    // fsb_data->FixParameter(8, 6.82);
 
-    gphie->SetPoint(i - 1, h2phie->GetXaxis()->GetBinCenter(i), N_phie);
-    gphie->SetPointError(i - 1, 0, dN_phie);
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
 
-    // ++++++++++++++++++++++++++++ mc  +++++++++++++++++++++++
-    cphie1_mc->cd(i);
-    TH1D *hphie_mc_py = h2phie_mc->ProjectionY(Form("hphie_mc_py_%d", i), i, i);
-    hphie_mc_py->Draw("e");
+    // TF1 *fb_data = new TF1("fb_data", "[0]*(x>[1])*(x<[2])*abs(x-[1])^[3]*abs([2]-x)^[4]", mkk_min, mkk_max); //
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
 
-    // w.factory(Form("Voigtian::sig_phie_mc(m_phie_mc[%f,%f],mean_phie_mc[1.015,1.022],width_phie_mc[0.004],sigma_phie_mc[0.002])", mkk_min, mkk_max)); //sigma_phie_mc[0.0001,0.01], mean_phie_mc[1.011,1.030]
-    // // w.factory(Form("BreitWigner::sig_phie_mc(m_phie_mc[%f,%f],mean_phie_mc[1.018,1.021],width_phie_mc[0.004])", mkk_min, mkk_max));
-    // w.factory("Chebychev::bkg_phie_mc(m_phie_mc,{c0_phie_mc[-10,10], c1_phie_mc[-10,10], c2_phie_mc[-10,10]})");
-    // w.factory("SUM:::model_phie_mc(nsig_phie_mc[0,100000000]*sig_phie_mc, nbkg_phie_mc[0,100000000]*bkg_phie_mc)"); //nsig[0,100000000]*sig2,
-    // w.var("m_phie_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
-    // RooDataHist dh_phie_mc("dh_phie_mc", "dh_phie_mc", *w.var("m_phie_mc"), Import(*hphie_mc_py));
-    // RooPlot *fr_phie_mc = w.var("m_phie_mc")->frame(Title(Form("E_{#gamma} = %f",h2phie_mc->GetXaxis()->GetBinCenter(i))));
-    // w.pdf("model_phie_mc")->fitTo(dh_phie_mc);
+    // hphie_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[4]); //4
 
-    // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-    // dh_phie_mc.plotOn(fr_phie_mc, RooFit::Name("ldh_phie_mc"));
-    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, Components(*w.pdf("sig_phie_mc")), LineColor(kRed), RooFit::Name("lsig_phie_mc"));
-    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, Components(*w.pdf("bkg_phie_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phie_mc"));
-    // w.pdf("model_phie_mc")->plotOn(fr_phie_mc, RooFit::Name("lmodel_phie_mc"));
-    // // w.pdf("model_phie_mc")->paramOn(fr_phie_mc, Layout(0.4, 0.90, 0.99), Parameters(RooArgSet(*w.var("nsig_phie_mc"), *w.var("nbkg_phie_mc")))); //,*w.var("mean_phie_mc"),*w.var("width_phie_mc"),*w.var("sigma_phie_mc"))));
-    // fr_phie_mc->Draw();
+    // +++++++++ Voigt + pol4
+    TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
+    fsb_data->SetLineColor(2);
+    fsb_data->SetParameters(1433, 1.019, 0.003, 0.0042, 1,1,1,1,1);  // voigt
+    fsb_data->FixParameter(1, fsb_mc->GetParameter(1)); //fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
+    fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); //fsb->SetParLimits(2, 0.008, 0.010);
+    fsb_data->FixParameter(3, fsb_mc->GetParameter(3)); //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
 
-    // TLegend *l_phie_mc = new TLegend(0.5, 0.7, 0.8, 0.9);
-    // l_phie_mc->SetFillColor(kWhite);
-    // l_phie_mc->AddEntry(fr_phie_mc->findObject("lsig_phie_mc"), Form("N_{Sig} = %.2f", w.var("nsig_phie_mc")->getVal()), "l");
-    // l_phie_mc->AddEntry(fr_phie_mc->findObject("lbkg_phie_mc"), Form("N_{Bkg} = %.2f", w.var("nbkg_phie_mc")->getVal()), "l");
-    // l_phie_mc->Draw();
+    TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    fs_data->SetLineColor(4);
 
-    // double N_phie_mc = w.var("nsig_phie_mc")->getVal();
-    // double dN_phie_mc = w.var("nsig_phie_mc")->getError();
+    TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    fb_data->SetLineColor(28);
+    fb_data->SetLineStyle(2);
 
-    TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
-    // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
-    fsb_mc->SetLineColor(2);
-    fsb_mc->SetParameters(1433, 1.019, 0.004, 0.002, 1, 1, 1, 1, 1);
-    fsb_mc->SetParLimits(0, 0, 10000);
-    fsb_mc->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
-    fsb_mc->FixParameter(2, 0.004);        //fsb->SetParLimits(2, 0.008, 0.010);
-    fsb_mc->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+    hphie_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    double par_data[10]; //6
+    fsb_data->GetParameters(&par_data[0]);
+    fs_data->SetParameters(&par_data[0]);
+    fb_data->SetParameters(&par_data[4]); //4
 
-    TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
-    // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
-    fs_mc->SetLineColor(4);
+    fs_data->Draw("same");
+    fb_data->Draw("same");
 
-    TF1 *fb_mc = new TF1("fb_mc", "pol4(4)", mkk_min, mkk_max); //pol2(3)
-    fb_mc->SetLineColor(28);
-    fb_mc->SetLineStyle(2);
+    double N_phie_data = fs_data->Integral(mkk_min, mkk_max) / hphie_py->GetBinWidth(1);
+    double dN_phie_data = N_phie_data * fsb_data->GetParError(0) / fsb_data->GetParameter(0);
 
-    hphie_mc_py->Fit("fsb_mc", "", "", mkk_min, mkk_max);
-    double par_mc[8]; //6
-    fsb_mc->GetParameters(&par_mc[0]);
-    fs_mc->SetParameters(&par_mc[0]);
-    fb_mc->SetParameters(&par_mc[4]); //3
+    TLatex lat_phie_data;
+    lat_phie_data.SetTextSize(0.06);
+    lat_phie_data.SetTextAlign(13); //align at top
+    lat_phie_data.SetNDC();
+    lat_phie_data.SetTextColor(kBlue);
+    lat_phie_data.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
+    lat_phie_data.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phie_data, dN_phie_data));
+    lat_phie_data.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_data->GetParameter(1), fsb_data->GetParError(1)));
+    lat_phie_data.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_data->GetParameter(2), fsb_data->GetParError(2)));
+    lat_phie_data.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_data->GetParameter(3), fsb_data->GetParError(3)));
 
-    fs_mc->Draw("same");
-    fb_mc->Draw("same");
-
-    double N_phie_mc = fs_mc->Integral(mkk_min, mkk_max) / hphie_mc_py->GetBinWidth(1);
-    double dN_phie_mc = N_phie_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
-
-    TLatex lat_phie_mc;
-    lat_phie_mc.SetTextSize(0.06);
-    lat_phie_mc.SetTextAlign(13); //align at top
-    lat_phie_mc.SetNDC();
-    lat_phie_mc.SetTextColor(kBlue);
-    lat_phie_mc.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
-    lat_phie_mc.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phie_mc, dN_phie_mc));
-    lat_phie_mc.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
-    lat_phie_mc.DrawLatex(0.45, 0.66, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
-    lat_phie_mc.DrawLatex(0.45, 0.59, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
-
-    gphie_mc->SetPoint(i - 1, h2phie_mc->GetXaxis()->GetBinCenter(i), N_phie_mc);
-    gphie_mc->SetPointError(i - 1, 0, dN_phie_mc);
+    gphie->SetPoint(i - 1, h2phie->GetXaxis()->GetBinCenter(i), N_phie_data);
+    gphie->SetPointError(i - 1, 0, dN_phie_data);    
 
     // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
     double eff_phi = N_phie_mc / h_beame_tru->GetBinContent(i); // Efficiency = N_observed/N_generated
     double deff_phi = eff_phi * (dN_phie_mc / N_phie_mc);
     gphieeff->SetPoint(i - 1, h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
     gphieeff->SetPointError(i - 1, 0, deff_phi*100); //->GetBinError(i)
+
+    // +++++++++++++++++++ Systematic Errors 
+    // double width_value[3] = {-169.74, -141.06, -197.77}; // Y Width value : 0.079, 0.065, 0.093  
+    // double err_width_value = TMath::RMS(3, width_value);
+
+    double N_bkg_poln_1[10] = {1689, 1753, 2465, 6581, 8566, 2607, 3110, 2557, 2450, 160}; // Bkg pol degree: 4
+    double N_bkg_poln_2[10] = {1685, 1749, 2459, 6567, 8548, 2677, 3103, 2552, 2444, 182}; // Bkg pol degree: 3
+    double N_bkg_poln_3[10] = {1694, 1756, 2471, 6595, 8583, 2611, 3118, 2562, 2456, 161}; // Bkg pol degree: 5
+    double bkg_poln[3] = {N_bkg_poln_1[i-1], N_bkg_poln_2[i-1], N_bkg_poln_3[i-1]};
+    double err_bkg_poln = TMath::RMS(3, bkg_poln);
+    double fit_range_1[10] = {1689, 1753, 2465, 6581, 8566, 2607, 3110, 2557, 2450, 160}; // Fit range: [0.98, 1.2]
+    double fit_range_2[10] = {1685, 1767, 2477, 6598, 8551, 2600, 3094, 2532, 2439, 182}; // Fit range: [0.98, 1.18]
+    double fit_range_3[10] = {1693, 1736, 2458, 6609, 8522, 2582, 3104, 2540, 2433, 163}; // Fit range: [0.98, 1.22]
+    double fit_range[3] = {fit_range_1[i-1], fit_range_2[i-1], fit_range_3[i-1]};
+    double err_fit_range = TMath::RMS(3, fit_range);
+    // double fit_func_1[10] = {1689.35, 1752.50, 2465.09, 6580.90, 8565.59, 2606.73, 3110.43, 2557.01, 2449.74, 160.43}; // Fit function: Voigt
+    // double fit_func_2[10] = {2157.41, 2302.83, 3158.83, 7835.29, 10889.65, 3077.05, 3893.53, 3240.87, 3128.20, 217.33}; // Fit function: Breit-wigner
+    // double fit_func_3[10] = {1608.70, 1734.22, 2367.27, 6358.65, 8255.21, 2452.65, 2940.46, 2476.66, 2322.49, 203.03}; // Fit function: Double Gaus
+    // double fit_func[3] = {fit_func_1[i-1], fit_func_2[i-1], fit_func_3[i-1]};
+    // double err_fit_func = TMath::RMS(3, fit_func);
+
+    double err_sys = TMath::Sqrt(err_bkg_poln*err_bkg_poln + err_fit_range*err_fit_range);
 
     // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
     double lumi_phi = h_tagged_flux->GetBinContent(i); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
@@ -332,19 +431,19 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     double T = 1.273; //Target thickness [b^{-1}]
     double br_phi = 0.492;
     double dbr_phi = 0.005;
-    double xsec_phi = 1e9 * N_phie / (eff_phi * lumi_phi * T * br_phi);
-    double dxsec_phi = xsec_phi * sqrt((dN_phie / N_phie) * (dN_phie / N_phie) + (deff_phi / eff_phi) * (deff_phi / eff_phi) + (dbr_phi / br_phi) * (dbr_phi / br_phi));
+    double xsec_phi2pi = 1e9 * N_phie_data / (eff_phi * lumi_phi * T * br_phi);
+    double dxsec_phi2pi_stat = xsec_phi2pi * (dN_phie_data / N_phie_data);
+    double dxsec_phi2pi_sys = xsec_phi2pi * TMath::Sqrt((err_sys / N_phie_data)*(err_sys / N_phie_data) + (deff_phi / eff_phi)*(deff_phi / eff_phi) + (dbr_phi / br_phi)*(dbr_phi / br_phi));
     // double xsec_phi = N_phie / lumi_phi;
-    // double dxsec_phi = dN_phie / lumi_phi;
-    gphiexsec->SetPoint(/*i - 1*/ gphiexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phi);
-    gphiexsec->SetPointError(/*i - 1*/ gphiexsec->GetN() - 1, 0, dxsec_phi);
+    // double dxsec_phi = dN_phie / lumi_phi;  
+    gphiexsec->SetPoint(gphiexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    gphiexsec->SetPointError(gphiexsec->GetN() - 1, 0, dxsec_phi2pi_stat);
 
-    // c2->Update();
-    //sleep(1);
-    ofs_scanphi << " i = " << i << " | N_{#phi} = " << N_phie << "#pm" << dN_phie << " |  N_{#phi MC} = " << N_phie_mc << "#pm" << dN_phie_mc << " | N_{generated} = " << h_beame_tru->GetBinContent(i) << " | N_{observed} = " << h_tagged_flux->GetBinContent(i) << " | #epsilon = " << eff_phi << "#pm" << deff_phi << " | #sigma = " << xsec_phi << "#pm" << dxsec_phi << endl;
-
-    table_phi << std::setprecision(4); // << std::fixed;
-    table_phi <<h2phie_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_beame_tru->GetBinContent(i)<<"&"<<N_phie_mc<<"$\\pm$"<<dN_phie_mc<<"&"<<N_phie<<"$\\pm$"<<dN_phie<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phi<<"$\\pm$"<<dxsec_phi<<" \\\\"<< endl;
+    fprintf(table_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phie_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(i), N_phie_mc, dN_phie_mc, N_phie_data, dN_phie_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
+    
+    fprintf(table_phi2pi_sys, "%0.2f & %0.2f & %0.2f \\\\ \n", h2phie_mc->GetXaxis()->GetBinCenter(i), err_bkg_poln*100/N_bkg_poln_1[i-1], err_fit_range*100/fit_range_1[i-1]);
+    // table_phi << std::setprecision(2) << std::fixed;
+    // table_phi <<h2phie_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_beame_tru->GetBinContent(i)<<"&"<<N_phie_mc<<"$\\pm$"<<dN_phie_mc<<"&"<<N_phie_data<<"$\\pm$"<<dN_phie_data<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phi2pi<<"$\\pm$"<<dxsec_phi2pi_stat<<"$\\pm$"<<dxsec_phi2pi_sys<<" \\\\"<< endl;
     }
 
     cgphie->cd();
@@ -389,7 +488,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     hdata_18_gphiexsec->SetLineColor(kRed);
     hdata_18_gphiexsec->SetMarkerStyle(20);
     mgxsec->Add(hdata_18_gphiexsec);
-    mgxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. E_{#gamma}; E_{#gamma} [GeV]; #sigma [nb]");
+    mgxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Beam Energy; E_{#gamma} [GeV]; #sigma [nb]");
     mgxsec->Draw("AP");
     mgxsec->SetMinimum(0.);
     cmgxsec->Modified();
@@ -398,6 +497,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     lmgxsec->AddEntry(hdata_18_gphiexsec, "2018", "p");
     lmgxsec->Draw();
     cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.eps", "eps");
+    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.png", "png");
     cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.root", "root");
 
     // total Yields
@@ -429,7 +529,7 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     hdata_18_gphie->SetLineColor(kRed);
     hdata_18_gphie->SetMarkerStyle(20);
     mgphie->Add(hdata_18_gphie);
-    mgphie->SetTitle("#phi(1020) Yield vs. E_{#gamma} (data); E_{#gamma} [GeV]; N_{#phi}");
+    mgphie->SetTitle("#phi(1020) Yield vs. Beam energy (data); E_{#gamma} [GeV]; N_{#phi}");
     mgphie->Draw("AP");
     mgphie->SetMinimum(0.);
     cmgphie->Modified();
@@ -438,26 +538,519 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
     lmgphie->AddEntry(hdata_18_gphie, "2018", "p");
     lmgphie->Draw();
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphie.eps", "eps");
+    cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphie.png", "png");
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphie.root", "root");
 
     cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie.root", name.Data()), "root");
     cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie.eps", name.Data()), "eps");
+    cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie.png", name.Data()), "png");
     cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie1.root", name.Data()), "root");
     cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie1.eps", name.Data()), "eps");
+    cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phie1.png", name.Data()), "png");
     cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphie.root", name.Data()), "root");
     cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphie.eps", name.Data()), "eps");
+    cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphie.png", name.Data()), "png");
     cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie_mc.root", "root");
     cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie_mc.eps", "eps");
+    cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie_mc.png", "png");
     cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie1_mc.root", "root");
     cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie1_mc.eps", "eps");
+    cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphie1_mc.png", "png");
     cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphie_mc.root", "root");
     cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphie_mc.eps", "eps");
+    cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphie_mc.png", "png");
     cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphieeff.root", "root");
     cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphieeff.eps", "eps");
+    cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphieeff.png", "png");
     cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphiexsec.root", name.Data()), "root");
     cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphiexsec.eps", name.Data()), "eps");
-    /*
-  // ======================================== Phi vs. -t ==================================================
+    cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphiexsec.png", name.Data()), "png");
+
+/*
+  // ======================================== Phi vs. -t ===============================================
+
+  //root -l 'scanphi.C+("data_17",100,1,10)'
+
+  FILE *table_phi2pi = fopen("table_phi2pi.tex","w");
+  fprintf(table_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections in momentum transfer bins}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n -t $[GeV^{2}]$ & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
+
+  FILE *table_phi2pi_sys = fopen("table_phi2pi_sys.tex","w");
+  fprintf(table_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors in momentum transfer bins}\n \\begin{tabularx}{\\textwidth}{|X|X|X|}\n \\hline\n -t $[GeV^{2}]$ & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
+  
+  // +++ PS flux
+  TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
+  c_tagged_flux->cd();
+  TH1F *h_tagged_flux = (TH1F *)fps->Get("tagged_flux");
+  cout << "h_tagged_flux" << h_tagged_flux << endl;
+  h_tagged_flux->Rebin(100);
+  h_tagged_flux->SetMarkerStyle(20);
+  h_tagged_flux->SetMarkerSize(1.5);
+  h_tagged_flux->Draw("e");
+
+  // +++ Thrown Beam Energy
+  TCanvas *c_beame_tru = new TCanvas("cbeame_tru", "cbeame_tru", 900, 600);
+  c_beame_tru->cd();
+  TH1F *h_beame_tru = new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", 1, 6, 12);
+  ttru->Project("h_beame_tru", "ThrownBeam__P4.E()", "ThrownBeam__P4.E()>6");
+  cout << "h_beame_tru" << h_beame_tru << endl;
+  // h_beame_tru->Rebin(10);
+  h_beame_tru->SetMarkerStyle(20);
+  h_beame_tru->SetMarkerSize(1.5);
+  h_beame_tru->Draw("e");
+
+  // root -l 'scanphi.C+(100,20,20)'
+  // Data
+  TCanvas *cphit = new TCanvas("cphit", "cphit", 900, 600);
+  cphit->cd();
+  TH2D *h2phit = new TH2D("h2phit", "Data; -t [GeV^{2}]; m_{K^{+}K^{-}} [GeV/c^{2}]", nt, 0, 4, n2k, mkk_min, mkk_max);
+  tdata->Project("h2phit", "kpkm_mf:-t_kin", "w8*(kpkm_uni && beam_p4_kin.E()>6)");
+
+  h2phit->Draw("colz");
+
+  TCanvas *cphit1 = new TCanvas("cphit1", "cphit1", 1500, 600);
+  cphit1->Divide(5, 2);
+  TCanvas *cgphit = new TCanvas("cgphit", "cgphit", 900, 600);
+  TGraphErrors *gphit = new TGraphErrors();
+  gphit->SetMarkerStyle(20);
+  gphit->SetMarkerSize(1.5);
+  gphit->SetMarkerColor(1);
+  gphit->SetMinimum(0.0);
+  gphit->SetTitle("#phi(1020) Yield vs. Momentum transfer (data); -t [GeV^{2}]; N_{#phi}");
+
+  // Monte Carlo
+  TCanvas *cphit_mc = new TCanvas("cphit_mc", "cphit_mc", 900, 600);
+  cphit_mc->cd();
+  TH2D *h2phit_mc = new TH2D("h2phit_mc", "MC; -t [GeV^{2}]; m_{K^{+}K^{-}} [GeV/c^{2}]", nt, 0, 4, n2k, mkk_min, mkk_max);//0.98, 1.2
+  tmc->Project("h2phit_mc", "kpkm_mf:-t_kin", "w8*(kpkm_uni && beam_p4_kin.E()>6)");
+  h2phit_mc->Draw("colz");
+
+  TCanvas *cphit1_mc = new TCanvas("cphit1_mc", "cphit1_mc", 1500, 600);
+  cphit1_mc->Divide(5, 2);
+  TCanvas *cgphit_mc = new TCanvas("cgphit_mc", "cgphit_mc", 900, 600);
+  TGraphErrors *gphit_mc = new TGraphErrors();
+  gphit_mc->SetMarkerStyle(20);
+  gphit_mc->SetMarkerSize(1.5);
+  gphit_mc->SetMarkerColor(1);
+  gphit_mc->SetMinimum(0.0);
+  gphit_mc->SetTitle("#phi(1020) Yield vs. Momentum transfer (MC); -t [GeV^{2}]; N_{#phi}");
+
+  // Efficiency
+  TCanvas *cgphiteff = new TCanvas("cgphiteff", "cgphiteff", 900, 600);
+  TGraphErrors *gphiteff = new TGraphErrors();
+  gphiteff->SetMarkerStyle(20);
+  gphiteff->SetMarkerSize(1.5);
+  gphiteff->SetMarkerColor(kBlue);
+  gphiteff->SetMinimum(0.0);
+  gphiteff->SetTitle("#phi(1020) Effeciency vs. Momentum transfer; -t [GeV^{2}]; #epsilon [%]");
+
+  // Cross-section
+  TCanvas *cgphitxsec = new TCanvas("cgphitxsec", "cgphitxsec", 900, 600);
+  TGraphErrors *gphitxsec = new TGraphErrors();
+  gphitxsec->SetMarkerStyle(20);
+  gphitxsec->SetMarkerSize(1.5);
+  gphitxsec->SetMarkerColor(1);
+  gphitxsec->SetMinimum(0.0);
+  gphitxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Momentum transfer; -t [GeV^{2}]; #sigma [nb]"); //#phi(1020) flux normalized yield, Yield_{#phi}
+
+  for (int i = 1; i <= nt; ++i)
+  {
+    cout << i << " " << flush;
+
+    // ++++++++++++++++++++++++++++ mc  +++++++++++++++++++++++
+    cphit1_mc->cd(i);
+    TH1D *hphit_mc_py = h2phit_mc->ProjectionY(Form("hphit_mc_py_%d", i), i, i);
+    hphit_mc_py->SetTitle(Form("-t = %.2f [GeV^{2}] (MC)",h2phit_mc->GetXaxis()->GetBinCenter(i)));
+    hphit_mc_py->Draw("e");
+
+    // w.factory(Form("Voigtian::sig_phit_mc(m_phit_mc[%f,%f],mean_phit_mc[1.015,1.022],width_phit_mc[0.004],sigma_phit_mc[0.002])", mkk_min, mkk_max)); //sigma_phit_mc[0.0001,0.01], mean_phit_mc[1.011,1.030]
+    // // w.factory(Form("BreitWigner::sig_phit_mc(m_phit_mc[%f,%f],mean_phit_mc[1.018,1.021],width_phit_mc[0.004])", mkk_min, mkk_max));
+    // w.factory("Chebychev::bkg_phit_mc(m_phit_mc,{c0_phit_mc[-10,10], c1_phit_mc[-10,10], c2_phit_mc[-10,10]})");
+    // w.factory("SUM:::model_phit_mc(nsig_phit_mc[0,100000000]*sig_phit_mc, nbkg_phit_mc[0,100000000]*bkg_phit_mc)"); //nsig[0,100000000]*sig2,
+    // w.var("m_phit_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
+    // RooDataHist dh_phit_mc("dh_phit_mc", "dh_phit_mc", *w.var("m_phit_mc"), Import(*hphit_mc_py));
+    // RooPlot *fr_phit_mc = w.var("m_phit_mc")->frame(Title(Form("-t = %f",h2phit_mc->GetXaxis()->GetBinCenter(i))));
+    // w.pdf("model_phit_mc")->fitTo(dh_phit_mc);
+
+    // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
+    // dh_phit_mc.plotOn(fr_phit_mc, RooFit::Name("ldh_phit_mc"));
+    // w.pdf("model_phit_mc")->plotOn(fr_phit_mc, Components(*w.pdf("sig_phit_mc")), LineColor(kRed), RooFit::Name("lsig_phit_mc"));
+    // w.pdf("model_phit_mc")->plotOn(fr_phit_mc, Components(*w.pdf("bkg_phit_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phit_mc"));
+    // w.pdf("model_phit_mc")->plotOn(fr_phit_mc, RooFit::Name("lmodel_phit_mc"));
+    // // w.pdf("model_phit_mc")->paramOn(fr_phit_mc, Layout(0.4, 0.90, 0.99), Parameters(RooArgSet(*w.var("nsig_phit_mc"), *w.var("nbkg_phit_mc")))); //,*w.var("mean_phit_mc"),*w.var("width_phit_mc"),*w.var("sigma_phit_mc"))));
+    // fr_phit_mc->Draw();
+
+    // TLegend *l_phit_mc = new TLegend(0.5, 0.7, 0.8, 0.9);
+    // l_phit_mc->SetFillColor(kWhite);
+    // l_phit_mc->AddEntry(fr_phit_mc->findObject("lsig_phit_mc"), Form("N_{Sig} = %.2f", w.var("nsig_phit_mc")->getVal()), "l");
+    // l_phit_mc->AddEntry(fr_phit_mc->findObject("lbkg_phit_mc"), Form("N_{Bkg} = %.2f", w.var("nbkg_phit_mc")->getVal()), "l");
+    // l_phit_mc->Draw();
+
+    // double N_phit_mc = w.var("nsig_phit_mc")->getVal();
+    // double dN_phit_mc = w.var("nsig_phit_mc")->getError();
+
+    // TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::BreitWigner(x,[1],[2]) + pol4(3)", mkk_min, mkk_max);
+    // fsb_mc->SetParameters(1433, 1.019, 0.005, 1,1,1,1,1); // breitwigner
+    // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+    // TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5]) + pol4(6)", mkk_min, mkk_max);
+    // fsb_mc->SetParameters(1433, 1.019, 0.003, 1433, 1.023, 0.005, 1,1,1,1,1); // double gaus
+    // TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5])", mkk_min, mkk_max);
+   
+    TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
+    fsb_mc->SetLineColor(2);
+    fsb_mc->SetParameters(1433, 1.019, 0.003, 0.0042, 1,1,1,1,1); // voigt
+    fsb_mc->SetParLimits(1, 1.015, 1.022); //fsb_mc->FixParameter(1, 1.019);
+    // fsb_mc->FixParameter(2, 0.0028);   //fsb->SetParLimits(2, 0.008, 0.010);
+    fsb_mc->FixParameter(3, 0.0042);   //0.0042   //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+
+    TF1 *fs_mc = new TF1("fs_mc", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    fs_mc->SetLineColor(4);
+
+    TF1 *fb_mc = new TF1("fb_mc", "pol4(4)", mkk_min, mkk_max);
+    fb_mc->SetLineColor(28);
+    fb_mc->SetLineStyle(2);
+
+    hphit_mc_py->Fit("fsb_mc", "", "", mkk_min, mkk_max);
+    double par_mc[10]; //6
+    fsb_mc->GetParameters(&par_mc[0]);
+    fs_mc->SetParameters(&par_mc[0]);
+    fb_mc->SetParameters(&par_mc[4]); //4
+
+    fs_mc->Draw("same");
+    fb_mc->Draw("same");
+
+    double N_phit_mc = fs_mc->Integral(mkk_min, mkk_max) / hphit_mc_py->GetBinWidth(1);
+    double dN_phit_mc = N_phit_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
+
+    TLatex lat_phit_mc;
+    lat_phit_mc.SetTextSize(0.06);
+    lat_phit_mc.SetTextAlign(13); //align at top
+    lat_phit_mc.SetNDC();
+    lat_phit_mc.SetTextColor(kBlue);
+    lat_phit_mc.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
+    lat_phit_mc.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phit_mc, dN_phit_mc));
+    lat_phit_mc.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
+    lat_phit_mc.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
+    lat_phit_mc.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
+
+    gphit_mc->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), N_phit_mc);
+    gphit_mc->SetPointError(i - 1, 0, dN_phit_mc);
+
+    // +++++++++++++++++++++++++ data  ++++++++++++++++++++
+    cphit1->cd(i);
+    TH1D *hphit_py = h2phit->ProjectionY(Form("hphit_py_%d", i), i, i);
+    hphit_py->SetTitle(Form("-t = %.2f [GeV^{2}] (Data)",h2phit->GetXaxis()->GetBinCenter(i)));
+    hphit_py->Draw("e");
+
+    // w.factory(Form("Voigtian::sig_phit(m_phit[%f,%f],mean_phit[1.015, 1.022],width_phit[0.004],sigma_phit[0.002])", mkk_min, mkk_max)); //sigma_phit[0.0001,0.01], mean_phit[1.016,1.022 or 1.010,1.030]
+    // // w.factory(Form("BreitWigner::sig_phit(m_phit[%f,%f],mean_phit[1.018,1.021],width_phit[0.004])", mkk_min, mkk_max));
+    // w.factory("Chebychev::bkg_phit(m_phit,{c0_phit[-10,10], c1_phit[-10,10], c2_phit[-10,10]})");
+    // w.factory("SUM:::model_phit(nsig_phit[0,100000000]*sig_phit, nbkg_phit[0,100000000]*bkg_phit)"); //nsig[0,100000000]*sig2,
+    // w.var("m_phit")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
+    // RooDataHist dh_phit("dh_phit", "dh_phit", *w.var("m_phit"), Import(*hphit_py));
+    // RooPlot *fr_phit = w.var("m_phit")->frame(Title(Form("-t = %f",h2phit->GetXaxis()->GetBinCenter(i))));
+    // w.pdf("model_phit")->fitTo(dh_phit);
+    // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
+    // dh_phit.plotOn(fr_phit, RooFit::Name("ldh_phit"));
+    // w.pdf("model_phit")->plotOn(fr_phit, Components(*w.pdf("sig_phit")), LineColor(kRed), RooFit::Name("lsig_phit"));
+    // w.pdf("model_phit")->plotOn(fr_phit, Components(*w.pdf("bkg_phit")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phit"));
+    // w.pdf("model_phit")->plotOn(fr_phit, RooFit::Name("lmodel_phit"));
+    // // w.pdf("model_phit")->paramOn(fr_phit, Layout(0.4, 0.90, 0.99), Parameters(RooArgSet(*w.var("nsig_phit"), *w.var("nbkg_phit")))); //,*w.var("mean_phit"),*w.var("width_phit"),*w.var("sigma_phit"))));
+    // fr_phit->Draw();
+
+    // TLegend *l_phit = new TLegend(0.5, 0.7, 0.8, 0.9);
+    // l_phit->SetFillColor(kWhite);
+    // l_phit->SetLineColor(kWhite);
+    // // l_phit->AddEntry(fr_phit->findObject("ldh_phit"), "Data", "p");
+    // // l_phit->AddEntry(fr_phit->findObject("lmodel_phit"), "total", "l");
+    // l_phit->AddEntry(fr_phit->findObject("lsig_phit"), Form("N_{Sig} = %.2f", w.var("nsig_phit")->getVal()), "l");
+    // l_phit->AddEntry(fr_phit->findObject("lbkg_phit"), Form("N_{Bkg} = %.2f", w.var("nbkg_phit")->getVal()), "l");
+    // l_phit->Draw();
+
+    // double N_phit = w.var("nsig_phit")->getVal();
+    // double dN_phit = w.var("nsig_phit")->getError();
+
+    // //+++++++++ BreitWigner + pol4
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::BreitWigner(x,[1],[2]) + pol4(3)", mkk_min, mkk_max);
+    // fsb_data->SetParameters(1433, 1.019, 0.005, 1,1,1,1,1);  // breiwigner
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1));
+    // // fsb_data->FixParameter(2, fsb_mc->GetParameter(3));
+    
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
+
+    // TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
+
+    // hphit_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[3]);
+
+    // //+++++++++ Double Gaus + pol4
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5]) + pol4(6)", mkk_min, mkk_max);
+    // fsb_data->SetParameters(1433, 1.019, 0.003, 1433, 1.023, 0.005, 1,1,1,1,1);  // double gaus
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1));
+    // // fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); // double gaus
+    // fsb_data->SetParLimits(4, 1.19, 1.023);
+    // // fsb_data->FixParameter(5, fsb_mc->GetParameter(3)); // double gaus
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Gaus(x,[1],[2]) + [3]*TMath::Gaus(x,[4],[5])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
+
+    // TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
+
+    // hphit_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[6]);
+
+    // //+++++++++ Voigt + |x-a|^b*|x-c|^d
+    // TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + [4]*(x>[5])*(x<[6])*abs(x-[5])^[7]*abs([6]-x)^[8]", mkk_min, mkk_max);
+    // fsb_data->SetLineColor(2);
+    // fsb_data->SetParameters(1433, 1.019, 0.003, 0.0042, 1,0.98,1.2,0.5,4);  // voigt 1,0.98,1.2,0.5,4
+    // fsb_data->FixParameter(1, fsb_mc->GetParameter(1)); //fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
+    // fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); //fsb->SetParLimits(2, 0.008, 0.010);
+    // fsb_data->FixParameter(3, fsb_mc->GetParameter(3)); //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+    // // fsb_data->SetParLimits(5, 0.97, 0.99);
+    // fsb_data->FixParameter(4, 19);
+    // fsb_data->FixParameter(5, 0.98);
+    // fsb_data->FixParameter(6, 2.82); //2.82
+    // fsb_data->FixParameter(7, 0.67);
+    // fsb_data->FixParameter(8, 6.82);
+
+    // TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    // fs_data->SetLineColor(4);
+
+    // TF1 *fb_data = new TF1("fb_data", "[0]*(x>[1])*(x<[2])*abs(x-[1])^[3]*abs([2]-x)^[4]", mkk_min, mkk_max); //
+    // fb_data->SetLineColor(28);
+    // fb_data->SetLineStyle(2);
+
+    // hphit_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    // double par_data[10]; //6
+    // fsb_data->GetParameters(&par_data[0]);
+    // fs_data->SetParameters(&par_data[0]);
+    // fb_data->SetParameters(&par_data[4]); //4
+
+    // +++++++++ Voigt + pol4
+    TF1 *fsb_data = new TF1("fsb_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", mkk_min, mkk_max);
+    fsb_data->SetLineColor(2);
+    fsb_data->SetParameters(1433, 1.019, 0.003, 0.0042, 1,1,1,1,1);  // voigt
+    fsb_data->FixParameter(1, fsb_mc->GetParameter(1)); //fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
+    fsb_data->FixParameter(2, fsb_mc->GetParameter(2)); //fsb->SetParLimits(2, 0.008, 0.010);
+    fsb_data->FixParameter(3, fsb_mc->GetParameter(3)); //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+
+    TF1 *fs_data = new TF1("fs_data", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
+    fs_data->SetLineColor(4);
+
+    TF1 *fb_data = new TF1("fb_data", "pol4(4)", mkk_min, mkk_max); //pol4(4)
+    fb_data->SetLineColor(28);
+    fb_data->SetLineStyle(2);
+
+    hphit_py->Fit("fsb_data", "", "", mkk_min, mkk_max);
+    double par_data[10]; //6
+    fsb_data->GetParameters(&par_data[0]);
+    fs_data->SetParameters(&par_data[0]);
+    fb_data->SetParameters(&par_data[4]); //4
+
+    fs_data->Draw("same");
+    fb_data->Draw("same");
+
+    double N_phit_data = fs_data->Integral(mkk_min, mkk_max) / hphit_py->GetBinWidth(1);
+    double dN_phit_data = N_phit_data * fsb_data->GetParError(0) / fsb_data->GetParameter(0);
+
+    TLatex lat_phit_data;
+    lat_phit_data.SetTextSize(0.06);
+    lat_phit_data.SetTextAlign(13); //align at top
+    lat_phit_data.SetNDC();
+    lat_phit_data.SetTextColor(kBlue);
+    lat_phit_data.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
+    lat_phit_data.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phit_data, dN_phit_data));
+    lat_phit_data.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_data->GetParameter(1), fsb_data->GetParError(1)));
+    lat_phit_data.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_data->GetParameter(2), fsb_data->GetParError(2)));
+    lat_phit_data.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_data->GetParameter(3), fsb_data->GetParError(3)));
+
+    gphit->SetPoint(i - 1, h2phit->GetXaxis()->GetBinCenter(i), N_phit_data);
+    gphit->SetPointError(i - 1, 0, dN_phit_data);    
+
+    // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
+    double eff_phi = N_phit_mc / h_beame_tru->GetBinContent(1); // Efficiency = N_observed/N_generated
+    double deff_phi = eff_phi * (dN_phit_mc / N_phit_mc);
+    gphiteff->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
+    gphiteff->SetPointError(i - 1, 0, deff_phi*100); //->GetBinError(i)
+
+    // +++++++++++++++++++ Systematic Errors 
+    // double width_value[3] = {-169.74, -141.06, -197.77}; // Y Width value : 0.079, 0.065, 0.093  
+    // double err_width_value = TMath::RMS(3, width_value);
+
+    double N_bkg_poln_1[10] = {4274, 8971, 6453, 4383, 2550, 1544, 1056, 652, 441, 319}; // Bkg pol degree: 4
+    double N_bkg_poln_2[10] = {4259, 8953, 6438, 4376, 2546, 1586, 1093, 673, 440, 338}; // Bkg pol degree: 3
+    double N_bkg_poln_3[10] = {4288, 8989, 6468, 4390, 2555, 1547, 1057, 653, 442, 320}; // Bkg pol degree: 5
+    double bkg_poln[3] = {N_bkg_poln_1[i-1], N_bkg_poln_2[i-1], N_bkg_poln_3[i-1]};
+    double err_bkg_poln = TMath::RMS(3, bkg_poln);
+    double fit_range_1[10] = {4274, 8971, 6453, 4383, 2550, 1544, 1056, 652, 441, 319}; // Fit range: [0.98, 1.2]
+    double fit_range_2[10] = {4255, 8964, 6468, 4363, 2540, 1537, 1067, 649, 462, 321}; // Fit range: [0.98, 1.18]
+    double fit_range_3[10] = {4241, 8894, 6522, 4350, 2549, 1545, 1042, 647, 465, 317}; // Fit range: [0.98, 1.22]
+    double fit_range[3] = {fit_range_1[i-1], fit_range_2[i-1], fit_range_3[i-1]};
+    double err_fit_range = TMath::RMS(3, fit_range);
+    // double fit_func_1[10] = {1689.35, 1752.50, 2465.09, 6580.90, 8565.59, 2606.73, 3110.43, 2557.01, 2449.74, 160.43}; // Fit function: Voigt
+    // double fit_func_2[10] = {2157.41, 2302.83, 3158.83, 7835.29, 10889.65, 3077.05, 3893.53, 3240.87, 3128.20, 217.33}; // Fit function: Breit-wigner
+    // double fit_func_3[10] = {1608.70, 1734.22, 2367.27, 6358.65, 8255.21, 2452.65, 2940.46, 2476.66, 2322.49, 203.03}; // Fit function: Double Gaus
+    // double fit_func[3] = {fit_func_1[i-1], fit_func_2[i-1], fit_func_3[i-1]};
+    // double err_fit_func = TMath::RMS(3, fit_func);
+
+    double err_sys = TMath::Sqrt(err_bkg_poln*err_bkg_poln + err_fit_range*err_fit_range);
+
+    // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
+    double lumi_phi = h_tagged_flux->GetBinContent(1); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
+    if (lumi_phi <= 0)
+    {
+      //gphitxsec->RemovePoint(i - 1);
+      continue;
+    }
+    double T = 1.273; //Target thickness [b^{-1}]
+    double br_phi = 0.492;
+    double dbr_phi = 0.005;
+    double xsec_phi2pi = 1e9 * N_phit_data / (eff_phi * lumi_phi * T * br_phi);
+    double dxsec_phi2pi_stat = xsec_phi2pi * (dN_phit_data / N_phit_data);
+    double dxsec_phi2pi_sys = xsec_phi2pi * TMath::Sqrt((err_sys / N_phit_data)*(err_sys / N_phit_data) + (deff_phi / eff_phi)*(deff_phi / eff_phi) + (dbr_phi / br_phi)*(dbr_phi / br_phi));
+    // double xsec_phi = N_phit / lumi_phi;
+    // double dxsec_phi = dN_phit / lumi_phi;  
+    gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
+
+    fprintf(table_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(1), N_phit_mc, dN_phit_mc, N_phit_data, dN_phit_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
+    
+    fprintf(table_phi2pi_sys, "%0.2f & %0.2f & %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), err_bkg_poln*100/N_bkg_poln_1[i-1], err_fit_range*100/fit_range_1[i-1]);
+    // table_phi << std::setprecision(2) << std::fixed;
+    // table_phi <<h2phit_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_beame_tru->GetBinContent(i)<<"&"<<N_phit_mc<<"$\\pm$"<<dN_phit_mc<<"&"<<N_phit_data<<"$\\pm$"<<dN_phit_data<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phi2pi<<"$\\pm$"<<dxsec_phi2pi_stat<<"$\\pm$"<<dxsec_phi2pi_sys<<" \\\\"<< endl;
+    }
+
+    cgphit->cd();
+    gphit->Draw("AP");
+    gphit->Write(Form("h%s_gphit", name.Data()), TObject::kWriteDelete);
+    cgphit_mc->cd();
+    gphit_mc->Draw("AP");
+    cgphiteff->cd();
+    gphiteff->Draw("AP");
+    cgphitxsec->cd();
+    gphitxsec->Draw("AP");
+    gphitxsec->Write(Form("h%s_gphitxsec", name.Data()), TObject::kWriteDelete);
+    // int j =1;
+    // gphit->Write(Form("grphit_%d", j), TObject::kWriteDelete);
+
+    // total Cross-sections
+    TMultiGraph *mgxsec = new TMultiGraph();
+    TCanvas *cmgxsec = new TCanvas("cmgxsec", "cmgxsec", 900, 600);
+    TLegend *lmgxsec = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgxsec->SetTextSize(0.04);
+    lmgxsec->SetBorderSize(0);
+    cmgxsec->cd();
+    cmgxsec->SetGrid();
+    TGraphErrors *hdata_16_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_16_gphitxsec");
+    cout << " ***** hdata_16_gphitxsec = " << hdata_16_gphitxsec << endl;
+    hdata_16_gphitxsec->SetMarkerColor(1);
+    hdata_16_gphitxsec->SetMarkerSize(1.5);
+    hdata_16_gphitxsec->SetLineColor(1);
+    hdata_16_gphitxsec->SetMarkerStyle(20);
+    mgxsec->Add(hdata_16_gphitxsec);
+    TGraphErrors *hdata_17_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_17_gphitxsec");
+    cout << " ***** hdata_17_gphitxsec = " << hdata_17_gphitxsec << endl;
+    hdata_17_gphitxsec->SetMarkerColor(kBlue);
+    hdata_17_gphitxsec->SetMarkerSize(1.5);
+    hdata_17_gphitxsec->SetLineColor(kBlue);
+    hdata_17_gphitxsec->SetMarkerStyle(20);
+    mgxsec->Add(hdata_17_gphitxsec);
+    TGraphErrors *hdata_18_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_18_gphitxsec");
+    cout << " ***** hdata_18_gphitxsec = " << hdata_18_gphitxsec << endl;
+    hdata_18_gphitxsec->SetMarkerColor(kRed);
+    hdata_18_gphitxsec->SetMarkerSize(1.5);
+    hdata_18_gphitxsec->SetLineColor(kRed);
+    hdata_18_gphitxsec->SetMarkerStyle(20);
+    mgxsec->Add(hdata_18_gphitxsec);
+    mgxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Momentum transfer; -t [GeV^{2}]; #sigma [nb]");
+    mgxsec->Draw("AP");
+    mgxsec->SetMinimum(0.);
+    cmgxsec->Modified();
+    lmgxsec->AddEntry(hdata_16_gphitxsec, "2016", "p");
+    lmgxsec->AddEntry(hdata_17_gphitxsec, "2017", "p");
+    lmgxsec->AddEntry(hdata_18_gphitxsec, "2018", "p");
+    lmgxsec->Draw();
+    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.eps", "eps");
+    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.png", "png");
+    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgxsec.root", "root");
+
+    // total Yields
+    TMultiGraph *mgphit = new TMultiGraph();
+    TCanvas *cmgphit = new TCanvas("cmgphit", "cmgphit", 900, 600);
+    TLegend *lmgphit = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgphit->SetTextSize(0.04);
+    lmgphit->SetBorderSize(0);
+    cmgphit->cd();
+    cmgphit->SetGrid();
+    TGraphErrors *hdata_16_gphit = (TGraphErrors *)outputfig->Get("hdata_16_gphit");
+    cout << " ***** hdata_16_gphit = " << hdata_16_gphit << endl;
+    hdata_16_gphit->SetMarkerColor(1);
+    hdata_16_gphit->SetMarkerSize(1.5);
+    hdata_16_gphit->SetLineColor(1);
+    hdata_16_gphit->SetMarkerStyle(20);
+    mgphit->Add(hdata_16_gphit);
+    TGraphErrors *hdata_17_gphit = (TGraphErrors *)outputfig->Get("hdata_17_gphit");
+    cout << " ***** hdata_17_gphit = " << hdata_17_gphit << endl;
+    hdata_17_gphit->SetMarkerColor(kBlue);
+    hdata_17_gphit->SetMarkerSize(1.5);
+    hdata_17_gphit->SetLineColor(kBlue);
+    hdata_17_gphit->SetMarkerStyle(20);
+    mgphit->Add(hdata_17_gphit);
+    TGraphErrors *hdata_18_gphit = (TGraphErrors *)outputfig->Get("hdata_18_gphit");
+    cout << " ***** hdata_18_gphit = " << hdata_18_gphit << endl;
+    hdata_18_gphit->SetMarkerColor(kRed);
+    hdata_18_gphit->SetMarkerSize(1.5);
+    hdata_18_gphit->SetLineColor(kRed);
+    hdata_18_gphit->SetMarkerStyle(20);
+    mgphit->Add(hdata_18_gphit);
+    mgphit->SetTitle("#phi(1020) Yield vs. Momentum transfer (data); -t [GeV^{2}]; N_{#phi}");
+    mgphit->Draw("AP");
+    mgphit->SetMinimum(0.);
+    cmgphit->Modified();
+    lmgphit->AddEntry(hdata_16_gphit, "2016", "p");
+    lmgphit->AddEntry(hdata_17_gphit, "2017", "p");
+    lmgphit->AddEntry(hdata_18_gphit, "2018", "p");
+    lmgphit->Draw();
+    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphit.eps", "eps");
+    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphit.png", "png");
+    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cmgphit.root", "root");
+
+    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit.root", name.Data()), "root");
+    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit.eps", name.Data()), "eps");
+    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit.png", name.Data()), "png");
+    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit1.root", name.Data()), "root");
+    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit1.eps", name.Data()), "eps");
+    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_phit1.png", name.Data()), "png");
+    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphit.root", name.Data()), "root");
+    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphit.eps", name.Data()), "eps");
+    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphit.png", name.Data()), "png");
+    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.root", "root");
+    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.eps", "eps");
+    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.png", "png");
+    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc.root", "root");
+    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc.eps", "eps");
+    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc.png", "png");
+    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.root", "root");
+    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.eps", "eps");
+    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.png", "png");
+    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.root", "root");
+    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.eps", "eps");
+    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.png", "png");
+    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphitxsec.root", name.Data()), "root");
+    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphitxsec.eps", name.Data()), "eps");
+    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_gphitxsec.png", name.Data()), "png");
+*/
+/*
+  // ======================================== Phi vs. (-t,E) ==================================================
   // root -l 'scanphi.C+(100,6,20)'
   //++++++  Data
   TCanvas *cbeamet = new TCanvas("cbeamet", "cbeamet", 600, 400);
@@ -469,11 +1062,11 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cphit = new TCanvas("cphit", "cphit", 1500, 800);
   cphit->Divide(2, 3);
 
-  TCanvas *cphit1[ne];
+  TCanvas *cphit1[nt];
 
   TCanvas *cgphit = new TCanvas("cgphit", "cgphit", 1500, 800);
   cgphit->Divide(2, 3);
-  TGraphErrors *gphit[ne];
+  TGraphErrors *gphit[nt];
 
   //++++++  mc
   TCanvas *cbeamet_mc = new TCanvas("cbeamet_mc", "cbeamet_mc", 600, 400);
@@ -485,29 +1078,29 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
   TCanvas *cphit_mc = new TCanvas("cphit_mc", "cphit_mc", 1500, 800);
   cphit_mc->Divide(2, 3);
 
-  TCanvas *cphit1_mc[ne];
+  TCanvas *cphit1_mc[nt];
 
   TCanvas *cgphit_mc = new TCanvas("cgphit_mc", "cgphit_mc", 1500, 800);
   cgphit_mc->Divide(2, 3);
-  TGraphErrors *gphit_mc[ne];
+  TGraphErrors *gphit_mc[nt];
 
   //++++++ Efficiency
   TCanvas *cgphiteff = new TCanvas("cgphiteff", "cgphiteff", 1500, 800);
   cgphiteff->Divide(2, 3);
-  TGraphErrors *gphiteff[ne];
+  TGraphErrors *gphiteff[nt];
 
   //+++++++ Differential Cross-section
   TCanvas *cgphitxsec = new TCanvas("cgphitxsec", "cgphitxsec", 1500, 800);
   cgphitxsec->Divide(2, 3);
-  TGraphErrors *gphitxsec[ne];
+  TGraphErrors *gphitxsec[nt];
 
   double Egmin = 6.3;  //= hdata_postcut->GetXaxis()->GetBinLowEdge(1);
   double Egmax = 11.6; //= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
-  double Egstep = (Egmax - Egmin) / ne;
-  double Eg1[ne];
-  double Eg2[ne];
+  double Egstep = (Egmax - Egmin) / nt;
+  double Eg1[nt];
+  double Eg2[nt];
 
-  for (int j = 1; j <= ne; ++j)
+  for (int j = 1; j <= nt; ++j)
   {
     Eg1[j] = Egmin + ((j - 1) * Egstep); //i * Egstep;
     Eg2[j] = Egmin + (j * Egstep);
@@ -662,41 +1255,59 @@ void scanphi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="ki
 
     cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_%d.root", j), "root");
     cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_%d.eps", j), "eps");
+    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_%d.png", j), "png");
     cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc_%d.root", j), "root");
-    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc_%d.eps", j), "eps");
+    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit1_mc_%d.png", j), "png");
   }
   // int j =1;
   // gphit->Write(Form("grphit_%d", j), TObject::kWriteDelete);
 
  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cbeamet.root", "root");
   cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cbeamet.eps", "eps");
+  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cbeamet.png", "png");
   cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit.root", "root");
   cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit.eps", "eps");
+  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit.png", "png");
   cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit.root", "root");
   cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit.eps", "eps");
+  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit.png", "png");
   cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.root", "root");
   cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.eps", "eps");
+  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cphit_mc.png", "png");
   cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.root", "root");
   cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.eps", "eps");
+  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphit_mc.png", "png");
   cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.root", "root");
   cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.eps", "eps");
+  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphiteff.png", "png");
   cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphitxsec.root", "root");
   cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphitxsec.eps", "eps");
+  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/cgphitxsec.png", "png");
 */
-    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.root", name.Data()), "root");
-    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.eps", name.Data()), "eps");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.root", name.Data()), "root");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.eps", name.Data()), "eps");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.png", name.Data()), "png");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.root", "root");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.eps", "eps");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.png", "png");
 
-    c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.root", "root");
-    c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.eps", "eps");
+  outputfig->Print();
 
-    outputfig->Print();
+  fprintf(table_phi2pi,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+  fclose(table_phi2pi);
+  gSystem->Exec("pdflatex table_phi2pi.tex");
 
-    table_phi <<"\\hline"<<endl;
-    table_phi <<"\\end{tabularx}" << endl;
-    table_phi <<"\\end{center}" << endl;
-    table_phi <<"\\end{table}" << endl;
-    table_phi <<"\\end{document}" << endl;
-    table_phi.close();
-    gSystem->Exec("pdflatex table_phi.tex");
+  fprintf(table_phi2pi_sys,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+  fclose(table_phi2pi_sys);
+  gSystem->Exec("pdflatex table_phi2pi_sys.tex");
 
+  // table_phi << "\\hline" << endl;
+  // table_phi << "\\end{tabularx}" << endl;
+  // table_phi << "\\end{center}" << endl;
+  // table_phi << "\\end{minipage}" << endl;
+  // table_phi << "\\end{table}" << endl;
+  // table_phi << "\\end{document}" << endl;
+  // table_phi.close();
+  // gSystem->Exec("pdflatex table_phi.tex");
+  
 }

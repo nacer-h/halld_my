@@ -42,9 +42,13 @@
 using namespace RooFit;
 using namespace RooStats;
 
-void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cut="&& kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
+void scanfo(TString name, int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cut="&& kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
-  TFile *fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_all_flat.root");
+   TFile *fdata = NULL;
+  if(name == "data_16") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_16_flat.root");
+  if(name == "data_17") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_17_flat.root");
+  if(name == "data_18") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_18_flat.root");  
+  if(name == "data_all") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_all_flat.root");
   TTree *tdata = (TTree *)fdata->Get("ntp");
   TFile *fmc = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phifo_genr8_17v3_flat.root");
   TTree *tmc = (TTree *)fmc->Get("ntp");
@@ -62,7 +66,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
-/*
+
   // *********************** Phi(1020) MC *********************************
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 1000, 600);
   TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "MC signal; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.005, 1.035);
@@ -91,16 +95,25 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   // w.pdf("model_PhiMass_mc")->paramOn(fr_PhiMass_mc, Layout(0.5, 0.90, 0.99));//, Parameters(RooArgSet(*w.var("nsig_PhiMass_mc"), *w.var("nbkg_PhiMass_mc")))); //,*w.var("mean_PhiMass_mc"),*w.var("width_PhiMass_mc"),*w.var("sigma_PhiMass_mc"))));
   fr_PhiMass_mc->Draw();
 
+  TLegend *l_phi_mc = new TLegend(0.2, 0.65, 0.4, 0.85);
+  l_phi_mc->SetFillColor(kWhite);
+  l_phi_mc->SetLineColor(kWhite);
+  // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("ldh_PhiMass_mc"), "Data", "p");
+  l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lmodel_PhiMass_mc"), "total", "l");
+  l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lsig_PhiMass_mc"), "Voigtian", "l");
+  l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lbkg_PhiMass_mc"), "pol 2nd", "l");
+  l_phi_mc->Draw();
+
   TLatex lat_PhiMass_mc;
   lat_PhiMass_mc.SetTextSize(0.05);
   lat_PhiMass_mc.SetTextAlign(13); //align at top
   lat_PhiMass_mc.SetNDC();
   lat_PhiMass_mc.SetTextColor(kBlue);
-  lat_PhiMass_mc.DrawLatex(0.65, 0.88, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_PhiMass_mc")->getVal(), w.var("nsig_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.65, 0.78, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_PhiMass_mc")->getVal(), w.var("nbkg_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.65, 0.68, Form("#mu = %0.3f#pm%0.3f", w.var("mean_PhiMass_mc")->getVal(), w.var("mean_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.65, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.65, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.87, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_PhiMass_mc")->getVal(), w.var("nsig_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.78, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_PhiMass_mc")->getVal(), w.var("nbkg_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.68, Form("#mu = %0.3f#pm%0.3f", w.var("mean_PhiMass_mc")->getVal(), w.var("mean_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
 
   // TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", 1.005, 1.035);
   // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
@@ -128,11 +141,12 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
   // fs->Draw("same");
   // fb->Draw("same");
 
-  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_PhiMass_postcuts_fitted.root", "root");
-  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/cmc_PhiMass_postcuts_fitted.eps", "eps");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/cmc_PhiMass_postcuts_fitted.root", "root");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/cmc_PhiMass_postcuts_fitted.eps", "eps");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/cmc_PhiMass_postcuts_fitted.png", "png");
 
   // cout<<"=============================  no problem up to here ! ========================"<<endl;
-*/
+/*
 
  // ======================================== fo vs. Phi(1020) ===============================================
  // root -l 'scanfo.C+(100,50,1,1)'
@@ -195,8 +209,8 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
     {
       // cout << i << " " << flush;
 
-      if (i < 26) cphifo_all1->cd(i);
-      if (i > 25 && i < 51) cphifo_all2->cd(i - 25);
+      if (i < 26) cphifo_all1->cd(i); // if (i < 26) cphifo_all1->cd(i);
+      if (i > 25) cphifo_all2->cd(i - 25);// if (i > 25 && i < 51) cphifo_all2->cd(i - 25);
      
       TH1D *hphifo_all_py = h2d2->ProjectionY(Form("_hphifo_all_py_%d", i), i, i);
 
@@ -253,8 +267,8 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
       lat_phifo_all.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f",fsb->GetChisquare()/fsb->GetNDF()));
       lat_phifo_all.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
       lat_phifo_all.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f",fsb->GetParameter(1),fsb->GetParError(1)));
-      lat_phifo_all.DrawLatex(0.45, 0.58, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
-      lat_phifo_all.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
+      lat_phifo_all.DrawLatex(0.45, 0.58, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
+      lat_phifo_all.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
 
       // gnophifo_all->SetPoint(i - 1, h2d2->GetXaxis()->GetBinCenter(i), Nbkg);
       // gnophifo_all->SetPointError(i - 1, 0, dNbkg);
@@ -293,6 +307,9 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
     fs->SetParameters(&par[0]);
     fb->SetParameters(&par[3]); //3
 
+    double Nfo_data = fs->Integral(0.85, 1.05)*n2pi/(m2pi_max-m2pi_min);
+    double dNfo_data = Nfo_data * fsb->GetParError(0) / fsb->GetParameter(0); 
+
     fs->Draw("same");
     fb->Draw("same");
 
@@ -302,10 +319,10 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
     lat_phifo_all.SetNDC();
     lat_phifo_all.SetTextColor(kBlue);
     lat_phifo_all.DrawLatex(0.6, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
-    lat_phifo_all.DrawLatex(0.6, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", fs->Integral(0.85, 1.05), fs->Integral(0.85, 1.05) * fsb->GetParError(0) / fsb->GetParameter(0)));
+    lat_phifo_all.DrawLatex(0.6, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", Nfo_data, dNfo_data));
     lat_phifo_all.DrawLatex(0.6, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
     lat_phifo_all.DrawLatex(0.6, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
-    // lat_phifo_all.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
+
     // cgphifo_all_width->cd(j);
     // gphifo_all_width[j]->Draw("AP");
 
@@ -318,15 +335,18 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
     // int j =1;
     // gphifo_all->Write(Form("grphifo_all_%d", j), TObject::kWriteDelete);
 
-    cphifo_all1->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_all.root", "root");
-    cphifo_all1->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_all.eps", "eps");
-    cphifo_all2->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_all.root", "root");
-    cphifo_all2->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_all.eps", "eps");
-
-    cphifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo_all.root", "root");
-    cphifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo_all.eps", "eps");
-    cgphifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all.root", "root");
-    cgphifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all.eps", "eps");
+    cphifo_all1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_all_%s.root", name.Data()), "root");
+    cphifo_all1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_all_%s.eps", name.Data()), "eps");
+    cphifo_all1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_all_%s.png", name.Data()), "png");
+    cphifo_all2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_all_%s.root", name.Data()), "root");
+    cphifo_all2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_all_%s.eps", name.Data()), "eps");
+    cphifo_all2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_all_%s.png", name.Data()), "png");
+    cphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo_all_%s.root", name.Data()), "root");
+    cphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo_all_%s.eps", name.Data()), "eps");
+    cphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo_all_%s.png", name.Data()), "png");
+    cgphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_%s.root", name.Data()), "root");
+    cgphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_%s.eps", name.Data()), "eps");
+    cgphifo_all->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_%s.png", name.Data()), "png");
     // cgphifo_all_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_width.root", "root");
     // cgphifo_all_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_width.eps", "eps");
     // cgphifo_all_mean->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo_all_mean.root", "root");
@@ -334,7 +354,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.root", "root");
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.eps", "eps");
-
+*/
 /*
   // ======================================== fo vs. Eg ===============================================
   // root -l 'scanfo.C+(50,50,4,4)'
@@ -573,8 +593,8 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
       lat_phifoe.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f",fsb->GetChisquare()/fsb->GetNDF()));
       lat_phifoe.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
       lat_phifoe.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f",fsb->GetParameter(1),fsb->GetParError(1)));
-      lat_phifoe.DrawLatex(0.45, 0.58, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
-      lat_phifoe.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
+      lat_phifoe.DrawLatex(0.45, 0.58, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
+      lat_phifoe.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
 
       // gnophifoe->SetPoint(i - 1, h2d2->GetXaxis()->GetBinCenter(i), Nbkg);
       // gnophifoe->SetPointError(i - 1, 0, dNbkg);
@@ -605,8 +625,10 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
     cphifoe1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifoe_%d.root", j), "root");
     cphifoe1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifoe_%d.eps", j), "eps");
+    cphifoe1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifoe_%d.png", j), "png");
     cphifoe2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifoe_%d.root", j), "root");
     cphifoe2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifoe_%d.eps", j), "eps");
+    cphifoe2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifoe_%d.png", j), "png");
     // cphifoe3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c3_phifoe_%d.root", j), "root");
     // cphifoe3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c3_phifoe_%d.eps", j), "eps");
     // cphifoe4[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c4_phifoe_%d.root", j), "root");
@@ -615,8 +637,10 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
   cphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifoe.root", "root");
   cphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifoe.eps", "eps");
+  cphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifoe.png", "png");
   cgphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe.root", "root");
   cgphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe.eps", "eps");
+  cgphifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe.png", "png");
   // cgphifoe_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe_width.root", "root");
   // cgphifoe_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe_width.eps", "eps");
   // cgphifoe_mean->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifoe_mean.root", "root");
@@ -624,6 +648,7 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
   // cgnophifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifoe.root", "root");
   // cgnophifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifoe.eps", "eps");
+  // cgnophifoe->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifoe.png", "png");
 */
     /*
   // ======================================== fo vs. -t ===============================================
@@ -803,8 +828,8 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
       lat_phifot.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f",fsb->GetChisquare()/fsb->GetNDF()));
       lat_phifot.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
       lat_phifot.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f",fsb->GetParameter(1),fsb->GetParError(1)));
-      lat_phifot.DrawLatex(0.45, 0.58, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
-      lat_phifot.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
+      lat_phifot.DrawLatex(0.45, 0.58, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
+      lat_phifot.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
 
       // if(i==1 && j==1) gphifot[j]->RemovePoint(1);
       // cgphifot->Update();
@@ -822,15 +847,19 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
     cphifot1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifot_%d.root", j), "root");
     cphifot1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifot_%d.eps", j), "eps");
+    cphifot1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifot_%d.png", j), "png");
     cphifot2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifot_%d.root", j), "root");
     cphifot2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifot_%d.eps", j), "eps");
+    cphifot2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifot_%d.png", j), "png");
   
   }
 
   cphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifot.root", "root");
   cphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifot.eps", "eps");
+  cphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifot.png", "png");
   cgphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifot.root", "root");
   cgphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifot.eps", "eps");
+  cgphifot->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifot.png", "png");
 */
 /*
   // ======================================== fo vs. (E,-t) ===============================================
@@ -964,8 +993,8 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
       lat_phifo.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f",fsb->GetChisquare()/fsb->GetNDF()));
       lat_phifo.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
       lat_phifo.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f",fsb->GetParameter(1),fsb->GetParError(1)));
-      lat_phifo.DrawLatex(0.45, 0.58, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
-      lat_phifo.DrawLatex(0.45, 0.48, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
+      lat_phifo.DrawLatex(0.45, 0.58, Form("#sigma = %0.3f#pm%0.3f",fsb->GetParameter(2),fsb->GetParError(2)));
+      lat_phifo.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f",fsb->GetParameter(3),fsb->GetParError(3)));
 
       // if(i==1 && j==1) gphifo[j]->RemovePoint(1);
       // cgphifo->Update();
@@ -983,15 +1012,19 @@ void scanfo(int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1) // TString cu
 
     cphifo1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_%d.root", j), "root");
     cphifo1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_%d.eps", j), "eps");
+    cphifo1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c1_phifo_%d.png", j), "png");
     cphifo2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_%d.root", j), "root");
     cphifo2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_%d.eps", j), "eps");
+    cphifo2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c2_phifo_%d.png", j), "png");
   
   }
 
   cphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo.root", "root");
   cphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo.eps", "eps");
+  cphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_phifo.png", "png");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.root", "root");
   cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.eps", "eps");
+  cgphifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gphifo.png", "png");
 */
     outputfig->Print();
 }
