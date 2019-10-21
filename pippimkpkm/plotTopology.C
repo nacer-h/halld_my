@@ -54,10 +54,13 @@ void plotTopology()
 
   ctopocent->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopocent.root");
   ctopocent->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopocent.eps");
+  ctopocent->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopocent.png");
   ctopomass->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomass.root");
   ctopomass->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomass.eps");
+  ctopomass->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomass.png");
   ctopomasstack->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomasstack.root");
   ctopomasstack->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomasstack.eps");
+  ctopomasstack->Print("/lustre/hebe/panda/ahamdi/gluex_root_analysis/workdir/dataout/ctopomasstack.png");
 
   return;
 }
