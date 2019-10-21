@@ -1,0 +1,21 @@
+\documentclass[8pt]{extarticle}
+ \usepackage[margin=0.1in]{geometry}
+ \usepackage{tabularx}
+ \usepackage{caption} 
+ \captionsetup{labelformat=empty}
+ \begin{document}
+ \begin{table}[!htbp]
+ \begin{minipage}{\textwidth}
+ \begin{center}
+ \caption{Total cross-sections and upper limit}
+ \begin{tabularx}{\textwidth}{|c|X|X|X|X|X|c|}
+ \hline
+ $E_{\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\epsilon$ [$\%$] & $\sigma$ [nb] & $90\%$ CL limit [nb] \\ 
+ \hline
+5.90 - 11.90 & 8753771 & 113817 $\pm$ 651 & -274 $\pm$ 140 & 1.30 $\pm$ 0.01 & -0.55 $\pm$ 0.28 $\pm$ -0.15 & 0.29 \\ 
+\hline
+ \end{tabularx}
+ \end{center}
+ \end{minipage}
+ \end{table}
+ \end{document}
