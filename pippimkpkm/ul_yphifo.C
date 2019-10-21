@@ -45,7 +45,7 @@
 using namespace RooFit;
 using namespace RooStats;
 
-void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TString cut="&& kin_chisq<30 && abs(mm2)<0.015"
+void ul_yphifo(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TString cut="&& kin_chisq<30 && abs(mm2)<0.015"
 {
    TFile *fdata = NULL;
   if(name == "data_16") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_16_flat.root");
@@ -60,13 +60,13 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
   TTree *tmc = (TTree *)fmc->Get("ntp");
   TFile *ftru = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_thrown_phifo_17v3.root");
   TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_scany/scany.root","UPDATE");
+  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/ul_yphifo.root","UPDATE");
 
-  FILE *table_y = fopen("table_y.tex","w");
-  fprintf(table_y,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections and upper limit}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & $90\\%$ CL limit [nb] \\\\ \n \\hline\n");
+  FILE *table_ul_yphifo = fopen("table_ul_yphifo.tex","w");
+  fprintf(table_ul_yphifo,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections and upper limit}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & $90\\%$ CL limit [nb] \\\\ \n \\hline\n");
 
-  FILE *table_y_sys = fopen("table_y_sys.tex","w");
-  fprintf(table_y_sys,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ $\\%$ ] & Fit Range [$\\%$] & $\\phi$-mass bins [$\\%$]  & Y Mean [$\\%$] & Y width [$\\%$] \\\\ \n \\hline\n");
+  FILE *table_ul_yphifo_sys = fopen("table_ul_yphifo_sys.tex","w");
+  fprintf(table_ul_yphifo_sys,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ $\\%$ ] & Fit Range [$\\%$] & $\\phi$-mass bins [$\\%$]  & Y Mean [$\\%$] & Y width [$\\%$] \\\\ \n \\hline\n");
 
   RooWorkspace w("w", kTRUE);
 
@@ -172,9 +172,9 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
   // fs->Draw("same");
   // fb->Draw("same");
 
-  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_PhiMass_postcuts_fitted.root", "root");
-  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_PhiMass_postcuts_fitted.eps", "eps");
-  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_PhiMass_postcuts_fitted.png", "png");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_PhiMass_postcuts_fitted.root", "root");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_PhiMass_postcuts_fitted.eps", "eps");
+  c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_PhiMass_postcuts_fitted.png", "png");
 
   // *********************** Y(2175) MC *********************************
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts", "c_YMass_postcuts", 900, 600);
@@ -273,14 +273,14 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
   lat_mc.DrawLatex(0.6, 0.48, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
   // lat_mc.Draw("same");
 
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_YMass_postcuts_fitted.root", "root");
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_YMass_postcuts_fitted.eps", "eps");
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/cmc_YMass_postcuts_fitted.png", "png");
+  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_YMass_postcuts_fitted.root", "root");
+  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_YMass_postcuts_fitted.eps", "eps");
+  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/cmc_YMass_postcuts_fitted.png", "png");
 
   // cout<<"=============================  no problem up to here ! ========================"<<endl;
 
   // ======================================== Y vs. Phi(1020) ===============================================
-  // root -l 'scany.C+(100,50,1,1)'
+  // root -l 'ul_yphifo.C+(100,50,1,1)'
 
   TCanvas *cphiyall=new TCanvas("cphiyall","cphiyall",900, 600);//1500, 800
 
@@ -368,7 +368,7 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
 
     // gnophiyall->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), Nbkg);
     // gnophiyall->SetPointError(i - 1, 0, dNbkg);
-    // ofs_scany << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
+    // ofs_ul_yphifo << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
 
     TLatex lat_phiyall;
     lat_phiyall.SetTextSize(0.09);
@@ -506,31 +506,31 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
     double dxsec_y_tot = TMath::Sqrt(dxsec_y_stat*dxsec_y_stat + dxsec_y_sys*dxsec_y_sys);
     double ul = xsec_y + ROOT::Math::gaussian_quantile(0.9 + 0.1 * ROOT::Math::gaussian_cdf(0, dxsec_y_tot, xsec_y), dxsec_y_tot);
 
-    fprintf(table_y, "%0.2f - %0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f & %0.2f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), N_y_gen, N_y_mc, dN_y_mc, N_y_data, dN_y_data, eff_y * 100, deff_y * 100, xsec_y, dxsec_y_stat, dxsec_y_sys, ul);    
+    fprintf(table_ul_yphifo, "%0.2f - %0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f & %0.2f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), N_y_gen, N_y_mc, dN_y_mc, N_y_data, dN_y_data, eff_y * 100, deff_y * 100, xsec_y, dxsec_y_stat, dxsec_y_sys, ul);    
 
-    fprintf(table_y_sys, "%0.2f - %0.2f & %0.2f & %0.2f & %0.2f & %0.2f & %0.2f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), abs(err_bkg_poln*100/bkg_poln[0]), abs(err_fit_range*100/fit_range[0]), abs(err_slice_numb*100/slice_numb[0]), abs(err_mean_value*100/mean_value[0]), abs(err_width_value*100/width_value[0]));    
+    fprintf(table_ul_yphifo_sys, "%0.2f - %0.2f & %0.2f & %0.2f & %0.2f & %0.2f & %0.2f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), abs(err_bkg_poln*100/bkg_poln[0]), abs(err_fit_range*100/fit_range[0]), abs(err_slice_numb*100/slice_numb[0]), abs(err_mean_value*100/mean_value[0]), abs(err_width_value*100/width_value[0]));    
 
     // int j =1;
     // gphiyall->Write(Form("grphiyall_%d", j), TObject::kWriteDelete);
 
-    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiyall_%s.root", name.Data()), "root");
-    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiyall_%s.eps", name.Data()), "eps");
-    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiyall_%s.png", name.Data()), "png");
-    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiyall_%s.root", name.Data()), "root");
-    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiyall_%s.eps", name.Data()), "eps");
-    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiyall_%s.png", name.Data()), "png");
-    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyall_%s.root", name.Data()), "root");
-    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyall_%s.eps", name.Data()), "eps");
-    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyall_%s.png", name.Data()), "png");
-    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyall_%s.root", name.Data()), "root");
-    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyall_%s.eps", name.Data()), "eps");
-    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyall_%s.png", name.Data()), "png");
-    // cgnophiyall->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiyall.root", "root");
-    // cgnophiyall->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiyall.eps", "eps");
+    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiyall_%s.root", name.Data()), "root");
+    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiyall_%s.eps", name.Data()), "eps");
+    cphiyall1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiyall_%s.png", name.Data()), "png");
+    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiyall_%s.root", name.Data()), "root");
+    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiyall_%s.eps", name.Data()), "eps");
+    cphiyall2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiyall_%s.png", name.Data()), "png");
+    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyall_%s.root", name.Data()), "root");
+    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyall_%s.eps", name.Data()), "eps");
+    cphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyall_%s.png", name.Data()), "png");
+    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyall_%s.root", name.Data()), "root");
+    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyall_%s.eps", name.Data()), "eps");
+    cgphiyall->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyall_%s.png", name.Data()), "png");
+    // cgnophiyall->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gnophiyall.root", "root");
+    // cgnophiyall->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gnophiyall.eps", "eps");
 
 /*
   // ======================================== Y vs. Eg ===============================================
-  // root -l 'scany.C+(50,50,4,4)'
+  // root -l 'ul_yphifo.C+(50,50,4,4)'
   // Eg= 3, 7.9, 8.56, 9.66, 12
   TCanvas *cphiye=new TCanvas("cphiye","cphiye",1500, 800);//1500, 800
   cphiye->Divide(3,2);
@@ -733,7 +733,7 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
 
       // gnophiye->SetPoint(i - 1, h1d2->GetXaxis()->GetBinCenter(i), Nbkg);
       // gnophiye->SetPointError(i - 1, 0, dNbkg);
-      // ofs_scany << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
+      // ofs_ul_yphifo << " i = " << i << " | Nbkg = " << Nbkg << " | dNbkg = " << dNbkg << " | h1d2->GetYaxis()->GetBinCenter(" << i << ") = " << h1d2->GetYaxis()->GetBinCenter(i)<<endl;
 
       TLatex lat_phiye;
       lat_phiye.SetTextSize(0.09);
@@ -765,27 +765,27 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
     // int j =1;
     // gphiye->Write(Form("grphiye_%d", j), TObject::kWriteDelete);
 
-    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiye_%d.root", j), "root");
-    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiye_%d.eps", j), "eps");
-    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiye_%d.png", j), "png");
-    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiye_%d.root", j), "root");
-    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiye_%d.eps", j), "eps");
-    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiye_%d.png", j), "png");
-    // cphiye3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c3_phiye_%d.root", j), "root");
-    // cphiye3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c3_phiye_%d.eps", j), "eps");
-    // cphiye4[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c4_phiye_%d.root", j), "root");
-    // cphiye4[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c4_phiye_%d.eps", j), "eps");
+    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiye_%d.root", j), "root");
+    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiye_%d.eps", j), "eps");
+    cphiye1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiye_%d.png", j), "png");
+    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiye_%d.root", j), "root");
+    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiye_%d.eps", j), "eps");
+    cphiye2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiye_%d.png", j), "png");
+    // cphiye3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c3_phiye_%d.root", j), "root");
+    // cphiye3[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c3_phiye_%d.eps", j), "eps");
+    // cphiye4[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c4_phiye_%d.root", j), "root");
+    // cphiye4[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c4_phiye_%d.eps", j), "eps");
 
   }
 
-  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiye.root", "root");
-  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiye.eps", "eps");
-  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiye.png", "png");
-  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiye.root", "root");
-  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiye.eps", "eps");
-  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiye.png", "png");
-  // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiye.root", "root");
-  // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gnophiye.eps", "eps");
+  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiye.root", "root");
+  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiye.eps", "eps");
+  cphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiye.png", "png");
+  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiye.root", "root");
+  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiye.eps", "eps");
+  cgphiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiye.png", "png");
+  // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gnophiye.root", "root");
+  // cgnophiye->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gnophiye.eps", "eps");
 */
     /*
   // ======================================== Y vs. -t ===============================================
@@ -981,18 +981,18 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
     // int j =1;
     // gphiyt->Write(Form("grphiyt_%d", j), TObject::kWriteDelete);
 
-    cphiyt1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiyt_%d.root", j), "root");
-    cphiyt1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiyt_%d.eps", j), "eps");
-    cphiyt2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiyt_%d.root", j), "root");
-    cphiyt2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiyt_%d.eps", j), "eps");
+    cphiyt1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiyt_%d.root", j), "root");
+    cphiyt1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiyt_%d.eps", j), "eps");
+    cphiyt2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiyt_%d.root", j), "root");
+    cphiyt2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiyt_%d.eps", j), "eps");
   }
 
-  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyt.root", "root");
-  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyt.eps", "eps");
-  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiyt.png", "png");
-  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyt.root", "root");
-  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyt.eps", "eps");
-  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiyt.png", "png");
+  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyt.root", "root");
+  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyt.eps", "eps");
+  cphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiyt.png", "png");
+  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyt.root", "root");
+  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyt.eps", "eps");
+  cgphiyt->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiyt.png", "png");
 */
     /*
   // ======================================== Y vs. (Eg,-t) ===============================================
@@ -1141,37 +1141,37 @@ void scany(TString name, int nkk=100, int n2pi2k=50, int ne=1, int nt=1) // , TS
     // int j =1;
     // gphiy->Write(Form("grphiy_%d", j), TObject::kWriteDelete);
 
-    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiy_%d.root", j), "root");
-    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiy_%d.eps", j), "eps");
-    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c1_phiy_%d.png", j), "png");
-    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiy_%d.root", j), "root");
-    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiy_%d.eps", j), "eps");
-    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c2_phiy_%d.png", j), "png");
+    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiy_%d.root", j), "root");
+    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiy_%d.eps", j), "eps");
+    cphiy1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c1_phiy_%d.png", j), "png");
+    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiy_%d.root", j), "root");
+    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiy_%d.eps", j), "eps");
+    cphiy2[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c2_phiy_%d.png", j), "png");
   }
 
-  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiy.root", "root");
-  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiy.eps", "eps");
-  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_phiy.png", "png");
-  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiy.root", "root");
-  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiy.eps", "eps");
-  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scany/c_gphiy.png", "png");
+  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiy.root", "root");
+  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiy.eps", "eps");
+  cphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_phiy.png", "png");
+  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiy.root", "root");
+  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiy.eps", "eps");
+  cgphiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_gphiy.png", "png");
 */
 
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.root", name.Data()), "root");
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.eps", name.Data()), "eps");
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c%s_tagged_flux.png", name.Data()), "png");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.root", "root");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.eps", "eps");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_beame_tru.png", "png");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c%s_tagged_flux.root", name.Data()), "root");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c%s_tagged_flux.eps", name.Data()), "eps");
+  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c%s_tagged_flux.png", name.Data()), "png");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_beame_tru.root", "root");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_beame_tru.eps", "eps");
+  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphifo/c_beame_tru.png", "png");
 
   outputfig->Print();
 
-  fprintf(table_y,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
-  fclose(table_y);
-  gSystem->Exec("pdflatex table_y.tex");
+  fprintf(table_ul_yphifo,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+  fclose(table_ul_yphifo);
+  gSystem->Exec("pdflatex table_ul_yphifo.tex");
  
-  fprintf(table_y_sys,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
-  fclose(table_y_sys);
-  gSystem->Exec("pdflatex table_y_sys.tex");
+  fprintf(table_ul_yphifo_sys,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+  fclose(table_ul_yphifo_sys);
+  gSystem->Exec("pdflatex table_ul_yphifo_sys.tex");
  
 }
