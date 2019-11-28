@@ -192,10 +192,13 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	//EXAMPLE MANUAL HISTOGRAMS:
 	dHist_MissingMassSquared = new TH1I("MissingMassSquared", ";Missing Mass Squared (GeV/c^{2})^{2}", 600, -0.06, 0.06);
 	dHist_BeamEnergy = new TH1I("BeamEnergy", ";Beam Energy (GeV)", 600, 0.0, 12.0);
+
 	// // Thrown  masses: Phi(1020), fo(980), Y(2175)
-	// h_PhiMass_Thrown = new TH1F("PhiMass_Thrown", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 1, 1.2);
-	// h_foMass_Thrown = new TH1F("foMass_Thrown", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 0.3, 1.2);
-	// h_YMass_Thrown = new TH1F("YMass_Thrown", ";m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 1.6, 3.2);
+	// h_PhiMass_Thrown = new TH1F("PhiMass_Thrown", "Generated ;m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 1, 1.2);
+	// h_foMass_Thrown = new TH1F("foMass_Thrown", "Generated ;m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 0.3, 1.2);
+	// h_YMass_Thrown = new TH1F("YMass_Thrown", "Generated ;m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 1.6, 3.2);
+	// h_t_Thrown = new TH1F("h_t_Thrown", "Generated ;-t [GeV^{2}];Counts", 100, 0, 4);
+    // h2_beamevst_Thrown = new TH2D("h2_beamevst_Thrown", "Generated; -t [GeV^{2}]; E_{#gamma} [GeV]", 10, 0, 4, 10, 6, 12);
 
 	// Measured masses: Phi(1020), fo(980), Y(2175)
 	h_PhiMass_Measured = new TH1F("PhiMass_Measured", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 0.98, 1.2);
@@ -261,20 +264,20 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// 	h_YMass_cuts[icuts] = new TH1F(hname_YMass_cuts, ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 2.05, 2.35); //2.5, 3.2, 2.05, 2.35
 	// }
 	/************************** bggen *************************/	
-	dHistThrownTopologies = new TH1F("hThrownTopologies","hThrownTopologies", 10, -0.5, 9.5);
+	// dHistThrownTopologies = new TH1F("hThrownTopologies","hThrownTopologies", 10, -0.5, 9.5);
 
-	vector<TString> locThrownTopologies;
-	locThrownTopologies.push_back("#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p");
-	locThrownTopologies.push_back("2#pi^{#plus}2#pi^{#minus}p");		
-	locThrownTopologies.push_back("2#gamma#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#pi^{0}]");
-	locThrownTopologies.push_back("2#gamma2#pi^{#plus}2#pi^{#minus}p[#pi^{0},#omega]");
-	locThrownTopologies.push_back("4#gamma2#pi^{#plus}2#pi^{#minus}p[2#pi^{0}]");
-	locThrownTopologies.push_back("2#gamma2#pi^{#plus}2#pi^{#minus}p[#pi^{0}]");
-	locThrownTopologies.push_back("#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#phi]");		
-	locThrownTopologies.push_back("4#gamma2#pi^{#plus}2#pi^{#minus}p[2#pi^{0},#omega]");
-	for(uint i=0; i<locThrownTopologies.size(); i++) {
-		dHistInvariantMass_ThrownTopology[locThrownTopologies[i]] = new TH1I(Form("hInvariantMass_ThrownTopology_%d", i),Form("Invariant Mass Topology: %s", locThrownTopologies[i].Data()), 1000, 1.0, 4.0);
-	}	
+	// vector<TString> locThrownTopologies;
+	// locThrownTopologies.push_back("#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p");
+	// locThrownTopologies.push_back("2#pi^{#plus}2#pi^{#minus}p");		
+	// locThrownTopologies.push_back("2#gamma#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#pi^{0}]");
+	// locThrownTopologies.push_back("2#gamma2#pi^{#plus}2#pi^{#minus}p[#pi^{0},#omega]");
+	// locThrownTopologies.push_back("4#gamma2#pi^{#plus}2#pi^{#minus}p[2#pi^{0}]");
+	// locThrownTopologies.push_back("2#gamma2#pi^{#plus}2#pi^{#minus}p[#pi^{0}]");
+	// locThrownTopologies.push_back("#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#phi]");		
+	// locThrownTopologies.push_back("4#gamma2#pi^{#plus}2#pi^{#minus}p[2#pi^{0},#omega]");
+	// for(uint i=0; i<locThrownTopologies.size(); i++) {
+	// 	dHistInvariantMass_ThrownTopology[locThrownTopologies[i]] = new TH1I(Form("hInvariantMass_ThrownTopology_%d", i),Form("Invariant Mass Topology: %s", locThrownTopologies[i].Data()), 1000, 1.0, 4.0);
+	// }	
 	/************************** EXAMPLE USER INITIALIZATION: CUSTOM OUTPUT BRANCHES - MAIN TREE *************************/
 
 	//EXAMPLE MAIN TREE CUSTOM BRANCHES (OUTPUT ROOT FILE NAME MUST FIRST BE GIVEN!!!! (ABOVE: TOP)):
@@ -310,7 +313,7 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("me");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("pt");
 	// dFlatTreeInterface->Create_Branch_Fundamental<Char_t*>("thrtop"); //bggen
-	dFlatTreeInterface->Create_Branch_NoSplitTObject<TObjString>("thrtop"); //bggen
+	// dFlatTreeInterface->Create_Branch_NoSplitTObject<TObjString>("thrtop"); //bggen
 
 	//CREATE HELPER AND INITIALIZE WITH DESIRED COMBINATIONS TO BE STORED
 	dComboTreeHelper = new DComboTreeHelper(dTreeInterface, dComboWrapper, dFlatTreeInterface, "K+ K-; pi+ pi-; K+ K- pi+ pi-; K+ pi-;K+ pi+; K+ p; K- pi-; K- pi+; K- p; pi+ p; pi- p; K+ K- p; K+ K- pi+; K+ K- pi-; pi+ pi- p; pi+ pi- K+; pi+ pi- K-; K+ pi- p; K- pi+ p", dThrownWrapper ,"acc");
@@ -399,8 +402,8 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		dTreeInterface->Fill_Fundamental<Int_t>("my_int_array", 3*loc_i, loc_i); //2nd argument = value, 3rd = array index
 	*/
 	/********************************************** bggen: PARSE THROWN TOPOLOGY ***************************************/
-	TString locThrownTopology = Get_ThrownTopologyString();
-	TObjString thrtop;
+	// TString locThrownTopology = Get_ThrownTopologyString();
+	// TObjString thrtop;
 	/************************************************* LOOP OVER COMBOS *************************************************/
 
 	//Loop over combos
@@ -414,9 +417,9 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 			continue; // Combo has been cut previously
 
         // bggen: remove the signal from bggen
-		thrtop = locThrownTopology.Data();
-		if (locThrownTopology == "#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#phi]")
-			continue;
+		// thrtop = locThrownTopology.Data();
+		// if (locThrownTopology == "#pi^{#plus}#pi^{#minus}K^{#plus}K^{#minus}p[#phi]")
+		// 	continue;
 
 		/********************************************** GET PARTICLE INDICES *********************************************/
 
@@ -768,12 +771,12 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		}
 
 		/****************************************** bggen ******************************************/
-		// Fill histogram of thrown topologies
-		dHistThrownTopologies->Fill(locThrownTopology.Data(),1);
+		// // Fill histogram of thrown topologies
+		// dHistThrownTopologies->Fill(locThrownTopology.Data(),1);
 
-		TLorentzVector locphi2piP4 = locPiPlusP4 + locPiMinusP4 + locKPlusP4 + locKMinusP4;
-		if(dHistInvariantMass_ThrownTopology.find(locThrownTopology) != dHistInvariantMass_ThrownTopology.end())
-			dHistInvariantMass_ThrownTopology[locThrownTopology]->Fill(locphi2piP4.M());
+		// TLorentzVector locphi2piP4 = locPiPlusP4 + locPiMinusP4 + locKPlusP4 + locKMinusP4;
+		// if(dHistInvariantMass_ThrownTopology.find(locThrownTopology) != dHistInvariantMass_ThrownTopology.end())
+		// 	dHistInvariantMass_ThrownTopology[locThrownTopology]->Fill(locphi2piP4.M());
 
 		/****************************************** FILL FLAT TREE (IF DESIRED) ******************************************/
 
@@ -804,7 +807,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("pt", pt);
 		// dFlatTreeInterface->Fill_Fundamental<Float_t>("chi2pi",  chi2pi);
 		// dFlatTreeInterface->Fill_Fundamental<Char_t*>("thrtop", locThrownTopology.Data()); //bggen
-		dFlatTreeInterface->Fill_TObject<TObjString>("thrtop", thrtop); //bggen
+		// dFlatTreeInterface->Fill_TObject<TObjString>("thrtop", thrtop); //bggen
 
 		dComboTreeHelper->Fill(locEntry); //fills branches for sub-combinations
 		Fill_FlatTree(); //for the active combo
@@ -828,6 +831,53 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		//Do stuff with the wrapper here ...
 	}
 */
+	// if (dThrownBeam != NULL)
+	// locEnergy = dThrownBeam->Get_P4().E();
+
+	// //Loop over throwns
+	// TLorentzVector locPiPlusP4_Thrown;
+	// TLorentzVector locPiMinusP4_Thrown;
+	// TLorentzVector locKPlusP4_Thrown;
+	// TLorentzVector locKMinusP4_Thrown;
+	// TLorentzVector locProtonP4_Thrown;
+
+	// //Loop over throwns
+	// for (UInt_t loc_i = 0; loc_i < Get_NumThrown(); ++loc_i)
+	// {
+	// 	//Set branch array indices corresponding to this particle
+	// 	dThrownWrapper->Set_ArrayIndex(loc_i);
+
+	// 	//Do stuff with the wrapper here ...
+
+	// 	Particle_t thrown_pid = dThrownWrapper->Get_PID();
+	// 	// cout << " loc_i=" << loc_i << " thrown_pid=" << thrown_pid << endl;
+	// 	TLorentzVector locP4_Thrown = dThrownWrapper->Get_P4();
+
+	// 	if (loc_i == 0)
+	// 		locKPlusP4_Thrown = locP4_Thrown; // assume order of particles as PID is zero at the moment
+	// 	if (loc_i == 1)
+	// 		locKMinusP4_Thrown = locP4_Thrown;
+	// 	if (loc_i == 2)
+	// 		locPiPlusP4_Thrown = locP4_Thrown;
+	// 	if (loc_i == 3)
+	// 		locPiMinusP4_Thrown = locP4_Thrown;
+	// 	if (loc_i == 4)
+	// 		locProtonP4_Thrown = locP4_Thrown;
+	// }
+
+    // // **************************** Phi, fo and Y invariant masses *********************************************
+	// double PhiMass_Thrown = (locKPlusP4_Thrown + locKMinusP4_Thrown).M();
+	// double foMass_Thrown = (locPiPlusP4_Thrown + locPiMinusP4_Thrown).M();
+	// double YMass_Thrown = (locKPlusP4_Thrown + locKMinusP4_Thrown + locPiPlusP4_Thrown + locPiMinusP4_Thrown).M();
+	// // compute invariant -t for Y(2175) with proton as a recoil
+	// Double_t t_thr = -2 * locProtonP4_Thrown.M() * (locProtonP4_Thrown.E() - locProtonP4_Thrown.M());
+
+	// h_PhiMass_Thrown->Fill(PhiMass_Thrown);
+	// h_foMass_Thrown->Fill(foMass_Thrown);
+	// h_YMass_Thrown->Fill(YMass_Thrown);
+	// h_t_Thrown->Fill(t_thr);
+	// h2_beamevst_Thrown->Fill(t_thr, locEnergy);
+
 	/****************************************** LOOP OVER OTHER ARRAYS (OPTIONAL) ***************************************/
 /*
 	//Loop over beam particles (note, only those appearing in combos are present)

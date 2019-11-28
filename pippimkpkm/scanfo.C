@@ -146,7 +146,7 @@ void scanfo(TString name, int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1)
   c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/cmc_PhiMass_postcuts_fitted.png", "png");
 
   // cout<<"=============================  no problem up to here ! ========================"<<endl;
-/*
+
 
  // ======================================== fo vs. Phi(1020) ===============================================
  // root -l 'scanfo.C+(100,50,1,1)'
@@ -354,7 +354,7 @@ void scanfo(TString name, int nkk = 100, int n2pi = 100, int ne = 1, int nt = 1)
 
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.root", "root");
     // cgnophifo_all->Print("/data.local/nacer/halld_my/pippimkpkm/fig_scanfo/c_gnophifo_all.eps", "eps");
-*/
+
 /*
   // ======================================== fo vs. Eg ===============================================
   // root -l 'scanfo.C+(50,50,4,4)'

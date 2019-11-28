@@ -47,19 +47,18 @@ using namespace RooStats;
 
 void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
-  TFile *fdata = NULL;
-  if(name == "data_16") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_16_flat.root");
-  if(name == "data_17") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_17_flat.root");
-  if(name == "data_18") fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_18_flat.root");
+  // TFile *fdata = NULL;
+  TFile *fdata = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_%s_flat.root", name.Data()));
+  TFile *fmc = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_phi2pi_%s_flat.root", name.Data()));
+  TFile *ftru = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/thrown_phi2pi_%s.root", name.Data()));
   TTree *tdata = (TTree*)fdata->Get("ntp");
-  TFile *fps = NULL;
-  if(name == "data_16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
-  if(name == "data_17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
-  if(name == "data_18") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_40856_42577.root");
-  TFile *fmc = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_phifo_genr8_17v3_flat.root");
   TTree *tmc = (TTree *)fmc->Get("ntp");
-  TFile *ftru = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/tree_thrown_phifo_17v3.root");
   TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
+  TFile *fps = NULL;
+  if(name == "16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
+  if(name == "17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
+  if(name == "18") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_40856_42577.root");
+
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/xsec_phi2pi.root", "UPDATE");
   
   // ofstream table_phi("table_phi.tex", ofstream::out);
@@ -85,6 +84,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
+
   // ======================================== Phi vs. Eg ===============================================
 
   //root -l 'xsec_phi2pi.C+("data_17",100,10,1)'
@@ -108,10 +108,10 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   // +++ Thrown Beam Energy
   TCanvas *c_beame_tru = new TCanvas("cbeame_tru", "cbeame_tru", 900, 600);
   c_beame_tru->cd();
-  TH1F *h_beame_tru = new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", ne, 5.9, 11.9);
-  ttru->Project("h_beame_tru", "ThrownBeam__P4.E()");
+  TH1F *h_beame_tru = (TH1F *)ftru->Get("h_beame_Thrown");// new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", ne, 5.9, 11.9);
+  // ttru->Project("h_beame_tru", "ThrownBeam__P4.E()");
   cout << "h_beame_tru" << h_beame_tru << endl;
-  // h_beame_tru->Rebin(10);
+  h_beame_tru->Rebin(10);
   h_beame_tru->SetMarkerStyle(20);
   h_beame_tru->SetMarkerSize(1.5);
   h_beame_tru->Draw("e");
@@ -394,10 +394,15 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphie->SetPointError(i - 1, 0, dN_phie_data);    
 
     // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
+    if (N_phie_mc <= 0)
+    {
+      //gphiexsec->RemovePoint(i - 1);
+      continue;
+    }
     double eff_phi = N_phie_mc / h_beame_tru->GetBinContent(i); // Efficiency = N_observed/N_generated
     double deff_phi = eff_phi * (dN_phie_mc / N_phie_mc);
-    gphieeff->SetPoint(i - 1, h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
-    gphieeff->SetPointError(i - 1, 0, deff_phi*100); //->GetBinError(i)
+    gphieeff->SetPoint(gphieeff->GetN(), h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
+    gphieeff->SetPointError(gphieeff->GetN()-1, 0, deff_phi*100); //->GetBinError(i)
 
     // +++++++++++++++++++ Systematic Errors 
     // double width_value[3] = {-169.74, -141.06, -197.77}; // Y Width value : 0.079, 0.065, 0.093  
@@ -453,52 +458,13 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphie_mc->Draw("AP");
     cgphieeff->cd();
     gphieeff->Draw("AP");
+    gphieeff->Write(Form("h%s_gphieeff", name.Data()), TObject::kWriteDelete);
     cgphiexsec->cd();
     gphiexsec->Draw("AP");
     gphiexsec->Write(Form("h%s_gphiexsec", name.Data()), TObject::kWriteDelete);
     // int j =1;
     // gphie->Write(Form("grphie_%d", j), TObject::kWriteDelete);
 
-    // total Cross-sections
-    TMultiGraph *mgxsec = new TMultiGraph();
-    TCanvas *cmgxsec = new TCanvas("cmgxsec", "cmgxsec", 900, 600);
-    TLegend *lmgxsec = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgxsec->SetTextSize(0.04);
-    lmgxsec->SetBorderSize(0);
-    cmgxsec->cd();
-    cmgxsec->SetGrid();
-    TGraphErrors *hdata_16_gphiexsec = (TGraphErrors *)outputfig->Get("hdata_16_gphiexsec");
-    cout << " ***** hdata_16_gphiexsec = " << hdata_16_gphiexsec << endl;
-    hdata_16_gphiexsec->SetMarkerColor(1);
-    hdata_16_gphiexsec->SetMarkerSize(1.5);
-    hdata_16_gphiexsec->SetLineColor(1);
-    hdata_16_gphiexsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_16_gphiexsec);
-    TGraphErrors *hdata_17_gphiexsec = (TGraphErrors *)outputfig->Get("hdata_17_gphiexsec");
-    cout << " ***** hdata_17_gphiexsec = " << hdata_17_gphiexsec << endl;
-    hdata_17_gphiexsec->SetMarkerColor(kBlue);
-    hdata_17_gphiexsec->SetMarkerSize(1.5);
-    hdata_17_gphiexsec->SetLineColor(kBlue);
-    hdata_17_gphiexsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_17_gphiexsec);
-    TGraphErrors *hdata_18_gphiexsec = (TGraphErrors *)outputfig->Get("hdata_18_gphiexsec");
-    cout << " ***** hdata_18_gphiexsec = " << hdata_18_gphiexsec << endl;
-    hdata_18_gphiexsec->SetMarkerColor(kRed);
-    hdata_18_gphiexsec->SetMarkerSize(1.5);
-    hdata_18_gphiexsec->SetLineColor(kRed);
-    hdata_18_gphiexsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_18_gphiexsec);
-    mgxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Beam Energy; E_{#gamma} [GeV]; #sigma [nb]");
-    mgxsec->Draw("AP");
-    mgxsec->SetMinimum(0.);
-    cmgxsec->Modified();
-    lmgxsec->AddEntry(hdata_16_gphiexsec, "2016", "p");
-    lmgxsec->AddEntry(hdata_17_gphiexsec, "2017", "p");
-    lmgxsec->AddEntry(hdata_18_gphiexsec, "2018", "p");
-    lmgxsec->Draw();
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.eps", "eps");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.png", "png");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.root", "root");
 
     // total Yields
     TMultiGraph *mgphie = new TMultiGraph();
@@ -508,38 +474,120 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     lmgphie->SetBorderSize(0);
     cmgphie->cd();
     cmgphie->SetGrid();
-    TGraphErrors *hdata_16_gphie = (TGraphErrors *)outputfig->Get("hdata_16_gphie");
-    cout << " ***** hdata_16_gphie = " << hdata_16_gphie << endl;
-    hdata_16_gphie->SetMarkerColor(1);
-    hdata_16_gphie->SetMarkerSize(1.5);
-    hdata_16_gphie->SetLineColor(1);
-    hdata_16_gphie->SetMarkerStyle(20);
-    mgphie->Add(hdata_16_gphie);
-    TGraphErrors *hdata_17_gphie = (TGraphErrors *)outputfig->Get("hdata_17_gphie");
-    cout << " ***** hdata_17_gphie = " << hdata_17_gphie << endl;
-    hdata_17_gphie->SetMarkerColor(kBlue);
-    hdata_17_gphie->SetMarkerSize(1.5);
-    hdata_17_gphie->SetLineColor(kBlue);
-    hdata_17_gphie->SetMarkerStyle(20);
-    mgphie->Add(hdata_17_gphie);
-    TGraphErrors *hdata_18_gphie = (TGraphErrors *)outputfig->Get("hdata_18_gphie");
-    cout << " ***** hdata_18_gphie = " << hdata_18_gphie << endl;
-    hdata_18_gphie->SetMarkerColor(kRed);
-    hdata_18_gphie->SetMarkerSize(1.5);
-    hdata_18_gphie->SetLineColor(kRed);
-    hdata_18_gphie->SetMarkerStyle(20);
-    mgphie->Add(hdata_18_gphie);
-    mgphie->SetTitle("#phi(1020) Yield vs. Beam energy (data); E_{#gamma} [GeV]; N_{#phi}");
+    TGraphErrors *h16_gphie = (TGraphErrors *)outputfig->Get("h16_gphie");
+    cout << " ***** h16_gphie = " << h16_gphie << endl;
+    h16_gphie->SetMarkerColor(1);
+    h16_gphie->SetMarkerSize(1.5);
+    h16_gphie->SetLineColor(1);
+    h16_gphie->SetMarkerStyle(20);
+    mgphie->Add(h16_gphie);
+    TGraphErrors *h17_gphie = (TGraphErrors *)outputfig->Get("h17_gphie");
+    cout << " ***** h17_gphie = " << h17_gphie << endl;
+    h17_gphie->SetMarkerColor(kBlue);
+    h17_gphie->SetMarkerSize(1.5);
+    h17_gphie->SetLineColor(kBlue);
+    h17_gphie->SetMarkerStyle(20);
+    mgphie->Add(h17_gphie);
+    TGraphErrors *h18_gphie = (TGraphErrors *)outputfig->Get("h18_gphie");
+    cout << " ***** h18_gphie = " << h18_gphie << endl;
+    h18_gphie->SetMarkerColor(kRed);
+    h18_gphie->SetMarkerSize(1.5);
+    h18_gphie->SetLineColor(kRed);
+    h18_gphie->SetMarkerStyle(20);
+    mgphie->Add(h18_gphie);
+    mgphie->SetTitle("#phi(1020) Yield vs. E_{#gamma} (data); E_{#gamma} [GeV]; N_{#phi}");
     mgphie->Draw("AP");
     mgphie->SetMinimum(0.);
     cmgphie->Modified();
-    lmgphie->AddEntry(hdata_16_gphie, "2016", "p");
-    lmgphie->AddEntry(hdata_17_gphie, "2017", "p");
-    lmgphie->AddEntry(hdata_18_gphie, "2018", "p");
+    lmgphie->AddEntry(h16_gphie, "2016", "p");
+    lmgphie->AddEntry(h17_gphie, "2017", "p");
+    lmgphie->AddEntry(h18_gphie, "2018", "p");
     lmgphie->Draw();
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphie.eps", "eps");
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphie.png", "png");
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphie.root", "root");
+
+    // total Efficiency
+    TMultiGraph *mgeeff = new TMultiGraph();
+    TCanvas *cmgeeff = new TCanvas("cmgeeff", "cmgeeff", 900, 600);
+    TLegend *lmgeeff = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgeeff->SetTextSize(0.04);
+    lmgeeff->SetBorderSize(0);
+    cmgeeff->cd();
+    cmgeeff->SetGrid();
+    TGraphErrors *h16_gphieeff = (TGraphErrors *)outputfig->Get("h16_gphieeff");
+    cout << " ***** h16_gphieeff = " << h16_gphieeff << endl;
+    h16_gphieeff->SetMarkerColor(1);
+    h16_gphieeff->SetMarkerSize(1.5);
+    h16_gphieeff->SetLineColor(1);
+    h16_gphieeff->SetMarkerStyle(20);
+    mgeeff->Add(h16_gphieeff);
+    TGraphErrors *h17_gphieeff = (TGraphErrors *)outputfig->Get("h17_gphieeff");
+    cout << " ***** h17_gphieeff = " << h17_gphieeff << endl;
+    h17_gphieeff->SetMarkerColor(kBlue);
+    h17_gphieeff->SetMarkerSize(1.5);
+    h17_gphieeff->SetLineColor(kBlue);
+    h17_gphieeff->SetMarkerStyle(20);
+    mgeeff->Add(h17_gphieeff);
+    TGraphErrors *h18_gphieeff = (TGraphErrors *)outputfig->Get("h18_gphieeff");
+    cout << " ***** h18_gphieeff = " << h18_gphieeff << endl;
+    h18_gphieeff->SetMarkerColor(kRed);
+    h18_gphieeff->SetMarkerSize(1.5);
+    h18_gphieeff->SetLineColor(kRed);
+    h18_gphieeff->SetMarkerStyle(20);
+    mgeeff->Add(h18_gphieeff);
+    mgeeff->SetTitle("#phi#pi^{+}#pi^{-} Effeciency vs. E_{#gamma}; E_{#gamma} [GeV]; #epsilon [%]");
+    mgeeff->Draw("AP");
+    mgeeff->SetMinimum(0.);
+    cmgeeff->Modified();
+    lmgeeff->AddEntry(h16_gphieeff, "2016", "p");
+    lmgeeff->AddEntry(h17_gphieeff, "2017", "p");
+    lmgeeff->AddEntry(h18_gphieeff, "2018", "p");
+    lmgeeff->Draw();
+    cmgeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgeeff.eps", "eps");
+    cmgeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgeeff.png", "png");
+    cmgeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgeeff.root", "root");
+
+    // total Cross-sections
+    TMultiGraph *mgexsec = new TMultiGraph();
+    TCanvas *cmgexsec = new TCanvas("cmgexsec", "cmgexsec", 900, 600);
+    TLegend *lmgexsec = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgexsec->SetTextSize(0.04);
+    lmgexsec->SetBorderSize(0);
+    cmgexsec->cd();
+    cmgexsec->SetGrid();
+    TGraphErrors *h16_gphiexsec = (TGraphErrors *)outputfig->Get("h16_gphiexsec");
+    cout << " ***** h16_gphiexsec = " << h16_gphiexsec << endl;
+    h16_gphiexsec->SetMarkerColor(1);
+    h16_gphiexsec->SetMarkerSize(1.5);
+    h16_gphiexsec->SetLineColor(1);
+    h16_gphiexsec->SetMarkerStyle(20);
+    mgexsec->Add(h16_gphiexsec);
+    TGraphErrors *h17_gphiexsec = (TGraphErrors *)outputfig->Get("h17_gphiexsec");
+    cout << " ***** h17_gphiexsec = " << h17_gphiexsec << endl;
+    h17_gphiexsec->SetMarkerColor(kBlue);
+    h17_gphiexsec->SetMarkerSize(1.5);
+    h17_gphiexsec->SetLineColor(kBlue);
+    h17_gphiexsec->SetMarkerStyle(20);
+    mgexsec->Add(h17_gphiexsec);
+    TGraphErrors *h18_gphiexsec = (TGraphErrors *)outputfig->Get("h18_gphiexsec");
+    cout << " ***** h18_gphiexsec = " << h18_gphiexsec << endl;
+    h18_gphiexsec->SetMarkerColor(kRed);
+    h18_gphiexsec->SetMarkerSize(1.5);
+    h18_gphiexsec->SetLineColor(kRed);
+    h18_gphiexsec->SetMarkerStyle(20);
+    mgexsec->Add(h18_gphiexsec);
+    mgexsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Beam Energy; E_{#gamma} [GeV]; #sigma [nb]");
+    mgexsec->Draw("AP");
+    mgexsec->SetMinimum(0.);
+    cmgexsec->Modified();
+    lmgexsec->AddEntry(h16_gphiexsec, "2016", "p");
+    lmgexsec->AddEntry(h17_gphiexsec, "2017", "p");
+    lmgexsec->AddEntry(h18_gphiexsec, "2018", "p");
+    lmgexsec->Draw();
+    cmgexsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgexsec.eps", "eps");
+    cmgexsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgexsec.png", "png");
+    cmgexsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgexsec.root", "root");
 
     cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie.root", name.Data()), "root");
     cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie.eps", name.Data()), "eps");
@@ -550,24 +598,50 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie.root", name.Data()), "root");
     cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie.eps", name.Data()), "eps");
     cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie.png", name.Data()), "png");
-    cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie_mc.root", "root");
-    cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie_mc.eps", "eps");
-    cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie_mc.png", "png");
-    cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie1_mc.root", "root");
-    cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie1_mc.eps", "eps");
-    cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphie1_mc.png", "png");
-    cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphie_mc.root", "root");
-    cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphie_mc.eps", "eps");
-    cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphie_mc.png", "png");
-    cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphieeff.root", "root");
-    cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphieeff.eps", "eps");
-    cgphieeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphieeff.png", "png");
+    cphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie_mc.root", name.Data()), "root");
+    cphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie_mc.eps", name.Data()), "eps");
+    cphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie_mc.png", name.Data()),"png");
+    cphie1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie1_mc.root", name.Data()),"root");
+    cphie1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie1_mc.eps", name.Data()),"eps");
+    cphie1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phie1_mc.png", name.Data()),"png");
+    cgphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie_mc.root", name.Data()),"root");
+    cgphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie_mc.eps", name.Data()),"eps");
+    cgphie_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphie_mc.png", name.Data()),"png");
+    cgphieeff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphieeff.root", name.Data()),"root");
+    cgphieeff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphieeff.eps", name.Data()),"eps");
+    cgphieeff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphieeff.png", name.Data()),"png");
     cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiexsec.root", name.Data()), "root");
     cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiexsec.eps", name.Data()), "eps");
     cgphiexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiexsec.png", name.Data()), "png");
+    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_beame_tru.root", name.Data()),"root");
+    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_beame_tru.eps", name.Data()),"eps");
+    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_beame_tru.png", name.Data()),"png");
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.root", name.Data()), "root");
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.eps", name.Data()), "eps");
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.png", name.Data()), "png");
+    
+    outputfig->Print();
+
+    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fclose(table_xsec_phi2pi);
+    gSystem->Exec("pdflatex table_xsec_phi2pi.tex");
+
+    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fclose(table_xsec_phi2pi_sys);
+    gSystem->Exec("pdflatex table_xsec_phi2pi_sys.tex");
+
+    // table_phi << "\\hline" << endl;
+    // table_phi << "\\end{tabularx}" << endl;
+    // table_phi << "\\end{center}" << endl;
+    // table_phi << "\\end{minipage}" << endl;
+    // table_phi << "\\end{table}" << endl;
+    // table_phi << "\\end{document}" << endl;
+    // table_phi.close();
+    // gSystem->Exec("pdflatex table_phi.tex");
 
 /*
   // ======================================== Phi vs. -t ===============================================
+
 
   //root -l 'xsec_phi2pi.C+("data_17",100,1,10)'
 
@@ -587,18 +661,16 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   h_tagged_flux->SetMarkerSize(1.5);
   h_tagged_flux->Draw("e");
 
-  // +++ Thrown Beam Energy
-  TCanvas *c_beame_tru = new TCanvas("cbeame_tru", "cbeame_tru", 900, 600);
-  c_beame_tru->cd();
-  TH1F *h_beame_tru = new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", 1, 6, 12);
-  ttru->Project("h_beame_tru", "ThrownBeam__P4.E()", "ThrownBeam__P4.E()>6");
-  cout << "h_beame_tru" << h_beame_tru << endl;
-  // h_beame_tru->Rebin(10);
-  h_beame_tru->SetMarkerStyle(20);
-  h_beame_tru->SetMarkerSize(1.5);
-  h_beame_tru->Draw("e");
+  // +++ Thrown Momentum Transfer
+  TCanvas *c_h_t_Thrown = new TCanvas("c_h_t_Thrown", "c_h_t_Thrown", 900, 600);
+  c_h_t_Thrown->cd();
+  TH1F *h_t_Thrown = (TH1F *)ftru->Get("h_t_Thrown");
+  cout << "h_t_Thrown = " << h_t_Thrown << endl;
+  h_t_Thrown->Rebin(10);
+  h_t_Thrown->SetMarkerStyle(20);
+  h_t_Thrown->SetMarkerSize(1.5);
+  h_t_Thrown->Draw("e");
 
-  // root -l 'xsec_phi2pi.C+(100,20,20)'
   // Data
   TCanvas *cphit = new TCanvas("cphit", "cphit", 900, 600);
   cphit->cd();
@@ -877,7 +949,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphit->SetPointError(i - 1, 0, dN_phit_data);    
 
     // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
-    double eff_phi = N_phit_mc / h_beame_tru->GetBinContent(1); // Efficiency = N_observed/N_generated
+    double eff_phi = N_phit_mc / h_t_Thrown->GetBinContent(i); // Efficiency = N_observed/N_generated
     double deff_phi = eff_phi * (dN_phit_mc / N_phit_mc);
     gphiteff->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
     gphiteff->SetPointError(i - 1, 0, deff_phi*100); //->GetBinError(i)
@@ -922,11 +994,11 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
     gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
 
-    fprintf(table_xsec_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(1), N_phit_mc, dN_phit_mc, N_phit_data, dN_phit_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
+    fprintf(table_xsec_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), h_t_Thrown->GetBinContent(i), N_phit_mc, dN_phit_mc, N_phit_data, dN_phit_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
     
     fprintf(table_xsec_phi2pi_sys, "%0.2f & %0.2f & %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), err_bkg_poln*100/N_bkg_poln_1[i-1], err_fit_range*100/fit_range_1[i-1]);
     // table_phi << std::setprecision(2) << std::fixed;
-    // table_phi <<h2phit_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_beame_tru->GetBinContent(i)<<"&"<<N_phit_mc<<"$\\pm$"<<dN_phit_mc<<"&"<<N_phit_data<<"$\\pm$"<<dN_phit_data<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phi2pi<<"$\\pm$"<<dxsec_phi2pi_stat<<"$\\pm$"<<dxsec_phi2pi_sys<<" \\\\"<< endl;
+    // table_phi <<h2phit_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_t_Thrown->GetBinContent(i)<<"&"<<N_phit_mc<<"$\\pm$"<<dN_phit_mc<<"&"<<N_phit_data<<"$\\pm$"<<dN_phit_data<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phi2pi<<"$\\pm$"<<dxsec_phi2pi_stat<<"$\\pm$"<<dxsec_phi2pi_sys<<" \\\\"<< endl;
     }
 
     cgphit->cd();
@@ -936,52 +1008,13 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphit_mc->Draw("AP");
     cgphiteff->cd();
     gphiteff->Draw("AP");
+    gphiteff->Write(Form("h%s_gphiteff", name.Data()), TObject::kWriteDelete);
     cgphitxsec->cd();
     gphitxsec->Draw("AP");
     gphitxsec->Write(Form("h%s_gphitxsec", name.Data()), TObject::kWriteDelete);
     // int j =1;
     // gphit->Write(Form("grphit_%d", j), TObject::kWriteDelete);
 
-    // total Cross-sections
-    TMultiGraph *mgxsec = new TMultiGraph();
-    TCanvas *cmgxsec = new TCanvas("cmgxsec", "cmgxsec", 900, 600);
-    TLegend *lmgxsec = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgxsec->SetTextSize(0.04);
-    lmgxsec->SetBorderSize(0);
-    cmgxsec->cd();
-    cmgxsec->SetGrid();
-    TGraphErrors *hdata_16_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_16_gphitxsec");
-    cout << " ***** hdata_16_gphitxsec = " << hdata_16_gphitxsec << endl;
-    hdata_16_gphitxsec->SetMarkerColor(1);
-    hdata_16_gphitxsec->SetMarkerSize(1.5);
-    hdata_16_gphitxsec->SetLineColor(1);
-    hdata_16_gphitxsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_16_gphitxsec);
-    TGraphErrors *hdata_17_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_17_gphitxsec");
-    cout << " ***** hdata_17_gphitxsec = " << hdata_17_gphitxsec << endl;
-    hdata_17_gphitxsec->SetMarkerColor(kBlue);
-    hdata_17_gphitxsec->SetMarkerSize(1.5);
-    hdata_17_gphitxsec->SetLineColor(kBlue);
-    hdata_17_gphitxsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_17_gphitxsec);
-    TGraphErrors *hdata_18_gphitxsec = (TGraphErrors *)outputfig->Get("hdata_18_gphitxsec");
-    cout << " ***** hdata_18_gphitxsec = " << hdata_18_gphitxsec << endl;
-    hdata_18_gphitxsec->SetMarkerColor(kRed);
-    hdata_18_gphitxsec->SetMarkerSize(1.5);
-    hdata_18_gphitxsec->SetLineColor(kRed);
-    hdata_18_gphitxsec->SetMarkerStyle(20);
-    mgxsec->Add(hdata_18_gphitxsec);
-    mgxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Momentum transfer; -t [GeV^{2}]; #sigma [nb]");
-    mgxsec->Draw("AP");
-    mgxsec->SetMinimum(0.);
-    cmgxsec->Modified();
-    lmgxsec->AddEntry(hdata_16_gphitxsec, "2016", "p");
-    lmgxsec->AddEntry(hdata_17_gphitxsec, "2017", "p");
-    lmgxsec->AddEntry(hdata_18_gphitxsec, "2018", "p");
-    lmgxsec->Draw();
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.eps", "eps");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.png", "png");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgxsec.root", "root");
 
     // total Yields
     TMultiGraph *mgphit = new TMultiGraph();
@@ -991,38 +1024,120 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     lmgphit->SetBorderSize(0);
     cmgphit->cd();
     cmgphit->SetGrid();
-    TGraphErrors *hdata_16_gphit = (TGraphErrors *)outputfig->Get("hdata_16_gphit");
-    cout << " ***** hdata_16_gphit = " << hdata_16_gphit << endl;
-    hdata_16_gphit->SetMarkerColor(1);
-    hdata_16_gphit->SetMarkerSize(1.5);
-    hdata_16_gphit->SetLineColor(1);
-    hdata_16_gphit->SetMarkerStyle(20);
-    mgphit->Add(hdata_16_gphit);
-    TGraphErrors *hdata_17_gphit = (TGraphErrors *)outputfig->Get("hdata_17_gphit");
-    cout << " ***** hdata_17_gphit = " << hdata_17_gphit << endl;
-    hdata_17_gphit->SetMarkerColor(kBlue);
-    hdata_17_gphit->SetMarkerSize(1.5);
-    hdata_17_gphit->SetLineColor(kBlue);
-    hdata_17_gphit->SetMarkerStyle(20);
-    mgphit->Add(hdata_17_gphit);
-    TGraphErrors *hdata_18_gphit = (TGraphErrors *)outputfig->Get("hdata_18_gphit");
-    cout << " ***** hdata_18_gphit = " << hdata_18_gphit << endl;
-    hdata_18_gphit->SetMarkerColor(kRed);
-    hdata_18_gphit->SetMarkerSize(1.5);
-    hdata_18_gphit->SetLineColor(kRed);
-    hdata_18_gphit->SetMarkerStyle(20);
-    mgphit->Add(hdata_18_gphit);
-    mgphit->SetTitle("#phi(1020) Yield vs. Momentum transfer (data); -t [GeV^{2}]; N_{#phi}");
+    TGraphErrors *h16_gphit = (TGraphErrors *)outputfig->Get("h16_gphit");
+    cout << " ***** h16_gphit = " << h16_gphit << endl;
+    h16_gphit->SetMarkerColor(1);
+    h16_gphit->SetMarkerSize(1.5);
+    h16_gphit->SetLineColor(1);
+    h16_gphit->SetMarkerStyle(20);
+    mgphit->Add(h16_gphit);
+    TGraphErrors *h17_gphit = (TGraphErrors *)outputfig->Get("h17_gphit");
+    cout << " ***** h17_gphit = " << h17_gphit << endl;
+    h17_gphit->SetMarkerColor(kBlue);
+    h17_gphit->SetMarkerSize(1.5);
+    h17_gphit->SetLineColor(kBlue);
+    h17_gphit->SetMarkerStyle(20);
+    mgphit->Add(h17_gphit);
+    TGraphErrors *h18_gphit = (TGraphErrors *)outputfig->Get("h18_gphit");
+    cout << " ***** h18_gphit = " << h18_gphit << endl;
+    h18_gphit->SetMarkerColor(kRed);
+    h18_gphit->SetMarkerSize(1.5);
+    h18_gphit->SetLineColor(kRed);
+    h18_gphit->SetMarkerStyle(20);
+    mgphit->Add(h18_gphit);
+    mgphit->SetTitle("#phi(1020) Yield vs. -t (data); -t [GeV^{2}]; N_{#phi}");
     mgphit->Draw("AP");
     mgphit->SetMinimum(0.);
     cmgphit->Modified();
-    lmgphit->AddEntry(hdata_16_gphit, "2016", "p");
-    lmgphit->AddEntry(hdata_17_gphit, "2017", "p");
-    lmgphit->AddEntry(hdata_18_gphit, "2018", "p");
+    lmgphit->AddEntry(h16_gphit, "2016", "p");
+    lmgphit->AddEntry(h17_gphit, "2017", "p");
+    lmgphit->AddEntry(h18_gphit, "2018", "p");
     lmgphit->Draw();
     cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphit.eps", "eps");
     cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphit.png", "png");
     cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphit.root", "root");
+
+    // total Efficiency
+    TMultiGraph *mgteff = new TMultiGraph();
+    TCanvas *cmgteff = new TCanvas("cmgteff", "cmgteff", 900, 600);
+    TLegend *lmgteff = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgteff->SetTextSize(0.04);
+    lmgteff->SetBorderSize(0);
+    cmgteff->cd();
+    cmgteff->SetGrid();
+    TGraphErrors *h16_gphiteff = (TGraphErrors *)outputfig->Get("h16_gphiteff");
+    cout << " ***** h16_gphiteff = " << h16_gphiteff << endl;
+    h16_gphiteff->SetMarkerColor(1);
+    h16_gphiteff->SetMarkerSize(1.5);
+    h16_gphiteff->SetLineColor(1);
+    h16_gphiteff->SetMarkerStyle(20);
+    mgteff->Add(h16_gphiteff);
+    TGraphErrors *h17_gphiteff = (TGraphErrors *)outputfig->Get("h17_gphiteff");
+    cout << " ***** h17_gphiteff = " << h17_gphiteff << endl;
+    h17_gphiteff->SetMarkerColor(kBlue);
+    h17_gphiteff->SetMarkerSize(1.5);
+    h17_gphiteff->SetLineColor(kBlue);
+    h17_gphiteff->SetMarkerStyle(20);
+    mgteff->Add(h17_gphiteff);
+    TGraphErrors *h18_gphiteff = (TGraphErrors *)outputfig->Get("h18_gphiteff");
+    cout << " ***** h18_gphiteff = " << h18_gphiteff << endl;
+    h18_gphiteff->SetMarkerColor(kRed);
+    h18_gphiteff->SetMarkerSize(1.5);
+    h18_gphiteff->SetLineColor(kRed);
+    h18_gphiteff->SetMarkerStyle(20);
+    mgteff->Add(h18_gphiteff);
+    mgteff->SetTitle("#phi#pi^{+}#pi^{-} Effeciency vs. Momentum transfer; -t [GeV^{2}]; #epsilon [%]");
+    mgteff->Draw("AP");
+    mgteff->SetMinimum(0.);
+    cmgteff->Modified();
+    lmgteff->AddEntry(h16_gphiteff, "2016", "p");
+    lmgteff->AddEntry(h17_gphiteff, "2017", "p");
+    lmgteff->AddEntry(h18_gphiteff, "2018", "p");
+    lmgteff->Draw();
+    cmgteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgteff.eps", "eps");
+    cmgteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgteff.png", "png");
+    cmgteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgteff.root", "root");
+
+    // total Cross-sections
+    TMultiGraph *mgtxsec = new TMultiGraph();
+    TCanvas *cmgtxsec = new TCanvas("cmgtxsec", "cmgtxsec", 900, 600);
+    TLegend *lmgtxsec = new TLegend(0.86, 0.86, 0.98, 0.98);
+    lmgtxsec->SetTextSize(0.04);
+    lmgtxsec->SetBorderSize(0);
+    cmgtxsec->cd();
+    cmgtxsec->SetGrid();
+    TGraphErrors *h16_gphitxsec = (TGraphErrors *)outputfig->Get("h16_gphitxsec");
+    cout << " ***** h16_gphitxsec = " << h16_gphitxsec << endl;
+    h16_gphitxsec->SetMarkerColor(1);
+    h16_gphitxsec->SetMarkerSize(1.5);
+    h16_gphitxsec->SetLineColor(1);
+    h16_gphitxsec->SetMarkerStyle(20);
+    mgtxsec->Add(h16_gphitxsec);
+    TGraphErrors *h17_gphitxsec = (TGraphErrors *)outputfig->Get("h17_gphitxsec");
+    cout << " ***** h17_gphitxsec = " << h17_gphitxsec << endl;
+    h17_gphitxsec->SetMarkerColor(kBlue);
+    h17_gphitxsec->SetMarkerSize(1.5);
+    h17_gphitxsec->SetLineColor(kBlue);
+    h17_gphitxsec->SetMarkerStyle(20);
+    mgtxsec->Add(h17_gphitxsec);
+    TGraphErrors *h18_gphitxsec = (TGraphErrors *)outputfig->Get("h18_gphitxsec");
+    cout << " ***** h18_gphitxsec = " << h18_gphitxsec << endl;
+    h18_gphitxsec->SetMarkerColor(kRed);
+    h18_gphitxsec->SetMarkerSize(1.5);
+    h18_gphitxsec->SetLineColor(kRed);
+    h18_gphitxsec->SetMarkerStyle(20);
+    mgtxsec->Add(h18_gphitxsec);
+    mgtxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Momentum transfer; -t [GeV^{2}]; #sigma [nb]");
+    mgtxsec->Draw("AP");
+    mgtxsec->SetMinimum(0.);
+    cmgtxsec->Modified();
+    lmgtxsec->AddEntry(h16_gphitxsec, "2016", "p");
+    lmgtxsec->AddEntry(h17_gphitxsec, "2017", "p");
+    lmgtxsec->AddEntry(h18_gphitxsec, "2018", "p");
+    lmgtxsec->Draw();
+    cmgtxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgtxsec.eps", "eps");
+    cmgtxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgtxsec.png", "png");
+    cmgtxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgtxsec.root", "root");
 
     cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit.root", name.Data()), "root");
     cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit.eps", name.Data()), "eps");
@@ -1033,281 +1148,47 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit.root", name.Data()), "root");
     cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit.eps", name.Data()), "eps");
     cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit.png", name.Data()), "png");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.root", "root");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.eps", "eps");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.png", "png");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_mc.root", "root");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_mc.eps", "eps");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_mc.png", "png");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.root", "root");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.eps", "eps");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.png", "png");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.root", "root");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.eps", "eps");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.png", "png");
+    cphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit_mc.root", name.Data()), "root");
+    cphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit_mc.eps", name.Data()), "eps");
+    cphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit_mc.png", name.Data()), "png");
+    cphit1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit1_mc.root", name.Data()), "root");
+    cphit1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit1_mc.eps", name.Data()), "eps");
+    cphit1_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_phit1_mc.png", name.Data()), "png");
+    cgphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit_mc.root", name.Data()), "root");
+    cgphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit_mc.eps", name.Data()), "eps");
+    cgphit_mc->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphit_mc.png", name.Data()), "png");
+    cgphiteff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiteff.root", name.Data()), "root");
+    cgphiteff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiteff.eps", name.Data()), "eps");
+    cgphiteff->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphiteff.png", name.Data()), "png");
     cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphitxsec.root", name.Data()), "root");
     cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphitxsec.eps", name.Data()), "eps");
     cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_gphitxsec.png", name.Data()), "png");
+
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.root", name.Data()), "root");
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.eps", name.Data()), "eps");
+    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.png", name.Data()), "png");
+    c_h_t_Thrown->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_h_t_Thrown.root", name.Data()), "root");
+    c_h_t_Thrown->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_h_t_Thrown.eps", name.Data()), "eps");
+    c_h_t_Thrown->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_h_t_Thrown.png", name.Data()), "png");
+
+    outputfig->Print();
+
+    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fclose(table_xsec_phi2pi);
+    gSystem->Exec("pdflatex table_xsec_phi2pi.tex");
+
+    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fclose(table_xsec_phi2pi_sys);
+    gSystem->Exec("pdflatex table_xsec_phi2pi_sys.tex");
+
+    // table_phi << "\\hline" << endl;
+    // table_phi << "\\end{tabularx}" << endl;
+    // table_phi << "\\end{center}" << endl;
+    // table_phi << "\\end{minipage}" << endl;
+    // table_phi << "\\end{table}" << endl;
+    // table_phi << "\\end{document}" << endl;
+    // table_phi.close();
+    // gSystem->Exec("pdflatex table_phi.tex");
 */
-/*
-  // ======================================== Phi vs. (-t,E) ==================================================
-  // root -l 'xsec_phi2pi.C+(100,6,20)'
-  //++++++  Data
-  TCanvas *cbeamet = new TCanvas("cbeamet", "cbeamet", 600, 400);
-  cbeamet->cd();
-  TH2D *h2beamet = new TH2D("h2beamet", "Data ;E_{#gamma} [GeV/c^{2}];-t [GeV/c]", 100, 6.3, 11.6, 100, 0.1, 2);
-  tdata->Project("h2beamet", "-t_kin:beam_p4_kin.E()", "w8*("+cut+")");
-  h2beamet->Draw("colz");
 
-  TCanvas *cphit = new TCanvas("cphit", "cphit", 1500, 800);
-  cphit->Divide(2, 3);
-
-  TCanvas *cphit1[nt];
-
-  TCanvas *cgphit = new TCanvas("cgphit", "cgphit", 1500, 800);
-  cgphit->Divide(2, 3);
-  TGraphErrors *gphit[nt];
-
-  //++++++  mc
-  TCanvas *cbeamet_mc = new TCanvas("cbeamet_mc", "cbeamet_mc", 600, 400);
-  cbeamet_mc->cd();
-  TH2D *h2beamet_mc = new TH2D("h2beamet_mc", "MC ;E_{#gamma} [GeV/c^{2}];-t [GeV/c]", 100, 6.3, 11.6, 100, 0.1, 2);
-  tmc->Project("h2beamet_mc", "-t_kin:beam_p4_kin.E()", "w8*("+cut+")");
-  h2beamet_mc->Draw("colz");
-
-  TCanvas *cphit_mc = new TCanvas("cphit_mc", "cphit_mc", 1500, 800);
-  cphit_mc->Divide(2, 3);
-
-  TCanvas *cphit1_mc[nt];
-
-  TCanvas *cgphit_mc = new TCanvas("cgphit_mc", "cgphit_mc", 1500, 800);
-  cgphit_mc->Divide(2, 3);
-  TGraphErrors *gphit_mc[nt];
-
-  //++++++ Efficiency
-  TCanvas *cgphiteff = new TCanvas("cgphiteff", "cgphiteff", 1500, 800);
-  cgphiteff->Divide(2, 3);
-  TGraphErrors *gphiteff[nt];
-
-  //+++++++ Differential Cross-section
-  TCanvas *cgphitxsec = new TCanvas("cgphitxsec", "cgphitxsec", 1500, 800);
-  cgphitxsec->Divide(2, 3);
-  TGraphErrors *gphitxsec[nt];
-
-  double Egmin = 6.3;  //= hdata_postcut->GetXaxis()->GetBinLowEdge(1);
-  double Egmax = 11.6; //= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
-  double Egstep = (Egmax - Egmin) / nt;
-  double Eg1[nt];
-  double Eg2[nt];
-
-  for (int j = 1; j <= nt; ++j)
-  {
-    Eg1[j] = Egmin + ((j - 1) * Egstep); //i * Egstep;
-    Eg2[j] = Egmin + (j * Egstep);
-    cout << "########  j = " << j << " | Eg1[" << j << "] = " << Eg1[j] << " | Eg2[" << j << "] = " << Eg2[j] << endl;
-
-    //++++++  Data
-    cphit->cd(j);
-    TH2D *h2phit = new TH2D("h2phit", Form("%f<E_{#gamma}<%f (Data);-t [GeV/c];m_{K^{+}K^{-}} [GeV/c^{2}]", Eg1[j], Eg2[j]), nt, 0.1, 2, n2k, 0.98, 1.2);
-    tdata->Project("h2phit", "kpkm_mf:-t_kin", Form("w8*(kpkm_uni &&" + cut + "&& beam_p4_kin.E()>%f && beam_p4_kin.E()<%f)", Eg1[j], Eg2[j]));
-    h2phit->Draw("colz");
-
-    cphit1[j] = new TCanvas(Form("cphit1_%d", j), Form("cphit1_%d", j), 1500, 800);
-    cphit1[j]->Divide(5, 4);
-
-    gphit[j] = new TGraphErrors(nt);
-    gphit[j]->SetMarkerStyle(20);
-    gphit[j]->SetMarkerSize(1.0);
-    gphit[j]->SetMarkerColor(1);
-    gphit[j]->SetMinimum(0.0);
-    gphit[j]->SetTitle(Form("%f<E_{#gamma}<%f (Data); -t [GeV/c]; N_{#phi}", Eg1[j], Eg2[j]));
-
-    //++++++  mc
-    cphit_mc->cd(j);
-    TH2D *h2phit_mc = new TH2D("h2phit_mc", Form("%f<E_{#gamma}<%f (MC);-t [GeV/c];m_{K^{+}K^{-}} [GeV/c^{2}]", Eg1[j], Eg2[j]), nt, 0.1, 2, n2k, 0.98, 1.2);
-    tmc->Project("h2phit_mc", "kpkm_mf:-t_kin", Form("w8*(kpkm_uni &&" + cut + "&& beam_p4_kin.E()>%f && beam_p4_kin.E()<%f)", Eg1[j], Eg2[j]));
-    h2phit_mc->Draw("colz");
-
-    cphit1_mc[j] = new TCanvas(Form("cphit1_mc_%d", j), Form("cphit1_mc_%d", j), 1500, 800);
-    cphit1_mc[j]->Divide(5, 4);
-
-    gphit_mc[j] = new TGraphErrors(nt);
-    gphit_mc[j]->SetMarkerStyle(20);
-    gphit_mc[j]->SetMarkerSize(1.0);
-    gphit_mc[j]->SetMarkerColor(1);
-    gphit_mc[j]->SetMinimum(0.0);
-    gphit_mc[j]->SetTitle(Form("%f<E_{#gamma}<%f (MC); -t [GeV/c]; N_{#phi}", Eg1[j], Eg2[j]));
-
-    //++++++ Efficiency
-    gphiteff[j] = new TGraphErrors(nt);
-    gphiteff[j]->SetMarkerStyle(20);
-    gphiteff[j]->SetMarkerSize(1.0);
-    gphiteff[j]->SetMarkerColor(1);
-    gphiteff[j]->SetMinimum(0.0);
-    gphiteff[j]->SetTitle(Form("%f<E_{#gamma}<%f; -t [GeV/c]; #epsilon_{#phi}", Eg1[j], Eg2[j]));
-
-    //+++++++ Differential Cross-section
-    gphitxsec[j] = new TGraphErrors(nt);
-    gphitxsec[j]->SetMarkerStyle(20);
-    gphitxsec[j]->SetMarkerSize(1.0);
-    gphitxsec[j]->SetMarkerColor(1);
-    gphitxsec[j]->SetMinimum(0.0);
-    gphitxsec[j]->SetTitle(Form("%f<E_{#gamma}<%f (flux normalized yield); -t [GeV/c]; Yield_{#phi}", Eg1[j], Eg2[j]));// d#sigma_{#phi}/dt [nb/s]
-
-    for (int i = 1; i <= nt; ++i)
-    {
-      cout << i << " " << flush;
-
-      // +++++++++++++++++++++++++ data  ++++++++++++++++++++
-      cphit1[j]->cd(i);
-      TH1D *hphit_py = h2phit->ProjectionY(Form("hphit_py_%d_%d", j, i), i, i);
-      hphit_py->Draw("e");
-
-      w.factory(Form("Voigtian::sig_phit(m_phit[%f,%f],mean_phit[1.016,1.024],width_phit[0.004],sigma_phit[0.001,0.1])", mkk_min, mkk_max)); //sigma_phit[0.001,0.01], mean_phit[1.016,1.022]
-      w.factory("Chebychev::bkg_phit(m_phit,{c0_phit[-1,1], c1_phit[-1,1]})");//, c2_phit[-1,1]
-      w.factory("SUM:::model_phit(nsig_phit[0,100000000]*sig_phit, nbkg_phit[0,100000000]*bkg_phit)"); //nsig[0,100000000]*sig2,
-      w.var("m_phit")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
-      RooDataHist dh_phit("dh_phit", "dh_phit", *w.var("m_phit"), Import(*hphit_py));
-      RooPlot *fr_phit = w.var("m_phit")->frame(Title(Form("-t = %f", h2phit->GetXaxis()->GetBinCenter(i))));
-      w.pdf("model_phit")->fitTo(dh_phit);
-      // result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-      dh_phit.plotOn(fr_phit, RooFit::Name("ldh_phit"));
-      w.pdf("model_phit")->plotOn(fr_phit, Components(*w.pdf("sig_phit")), LineColor(kRed), RooFit::Name("lsig_phit"));
-      w.pdf("model_phit")->plotOn(fr_phit, Components(*w.pdf("bkg_phit")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phit"));
-      w.pdf("model_phit")->plotOn(fr_phit, RooFit::Name("lmodel_phit"));
-      fr_phit->Draw();
-      TLegend *l_phit = new TLegend(0.5, 0.7, 0.8, 0.9);
-      l_phit->SetFillColor(kWhite);
-      l_phit->SetLineColor(kWhite);
-      l_phit->AddEntry(fr_phit->findObject("lsig_phit"), Form("N_{Sig} = %.2f", w.var("nsig_phit")->getVal()), "l");
-      l_phit->AddEntry(fr_phit->findObject("lbkg_phit"), Form("N_{Bkg} = %.2f", w.var("nbkg_phit")->getVal()), "l");
-      l_phit->Draw();
-
-      double N_phit = w.var("nsig_phit")->getVal();
-      double dN_phit = w.var("nsig_phit")->getError();
-
-      gphit[j]->SetPoint(i - 1, h2phit->GetXaxis()->GetBinCenter(i), N_phit);
-      gphit[j]->SetPointError(i - 1, 0, dN_phit);
-
-      // +++++++++++++++++++++++++ MC  ++++++++++++++++++++
-
-      cphit1_mc[j]->cd(i);
-      TH1D *hphit_mc_py = h2phit_mc->ProjectionY(Form("hphit_mc_py_%d_%d", j, i), i, i);
-      hphit_mc_py->Draw("e");
-
-      w.factory(Form("Voigtian::sig_phit_mc(m_phit_mc[%f,%f],mean_phit_mc[1.005,1.03],width_phit_mc[0.004],sigma_phit_mc[0.0001,0.8])", mkk_min, mkk_max)); //sigma_phit_mc[0.001,0.01], mean_phit_mc[1.016,1.022]
-      w.factory("Chebychev::bkg_phit_mc(m_phit_mc,{c0_phit_mc[-1,1], c1_phit_mc[-1,1]})"); //, c2_phit_mc[-1,1]
-      w.factory("SUM:::model_phit_mc(nsig_phit_mc[0,100000000]*sig_phit_mc, nbkg_phit_mc[0,100000000]*bkg_phit_mc)"); //nsig[0,100000000]*sig2,
-      w.var("m_phit_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
-      RooDataHist dh_phit_mc("dh_phit_mc", "dh_phit_mc", *w.var("m_phit_mc"), Import(*hphit_mc_py));
-      RooPlot *fr_phit_mc = w.var("m_phit_mc")->frame(Title(Form("-t = %f", h2phit_mc->GetXaxis()->GetBinCenter(i))));
-      w.pdf("model_phit_mc")->fitTo(dh_phit_mc);
-      // result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-      dh_phit_mc.plotOn(fr_phit_mc, RooFit::Name("ldh_phit_mc"));
-      w.pdf("model_phit_mc")->plotOn(fr_phit_mc, Components(*w.pdf("sig_phit_mc")), LineColor(kRed), RooFit::Name("lsig_phit_mc"));
-      w.pdf("model_phit_mc")->plotOn(fr_phit_mc, Components(*w.pdf("bkg_phit_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_phit_mc"));
-      w.pdf("model_phit_mc")->plotOn(fr_phit_mc, RooFit::Name("lmodel_phit_mc"));
-      fr_phit_mc->Draw();
-      TLegend *l_phit_mc = new TLegend(0.5, 0.7, 0.8, 0.9);
-      l_phit_mc->SetFillColor(kWhite);
-      l_phit_mc->SetLineColor(kWhite);
-      l_phit_mc->AddEntry(fr_phit_mc->findObject("lsig_phit_mc"), Form("N_{Sig} = %.2f", w.var("nsig_phit_mc")->getVal()), "l");
-      l_phit_mc->AddEntry(fr_phit_mc->findObject("lbkg_phit_mc"), Form("N_{Bkg} = %.2f", w.var("nbkg_phit_mc")->getVal()), "l");
-      l_phit_mc->Draw();
-
-      double N_phit_mc = w.var("nsig_phit_mc")->getVal();
-      double dN_phit_mc = w.var("nsig_phit_mc")->getError();
-
-      gphit_mc[j]->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), N_phit_mc);
-      gphit_mc[j]->SetPointError(i - 1, 0, dN_phit_mc);
-
-      // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
-      double eff_phi = N_phit_mc / h_beame_tru->GetBinContent(j); // Efficiency = N_observed/N_generated
-      gphiteff[j]->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), eff_phi);
-      gphiteff[j]->SetPointError(i - 1, 0, dN_phit_mc / h_beame_tru->GetBinContent(j));
-
-      // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
-      Int_t bin1 = h_tagged_flux->FindBin(Eg1[j]);
-      Int_t bin2 = h_tagged_flux->FindBin(Eg2[j])-1;
-      double lumi_phi = h_tagged_flux->Integral(bin1, bin2); // * 1.273; // Luminosity = N_gama * T ,  T = 1.26 barns^-1
-      double br_phi = 0.489;
-      // double xsec_phi = 1e9 * N_phit / (eff_phi * lumi_phi * br_phi);
-      // double dxsec_phi = 1e9 * dN_phit / (eff_phi * lumi_phi * br_phi);
-      double xsec_phi = N_phit / lumi_phi;
-      double dxsec_phi = dN_phit / lumi_phi;     
-      gphitxsec[j]->SetPoint(i - 1, h2phit->GetXaxis()->GetBinCenter(i), xsec_phi);
-      gphitxsec[j]->SetPointError(i - 1, 0, dxsec_phi);
-    
-      ofs_xsec_phi2pi << " j = " << j << " i = " << i << " | N_phit = " << N_phit << " | N_phit_mc = " << N_phit_mc << " | h_beame_tru->GetBinContent(i) = " << h_beame_tru->GetBinContent(j) << " | h_tagged_flux->Integral(bin1, bin2) = " << h_tagged_flux->Integral(bin1, bin2) << " | eff_phi = " << eff_phi << " | xsec_phi = " << xsec_phi << endl;
-
-    }
-
-    cout << endl;
-
-    cgphit->cd(j);
-    gphit[j]->Draw("AP");
-    cgphit_mc->cd(j);
-    gphit_mc[j]->Draw("AP");
-    cgphiteff->cd(j);
-    gphiteff[j]->Draw("AP");
-    cgphitxsec->cd(j);
-    gphitxsec[j]->Draw("AP");
-
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_%d.root", j), "root");
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_%d.eps", j), "eps");
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_%d.png", j), "png");
-    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_mc_%d.root", j), "root");
-    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit1_mc_%d.png", j), "png");
-  }
-  // int j =1;
-  // gphit->Write(Form("grphit_%d", j), TObject::kWriteDelete);
-
- cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cbeamet.root", "root");
-  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cbeamet.eps", "eps");
-  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cbeamet.png", "png");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit.root", "root");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit.eps", "eps");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit.png", "png");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit.root", "root");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit.eps", "eps");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit.png", "png");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.root", "root");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.eps", "eps");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cphit_mc.png", "png");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.root", "root");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.eps", "eps");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphit_mc.png", "png");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.root", "root");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.eps", "eps");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphiteff.png", "png");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphitxsec.root", "root");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphitxsec.eps", "eps");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cgphitxsec.png", "png");
-*/
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.root", name.Data()), "root");
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.eps", name.Data()), "eps");
-  c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c%s_tagged_flux.png", name.Data()), "png");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c_beame_tru.root", "root");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c_beame_tru.eps", "eps");
-  c_beame_tru->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/c_beame_tru.png", "png");
-
-  outputfig->Print();
-
-  fprintf(table_xsec_phi2pi,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
-  fclose(table_xsec_phi2pi);
-  gSystem->Exec("pdflatex table_xsec_phi2pi.tex");
-
-  fprintf(table_xsec_phi2pi_sys,"\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
-  fclose(table_xsec_phi2pi_sys);
-  gSystem->Exec("pdflatex table_xsec_phi2pi_sys.tex");
-
-  // table_phi << "\\hline" << endl;
-  // table_phi << "\\end{tabularx}" << endl;
-  // table_phi << "\\end{center}" << endl;
-  // table_phi << "\\end{minipage}" << endl;
-  // table_phi << "\\end{table}" << endl;
-  // table_phi << "\\end{document}" << endl;
-  // table_phi.close();
-  // gSystem->Exec("pdflatex table_phi.tex");
-  
 }
