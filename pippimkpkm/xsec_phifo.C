@@ -304,7 +304,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
    cphifo->cd();
    TH2F *h2d2 = new TH2F("h2d2", "(Data);m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n2pi, m2pi_min, m2pi_max, n2k, mkk_min, mkk_max);
-   tdata->Project("h2d2", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni) && beam_p4_kin.E()>5.9 && beam_p4_kin.E()<11.9)");
+   tdata->Project("h2d2", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni) && beam_p4_kin.E()>6.5 && beam_p4_kin.E()<11.6)");
    h2d2->Draw("colz");
 
    gphifo = new TGraphErrors(); //n2pi
@@ -416,10 +416,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     // TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol2(4)", mkk_min, mkk_max);
     TF1 *fsb_fo_data = new TF1("fsb_fo_data", "[0]*TMath::BreitWigner(x,[1],[2]) + pol3(3)", 0.85, 1.05);
     fsb_fo_data->SetLineColor(2);
-    fsb_fo_data->SetParameters(1433, 0.980, 0.1, 1,1,1,1);
+    fsb_fo_data->SetParameters(30, 0.980, 0.01, 1,1,1,1);
     // fsb->SetParLimits(0, 0, 10000);
-    fsb_fo_data->SetParLimits(1, 0.95, 0.98); 
-    fsb_fo_data->SetParLimits(2, 0.001, 0.6); 
+    fsb_fo_data->SetParLimits(1, 0.95, 0.99); 
+    fsb_fo_data->SetParLimits(2, 0.01, 0.1); 
     // fsb_fo_data->FixParameter(1, fsb_fo_mc->GetParameter(1)); 
     // fsb_fo_data->FixParameter(2, fsb_fo_mc->GetParameter(2));
 
@@ -431,7 +431,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     fb_fo_data->SetLineColor(28);
     fb_fo_data->SetLineStyle(2);
 
-    gphifo->Fit("fsb_fo_data", "", "", 0.85, 1.05);
+    gphifo->Fit("fsb_fo_data", "R", "", 0.85, 1.05);
     double par_fo_data[10]; //6
     fsb_fo_data->GetParameters(&par_fo_data[0]);
     fs_fo_data->SetParameters(&par_fo_data[0]);
@@ -915,11 +915,11 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
     // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
     double lumi_phifoe = h_tagged_flux->GetBinContent(i); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
-    if (lumi_phifoe <= 0)
-    {
-      //gphiexsec->RemovePoint(i - 1);
-      continue;
-    }
+    // if (lumi_phifoe <= 0)
+    // {
+    //   //gphiexsec->RemovePoint(i - 1);
+    //   continue;
+    // }
     double T = 1.273; //Target thickness [b^{-1}]
     double br_phi = 0.492;
     double dbr_phi = 0.005;
@@ -928,8 +928,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     double dxsec_phifoe_sys = xsec_phifoe * TMath::Sqrt((err_sys / N_foe_data) * (err_sys / N_foe_data) + (deff_phifoe / eff_phifoe) * (deff_phifoe / eff_phifoe) + (dbr_phi / br_phi) * (dbr_phi / br_phi));
     // double xsec_phi = N_foe / lumi_phi;
     // double dxsec_phi = dN_foe / lumi_phi;
-    gphifoexsec->SetPoint(gphifoexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phifoe);
-    gphifoexsec->SetPointError(gphifoexsec->GetN() - 1, 0, dxsec_phifoe_stat);
+    gphifoexsec->SetPoint(i-1, h2phie->GetXaxis()->GetBinCenter(i), xsec_phifoe);
+    gphifoexsec->SetPointError(i-1, 0, dxsec_phifoe_stat);
+    // gphifoexsec->SetPoint(gphifoexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phifoe);
+    // gphifoexsec->SetPointError(gphifoexsec->GetN() - 1, 0, dxsec_phifoe_stat);
 
     fprintf(table_xsec_phifo, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phie_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(i), N_foe_mc, dN_foe_mc, N_foe_data, dN_foe_data, eff_phifoe * 100, deff_phifoe * 100, xsec_phifoe, dxsec_phifoe_stat, dxsec_phifoe_sys);
 
@@ -1398,11 +1400,11 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
     // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
     double lumi_phi = h_tagged_flux->GetBinContent(1); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
-    if (lumi_phi <= 0)
-    {
-      //gphitxsec->RemovePoint(i - 1);
-      continue;
-    }
+    // if (lumi_phi <= 0)
+    // {
+    //   //gphitxsec->RemovePoint(i - 1);
+    //   continue;
+    // }
     double T = 1.273; //Target thickness [b^{-1}]
     double br_phi = 0.492;
     double dbr_phi = 0.005;
@@ -1411,8 +1413,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     double dxsec_phi2pi_sys = xsec_phi2pi * TMath::Sqrt((err_sys / N_phit_data)*(err_sys / N_phit_data) + (deff_phi / eff_phi)*(deff_phi / eff_phi) + (dbr_phi / br_phi)*(dbr_phi / br_phi));
     // double xsec_phi = N_phit / lumi_phi;
     // double dxsec_phi = dN_phit / lumi_phi;  
-    gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
-    gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
+    gphitxsec->SetPoint(i-1, h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    gphitxsec->SetPointError(i-1, 0, dxsec_phi2pi_stat);
+    // gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    // gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
 
     fprintf(table_xsec_phifo, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(1), N_phit_mc, dN_phit_mc, N_phit_data, dN_phit_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
     

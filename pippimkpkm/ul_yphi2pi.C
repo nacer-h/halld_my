@@ -56,7 +56,7 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   TFile *ftru = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/thrown_yphi2pi_%s.root", name.Data()));
   TTree *tdata = (TTree*)fdata->Get("ntp");
   TTree *tmc = (TTree *)fmc->Get("ntp");
-  TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
+  // TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
   TFile *fps = NULL;
   if(name == "16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
   if(name == "17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");

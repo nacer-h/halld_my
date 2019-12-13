@@ -51,7 +51,7 @@ void y2175(TString name)//, TString cut)
   // gStyle->SetMarkerSize(1);
   // gStyle->SetLineWidth(1);
   // gStyle->SetHistLineWidth(3);
-  // TString cutlist = "(abs(kp_dttof)<0.135 || kp_dttof == -999) && (abs(kp_dtbcal)<0.4125 || kp_dtbcal == -999) && (abs(kp_dtfcal)<1 || kp_dtfcal == -999) && (abs(pip_dttof)<0.15 || pip_dttof == -999) && (abs(pip_dtbcal)<0.85 || pip_dtbcal == -999) && (abs(p_dttof)<0.27 || p_dttof == -999) && abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50";// abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50 &&
+  TString cutlist = "(abs(kp_dttof)<0.135 || kp_dttof == -999) && (abs(kp_dtbcal)<0.4125 || kp_dtbcal == -999) && (abs(kp_dtfcal)<1 || kp_dtfcal == -999) && (abs(pip_dttof)<0.15 || pip_dttof == -999) && (abs(pip_dtbcal)<0.85 || pip_dtbcal == -999) && (abs(p_dttof)<0.27 || p_dttof == -999)";// && abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50
 
   // // Van Hove
   // TCanvas *c_vhthetaphi = new TCanvas("c_vhthetaphi", "c_vhthetaphi", 900,600);
@@ -100,11 +100,16 @@ if(name == "data")
   c_kin_chisq_chi2pi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kin_chisq_chi2pi.root",name.Data()), "root");
   c_kin_chisq_chi2pi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kin_chisq_chi2pi.eps",name.Data()), "eps");  
 }
+*/
+/*
   // ******* Tagger accidentals
   TCanvas *c_TaggerAccidentals = new TCanvas("c_TaggerAccidentals","c_TaggerAccidentals",900,600);
   c_TaggerAccidentals->cd();
-  TH1F *h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", Form("Vertex time - RF (%s);#Deltat_{Beam-RF}(ns)",name.Data()), 300, -18, 18);
+  TH1F *h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", "Vertex time - RF;#Deltat_{Beam-RF}(ns)", 600, -18, 18);
   t->Project("h_TaggerAccidentals","rf_dt","");
+  TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  "Vertex time - RF;#Deltat_{Beam-RF}(ns)", 600, -18, 18);
+  t->Project("h_TaggerAccidentals_postcut","rf_dt","w8");
+  h_TaggerAccidentals_postcut->SetLineColor(kRed);
   TLine *l_TaggerAccidentals1 = new TLine(2.004, 0, 2.004, h_TaggerAccidentals->GetMaximum());
   TLine *l_TaggerAccidentals2 = new TLine(-2.004, 0, -2.004, h_TaggerAccidentals->GetMaximum());
   TLine *l_TaggerAccidentals3 = new TLine(6.012, 0, 6.012, h_TaggerAccidentals->GetMaximum());
@@ -118,32 +123,37 @@ if(name == "data")
   l_TaggerAccidentals3->SetLineStyle(10);
   l_TaggerAccidentals4->SetLineStyle(10);
   h_TaggerAccidentals->Draw();
-  l_TaggerAccidentals1->Draw("same");
-  l_TaggerAccidentals2->Draw("same");
-  l_TaggerAccidentals3->Draw("same");
-  l_TaggerAccidentals4->Draw("same");
+  h_TaggerAccidentals_postcut->Draw("hist same");
+  // l_TaggerAccidentals1->Draw("same");
+  // l_TaggerAccidentals2->Draw("same");
+  // l_TaggerAccidentals3->Draw("same");
+  // l_TaggerAccidentals4->Draw("same");
   h_TaggerAccidentals->Write();
+  h_TaggerAccidentals_postcut->Write();
   c_TaggerAccidentals->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals.root",name.Data()), "root");
   c_TaggerAccidentals->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals.eps",name.Data()), "eps");
+  c_TaggerAccidentals->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals.png",name.Data()), "png");
 
-  TCanvas *c_TaggerAccidentals_postcut = new TCanvas("c_TaggerAccidentals_postcut","c_TaggerAccidentals_postcut",900,600);
-  c_TaggerAccidentals_postcut->cd();
-  TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  Form("Vertex time - RF (%s);#Deltat_{Beam-RF}(ns)",name.Data()), 300, -18, 18);
-  t->Project("h_TaggerAccidentals_postcut","rf_dt","w8");
-  h_TaggerAccidentals_postcut->Draw("hist");
-  h_TaggerAccidentals_postcut->Write();
-  c_TaggerAccidentals_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals_postcut.root",name.Data()), "root");
-  c_TaggerAccidentals_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals_postcut.eps",name.Data()), "eps");
-*/
-/*
+  // TCanvas *c_TaggerAccidentals_postcut = new TCanvas("c_TaggerAccidentals_postcut","c_TaggerAccidentals_postcut",900,600);
+  // c_TaggerAccidentals_postcut->cd();
+  // TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  Form("Vertex time - RF (%s);#Deltat_{Beam-RF}(ns)",name.Data()), 300, -18, 18);
+  // t->Project("h_TaggerAccidentals_postcut","rf_dt","w8");
+  // h_TaggerAccidentals_postcut->SetLineColor(kRed);
+  // h_TaggerAccidentals_postcut->Draw("hist same");
+  // h_TaggerAccidentals_postcut->Write();
+  // c_TaggerAccidentals_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals_postcut.root",name.Data()), "root");
+  // c_TaggerAccidentals_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals_postcut.eps",name.Data()), "eps");
+  // c_TaggerAccidentals_postcut->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_TaggerAccidentals_postcut.png",name.Data()), "png");
+
+
   // ********  Chi2 of KinFit
   TCanvas *c_kin_chisq = new TCanvas("c_kin_chisq","c_kin_chisq",900,600);
   c_kin_chisq->cd();
-  TH1F *h_kin_chisq = new TH1F("h_kin_chisq", Form("%s;#chi^{2} of Kinematic Fit;Counts",name.Data()), 300, 0, 100);
-  t->Project("h_kin_chisq","kin_chisq","w8*("+cutlist+"&& abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50)");
+  TH1F *h_kin_chisq = new TH1F("h_kin_chisq", ";#chi^{2} of Kinematic Fit;Counts", 300, 0, 100);
+  t->Project("h_kin_chisq","kin_chisq","w8*("+cutlist+" && abs(mm2)<0.01 && kp_x4_kin.Z()<80 && kp_x4_kin.Z()>50)");
   TLine *l_kin_chisq = new TLine(25, 0, 25, h_kin_chisq->GetMaximum());
   l_kin_chisq->SetLineColor(kRed);
-  l_kin_chisq->SetLineStyle(10);
+  l_kin_chisq->SetLineWidth(2);
   h_kin_chisq->Draw("hist");
   h_kin_chisq->Write(Form("h%s_kin_chisq",name.Data()),TObject::kWriteDelete);
   l_kin_chisq->Draw("same");
@@ -161,47 +171,51 @@ if(name == "data")
   h_kin_chisq->Write();
   c_kin_chisq->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kin_chisq.root",name.Data()), "root");
   c_kin_chisq->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kin_chisq.eps",name.Data()), "eps");  
+  c_kin_chisq->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kin_chisq.png",name.Data()), "png");  
 
 
   // ********  Missing Mass Squared
   TCanvas *c_mm2 = new TCanvas("c_mm2","c_mm2",900,600);
   c_mm2->cd();
   // c_mm2->SetLogy();
-  TH1F *h_mm2 = new TH1F("h_mm2", Form("%s; MM^{2} (GeV/c^{2})^{2}; Counts",name.Data()), 600, -0.1, 0.1);
+  TH1F *h_mm2 = new TH1F("h_mm2", "; MM^{2} (GeV/c^{2})^{2}; Counts", 600, -0.02, 0.02);
   t->Project("h_mm2","mm2","w8*("+cutlist+")");
   TLine *l_mm21 = new TLine(0.01, 0, 0.01, h_mm2->GetMaximum());
   TLine *l_mm22 = new TLine(-0.01, 0, -0.01, h_mm2->GetMaximum());
   l_mm21->SetLineColor(kRed);
   l_mm22->SetLineColor(kRed);
-  l_mm21->SetLineStyle(10);
-  l_mm22->SetLineStyle(10);  
+  l_mm21->SetLineWidth(2);
+  l_mm22->SetLineWidth(2);  
   h_mm2->Draw("hist");
   l_mm21->Draw("same");
   l_mm22->Draw("same");
   h_mm2->Write(Form("h%s_mm2",name.Data()),TObject::kWriteDelete);
   c_mm2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2.root",name.Data()), "root");
   c_mm2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2.eps",name.Data()), "eps");
-*/
-/*
+  c_mm2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2.png",name.Data()), "png");
+
+
   // ********  VertexZ
   // proton
-  TCanvas *c_p_vertexz = new TCanvas("c_p_vertexz","c_p_vertexz",600,400);
+  TCanvas *c_p_vertexz = new TCanvas("c_p_vertexz","c_p_vertexz",900,600);
   c_p_vertexz->cd();
-  TH1F *h_p_vertexz = new TH1F("h_p_vertexz", Form("%s;Vertex-Z (cm) (Protons); Counts",name.Data()), 300, 45, 85);
+  TH1F *h_p_vertexz = new TH1F("h_p_vertexz", ";Vertex-Z (cm) (Protons); Counts", 300, 45, 85);
   t->Project("h_p_vertexz","p_x4_kin.Z()","w8*("+cutlist+"&& abs(mm2)<0.01)");
   TLine *l_p_vertexz1 = new TLine(50, 0, 50, h_p_vertexz->GetMaximum());
   TLine *l_p_vertexz2 = new TLine(80, 0, 80, h_p_vertexz->GetMaximum());
   l_p_vertexz1->SetLineColor(kRed);
   l_p_vertexz2->SetLineColor(kRed);
-  l_p_vertexz1->SetLineStyle(10);
-  l_p_vertexz2->SetLineStyle(10);  
+  l_p_vertexz1->SetLineWidth(2);
+  l_p_vertexz2->SetLineWidth(2);
   h_p_vertexz->Draw("hist");
   l_p_vertexz1->Draw("same");
   l_p_vertexz2->Draw("same");
   h_p_vertexz->Write();
   c_p_vertexz->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_vertexz.root",name.Data()), "root");
   c_p_vertexz->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_vertexz.eps",name.Data()), "eps");
-
+  c_p_vertexz->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_vertexz.png",name.Data()), "png");
+*/
+/*
   // pip
   TCanvas *c_pip_vertexz = new TCanvas("c_pip_vertexz","c_pip_vertexz",600,400);
   c_pip_vertexz->cd();
@@ -312,11 +326,11 @@ if(name == "data")
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.root",name.Data()), "root");
   c_pt->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pt.eps",name.Data()), "eps"); 
 
-
+*/
   // ********  Beam Energy
   TCanvas *c_beam_e = new TCanvas("c_beam_e", "c_beam_e", 900, 600);
   c_beam_e->cd();
-  TH1F *h_beam_e = new TH1F("h_beam_e", Form("%s;Beam Energy (GeV);Counts",name.Data()), 100, 3.0, 11.6);
+  TH1F *h_beam_e = new TH1F("h_beam_e", Form("%s;Beam Energy (GeV);Counts",name.Data()), 100, 6.5, 11.6);
   t->Project("h_beam_e","beam_p4_kin.E()","w8");
   h_beam_e->Draw("hist");
   h_beam_e->Write(Form("h%s_beam_e",name.Data()),TObject::kWriteDelete);
@@ -336,14 +350,14 @@ if(name == "data")
   TCanvas *c_t_kin = new TCanvas("c_t_kin","c_t_kin",900,600);
   c_t_kin->cd();
   c_t_kin->SetLogy();
-  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV/c)^{2});Counts",name.Data()), 300, 0, 10);
+  TH1F *h_t_kin = new TH1F("h_t_kin", Form("%s;-t (GeV/c)^{2});Counts",name.Data()), 300, 0, 4);
   t->Project("h_t_kin","-t_kin","w8*(kpkm_mf>1.005 && kpkm_mf<1.035)");
-  h_t_kin->Fit("expo", "R", "", 0.8, 3.5);
+  h_t_kin->Fit("expo", "R", "", 0.8, 3.0);
   h_t_kin->Draw("e");
   h_t_kin->Write(Form("h%s_t_kin",name.Data()),TObject::kWriteDelete);
   c_t_kin->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_t_kin.root", name.Data()), "root");
   c_t_kin->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_t_kin.eps",name.Data()), "eps");
-
+/*
   // ********  Eg vs. -t
   TCanvas *c_beamevst = new TCanvas("c_beamevst", "c_beamevst", 900, 600);
   c_beamevst->cd();
@@ -372,7 +386,7 @@ if(name == "data")
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.root",name.Data()), "root");
   c_mm2vsmm2_piask->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_mm2vsmm2_piask.eps",name.Data()), "eps");     
 */
-
+/*
   // **************** P vs. theta
 
   TCanvas *c_tot_ptheta = new TCanvas("c_tot_ptheta", "c_tot_ptheta", 2500, 500);
@@ -434,217 +448,223 @@ if(name == "data")
   c_tot_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_tot_ptheta.root",name.Data()), "root");
   c_tot_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_tot_ptheta.eps",name.Data()), "eps");
   c_tot_ptheta->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_tot_ptheta.png",name.Data()), "png");
-
+*/
 /*
   // **************** dt vs. p
   // proton
   // TOF
-  TCanvas *c_p_dttof = new TCanvas("c_p_dttof", "c_p_dttof", 600, 400);
+  TCanvas *c_p_dttof = new TCanvas("c_p_dttof", "c_p_dttof", 900,600);
   c_p_dttof->cd();
-  TH2D *h_p_dttof = new TH2D("h_p_dttof", Form("proton (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.6, 0.6);
+  TH2D *h_p_dttof = new TH2D("h_p_dttof", "proton; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.6, 0.6);
   t->Project("h_p_dttof", "p_dttof:p_p4_kin.P()","");
   cout << "h_p_dttof = " << h_p_dttof << endl;
   TLine *l_p_dttof1 = new TLine(0, 0.27, 8, 0.27);
   TLine *l_p_dttof2 = new TLine(0, -0.27, 8, -0.27); 
   l_p_dttof1->SetLineColor(kRed);
   l_p_dttof2->SetLineColor(kRed);
-  l_p_dttof1->SetLineStyle(10);
-  l_p_dttof2->SetLineStyle(10); 
+  l_p_dttof1->SetLineWidth(2);
+  l_p_dttof2->SetLineWidth(2);
   h_p_dttof->Draw("colz");
   l_p_dttof1->Draw("same");
   l_p_dttof2->Draw("same");
   h_p_dttof->Write(Form("h%s_p_dttof",name.Data()),TObject::kWriteDelete);
   c_p_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dttof.root",name.Data()), "root");
   c_p_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dttof.eps",name.Data()), "eps");
+  c_p_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dttof.png",name.Data()), "png");
 
-  // BCAL
-  TCanvas *c_p_dtbcal = new TCanvas("c_p_dtbcal", "c_p_dtbcal", 600, 400);
-  c_p_dtbcal->cd();
-  TH2D *h_p_dtbcal = new TH2D("h_p_dtbcal", Form("proton (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-1.0, 1.0);
-  t->Project("h_p_dtbcal", "p_dtbcal:p_p4_kin.P()","");
-  cout << "h_p_dtbcal = " << h_p_dtbcal << endl;
-  h_p_dtbcal->Draw("colz");
-  h_p_dtbcal->Write(Form("h%s_p_dtbcal",name.Data()),TObject::kWriteDelete);
-  c_p_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtbcal.root",name.Data()), "root");
-  c_p_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtbcal.eps",name.Data()), "eps");
-  // FCAL
-  TCanvas *c_p_dtfcal = new TCanvas("c_p_dtfcal", "c_p_dtfcal", 600, 400);
-  c_p_dtfcal->cd();
-  TH2D *h_p_dtfcal = new TH2D("h_p_dtfcal", Form("proton (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_p_dtfcal", "p_dtfcal:p_p4_kin.P()","");
-  cout << "h_p_dtfcal = " << h_p_dtfcal << endl;
-  h_p_dtfcal->Draw("colz");
-  h_p_dtfcal->Write(Form("h%s_p_dtfcal",name.Data()),TObject::kWriteDelete);
-  c_p_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtfcal.root",name.Data()), "root");
-  c_p_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtfcal.eps",name.Data()), "eps");
+  // // BCAL
+  // TCanvas *c_p_dtbcal = new TCanvas("c_p_dtbcal", "c_p_dtbcal", 600, 400);
+  // c_p_dtbcal->cd();
+  // TH2D *h_p_dtbcal = new TH2D("h_p_dtbcal", Form("proton (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-1.0, 1.0);
+  // t->Project("h_p_dtbcal", "p_dtbcal:p_p4_kin.P()","");
+  // cout << "h_p_dtbcal = " << h_p_dtbcal << endl;
+  // h_p_dtbcal->Draw("colz");
+  // h_p_dtbcal->Write(Form("h%s_p_dtbcal",name.Data()),TObject::kWriteDelete);
+  // c_p_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtbcal.root",name.Data()), "root");
+  // c_p_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtbcal.eps",name.Data()), "eps");
+  // // FCAL
+  // TCanvas *c_p_dtfcal = new TCanvas("c_p_dtfcal", "c_p_dtfcal", 600, 400);
+  // c_p_dtfcal->cd();
+  // TH2D *h_p_dtfcal = new TH2D("h_p_dtfcal", Form("proton (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
+  // t->Project("h_p_dtfcal", "p_dtfcal:p_p4_kin.P()","");
+  // cout << "h_p_dtfcal = " << h_p_dtfcal << endl;
+  // h_p_dtfcal->Draw("colz");
+  // h_p_dtfcal->Write(Form("h%s_p_dtfcal",name.Data()),TObject::kWriteDelete);
+  // c_p_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtfcal.root",name.Data()), "root");
+  // c_p_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_p_dtfcal.eps",name.Data()), "eps");
 
   // pip
   // TOF
-  TCanvas *c_pip_dttof = new TCanvas("c_pip_dttof", "c_pip_dttof", 600, 400);
+  TCanvas *c_pip_dttof = new TCanvas("c_pip_dttof", "c_pip_dttof", 900,600);
   c_pip_dttof->cd();
-  TH2D *h_pip_dttof = new TH2D("h_pip_dttof", Form("#pi^{+} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.5, 0.5);
+  TH2D *h_pip_dttof = new TH2D("h_pip_dttof", "#pi^{+}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.5, 0.5);
   t->Project("h_pip_dttof", "pip_dttof:pip_p4_kin.P()","");
   cout << "h_pip_dttof = " << h_pip_dttof << endl;
   TLine *l_pip_dttof1 = new TLine(0, 0.15, 8, 0.15);
   TLine *l_pip_dttof2 = new TLine(0, -0.15, 8, -0.15); 
   l_pip_dttof1->SetLineColor(kRed);
   l_pip_dttof2->SetLineColor(kRed);
-  l_pip_dttof1->SetLineStyle(10);
-  l_pip_dttof2->SetLineStyle(10); 
+  l_pip_dttof1->SetLineWidth(2);
+  l_pip_dttof2->SetLineWidth(2);
   h_pip_dttof->Draw("colz");
   l_pip_dttof1->Draw("same");
   l_pip_dttof2->Draw("same");
   h_pip_dttof->Write(Form("h%s_pip_dttof",name.Data()),TObject::kWriteDelete);
   c_pip_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dttof.root",name.Data()), "root");
   c_pip_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dttof.eps",name.Data()), "eps");
+  c_pip_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dttof.png",name.Data()), "png");
   // BCAL
-  TCanvas *c_pip_dtbcal = new TCanvas("c_pip_dtbcal", "c_pip_dtbcal", 600, 400);
+  TCanvas *c_pip_dtbcal = new TCanvas("c_pip_dtbcal", "c_pip_dtbcal", 900,600);
   c_pip_dtbcal->cd();
-  TH2D *h_pip_dtbcal = new TH2D("h_pip_dtbcal", Form("#pi^{+} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-1.0, 1.0);
+  TH2D *h_pip_dtbcal = new TH2D("h_pip_dtbcal", "#pi^{+}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-1.0, 1.0);
   t->Project("h_pip_dtbcal", "pip_dtbcal:pip_p4_kin.P()","");
   cout << "h_pip_dtbcal = " << h_pip_dtbcal << endl;
   TLine *l_pip_dtbcal1 = new TLine(0, 0.85, 8, 0.85);
   TLine *l_pip_dtbcal2 = new TLine(0, -0.85, 8, -0.85); 
   l_pip_dtbcal1->SetLineColor(kRed);
   l_pip_dtbcal2->SetLineColor(kRed);
-  l_pip_dtbcal1->SetLineStyle(10);
-  l_pip_dtbcal2->SetLineStyle(10); 
+  l_pip_dtbcal1->SetLineWidth(2);
+  l_pip_dtbcal2->SetLineWidth(2); 
   h_pip_dtbcal->Draw("colz");
   l_pip_dtbcal1->Draw("same");
   l_pip_dtbcal2->Draw("same");
   h_pip_dtbcal->Write(Form("h%s_pip_dtbcal",name.Data()),TObject::kWriteDelete);
   c_pip_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtbcal.root",name.Data()), "root");
   c_pip_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtbcal.eps",name.Data()), "eps");
-  // FCAL
-  TCanvas *c_pip_dtfcal = new TCanvas("c_pip_dtfcal", "c_pip_dtfcal", 600, 400);
-  c_pip_dtfcal->cd();
-  TH2D *h_pip_dtfcal = new TH2D("h_pip_dtfcal", Form("#pi^{+} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_pip_dtfcal", "pip_dtfcal:pip_p4_kin.P()","");
-  cout << "h_pip_dtfcal = " << h_pip_dtfcal << endl;
-  h_pip_dtfcal->Draw("colz");
-  h_pip_dtfcal->Write(Form("h%s_pip_dtfcal",name.Data()),TObject::kWriteDelete);
-  c_pip_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtfcal.root",name.Data()), "root");
-  c_pip_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtfcal.eps",name.Data()), "eps");
+  c_pip_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtbcal.png",name.Data()), "png");
+  // // FCAL
+  // TCanvas *c_pip_dtfcal = new TCanvas("c_pip_dtfcal", "c_pip_dtfcal", 600, 400);
+  // c_pip_dtfcal->cd();
+  // TH2D *h_pip_dtfcal = new TH2D("h_pip_dtfcal", Form("#pi^{+} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
+  // t->Project("h_pip_dtfcal", "pip_dtfcal:pip_p4_kin.P()","");
+  // cout << "h_pip_dtfcal = " << h_pip_dtfcal << endl;
+  // h_pip_dtfcal->Draw("colz");
+  // h_pip_dtfcal->Write(Form("h%s_pip_dtfcal",name.Data()),TObject::kWriteDelete);
+  // c_pip_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtfcal.root",name.Data()), "root");
+  // c_pip_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pip_dtfcal.eps",name.Data()), "eps");
 
-  // pim
-  // TOF
-  TCanvas *c_pim_dttof = new TCanvas("c_pim_dttof", "c_pim_dttof", 600, 400);
-  c_pim_dttof->cd();
-  TH2D *h_pim_dttof = new TH2D("h_pim_dttof", Form("#pi^{-} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.5, 0.5);
-  t->Project("h_pim_dttof", "pim_dttof:pim_p4_kin.P()","");
-  cout << "h_pim_dttof = " << h_pim_dttof << endl;
-  h_pim_dttof->Draw("colz");
-  h_pim_dttof->Write(Form("h%s_pim_dttof",name.Data()),TObject::kWriteDelete);
-  c_pim_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dttof.root",name.Data()), "root");
-  c_pim_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dttof.eps",name.Data()), "eps");
-  // BCAL
-  TCanvas *c_pim_dtbcal = new TCanvas("c_pim_dtbcal", "c_pim_dtbcal", 600, 400);
-  c_pim_dtbcal->cd();
-  TH2D *h_pim_dtbcal = new TH2D("h_pim_dtbcal", Form("#pi^{-} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-1.0, 1.0);
-  t->Project("h_pim_dtbcal", "pim_dtbcal:pim_p4_kin.P()","");
-  cout << "h_pim_dtbcal = " << h_pim_dtbcal << endl;
-  h_pim_dtbcal->Draw("colz");
-  h_pim_dtbcal->Write(Form("h%s_pim_dtbcal",name.Data()),TObject::kWriteDelete);
-  c_pim_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtbcal.root",name.Data()), "root");
-  c_pim_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtbcal.eps",name.Data()), "eps");
-  // FCAL
-  TCanvas *c_pim_dtfcal = new TCanvas("c_pim_dtfcal", "c_pim_dtfcal", 600, 400);
-  c_pim_dtfcal->cd();
-  TH2D *h_pim_dtfcal = new TH2D("h_pim_dtfcal", Form("#pi^{-} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
-  t->Project("h_pim_dtfcal", "pim_dtfcal:pim_p4_kin.P()","");
-  cout << "h_pim_dtfcal = " << h_pim_dtfcal << endl;
-  h_pim_dtfcal->Draw("colz");
-  h_pim_dtfcal->Write(Form("h%s_pim_dtfcal",name.Data()),TObject::kWriteDelete);
-  c_pim_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtfcal.root",name.Data()), "root");
-  c_pim_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtfcal.eps",name.Data()), "eps");
+  // // pim
+  // // TOF
+  // TCanvas *c_pim_dttof = new TCanvas("c_pim_dttof", "c_pim_dttof", 600, 400);
+  // c_pim_dttof->cd();
+  // TH2D *h_pim_dttof = new TH2D("h_pim_dttof", Form("#pi^{-} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.5, 0.5);
+  // t->Project("h_pim_dttof", "pim_dttof:pim_p4_kin.P()","");
+  // cout << "h_pim_dttof = " << h_pim_dttof << endl;
+  // h_pim_dttof->Draw("colz");
+  // h_pim_dttof->Write(Form("h%s_pim_dttof",name.Data()),TObject::kWriteDelete);
+  // c_pim_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dttof.root",name.Data()), "root");
+  // c_pim_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dttof.eps",name.Data()), "eps");
+  // // BCAL
+  // TCanvas *c_pim_dtbcal = new TCanvas("c_pim_dtbcal", "c_pim_dtbcal", 600, 400);
+  // c_pim_dtbcal->cd();
+  // TH2D *h_pim_dtbcal = new TH2D("h_pim_dtbcal", Form("#pi^{-} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-1.0, 1.0);
+  // t->Project("h_pim_dtbcal", "pim_dtbcal:pim_p4_kin.P()","");
+  // cout << "h_pim_dtbcal = " << h_pim_dtbcal << endl;
+  // h_pim_dtbcal->Draw("colz");
+  // h_pim_dtbcal->Write(Form("h%s_pim_dtbcal",name.Data()),TObject::kWriteDelete);
+  // c_pim_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtbcal.root",name.Data()), "root");
+  // c_pim_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtbcal.eps",name.Data()), "eps");
+  // // FCAL
+  // TCanvas *c_pim_dtfcal = new TCanvas("c_pim_dtfcal", "c_pim_dtfcal", 600, 400);
+  // c_pim_dtfcal->cd();
+  // TH2D *h_pim_dtfcal = new TH2D("h_pim_dtfcal", Form("#pi^{-} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.0, 2.0);
+  // t->Project("h_pim_dtfcal", "pim_dtfcal:pim_p4_kin.P()","");
+  // cout << "h_pim_dtfcal = " << h_pim_dtfcal << endl;
+  // h_pim_dtfcal->Draw("colz");
+  // h_pim_dtfcal->Write(Form("h%s_pim_dtfcal",name.Data()),TObject::kWriteDelete);
+  // c_pim_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtfcal.root",name.Data()), "root");
+  // c_pim_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_pim_dtfcal.eps",name.Data()), "eps");
 
   // kp
   // TOF
-  TCanvas *c_kp_dttof = new TCanvas("c_kp_dttof", "c_kp_dttof", 600, 400);
+  TCanvas *c_kp_dttof = new TCanvas("c_kp_dttof", "c_kp_dttof", 900,600);
   c_kp_dttof->cd();
-  TH2D *h_kp_dttof = new TH2D("h_kp_dttof", Form("K^{+} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.3, 0.3);
+  TH2D *h_kp_dttof = new TH2D("h_kp_dttof", "K^{+}; p (GeV/c); TOF #Delta T (ns)", 250, 0.0, 10.0, 500,-0.3, 0.3);
   t->Project("h_kp_dttof", "kp_dttof:kp_p4_kin.P()","");
   cout << "h_kp_dttof = " << h_kp_dttof << endl;
   TLine *l_kp_dttof1 = new TLine(0, 0.135, 8, 0.135);
   TLine *l_kp_dttof2 = new TLine(0, -0.135, 8, -0.135); 
   l_kp_dttof1->SetLineColor(kRed);
   l_kp_dttof2->SetLineColor(kRed);
-  l_kp_dttof1->SetLineStyle(10);
-  l_kp_dttof2->SetLineStyle(10);
+  l_kp_dttof1->SetLineWidth(2);
+  l_kp_dttof2->SetLineWidth(2);
   h_kp_dttof->Draw("colz");
   l_kp_dttof1->Draw("same");
   l_kp_dttof2->Draw("same");
   h_kp_dttof->Write(Form("h%s_kp_dttof",name.Data()),TObject::kWriteDelete);
   c_kp_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dttof.root",name.Data()), "root");
   c_kp_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dttof.eps",name.Data()), "eps");
+  c_kp_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dttof.png",name.Data()), "png");
   // BCAL
-  TCanvas *c_kp_dtbcal = new TCanvas("c_kp_dtbcal", "c_kp_dtbcal", 600, 400);
+  TCanvas *c_kp_dtbcal = new TCanvas("c_kp_dtbcal", "c_kp_dtbcal", 900,600);
   c_kp_dtbcal->cd();
-  TH2D *h_kp_dtbcal = new TH2D("h_kp_dtbcal", Form("K^{+} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.75, 0.75);
+  TH2D *h_kp_dtbcal = new TH2D("h_kp_dtbcal", "K^{+}; p (GeV/c); BCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-0.75, 0.75);
   t->Project("h_kp_dtbcal", "kp_dtbcal:kp_p4_kin.P()","");
   cout << "h_kp_dtbcal = " << h_kp_dtbcal << endl;
   TLine *l_kp_dtbcal1 = new TLine(0, 0.4125, 8, 0.4125);
   TLine *l_kp_dtbcal2 = new TLine(0, -0.4125, 8, -0.4125); 
   l_kp_dtbcal1->SetLineColor(kRed);
   l_kp_dtbcal2->SetLineColor(kRed);
-  l_kp_dtbcal1->SetLineStyle(10);
-  l_kp_dtbcal2->SetLineStyle(10);  
+  l_kp_dtbcal1->SetLineWidth(2);
+  l_kp_dtbcal2->SetLineWidth(2);  
   h_kp_dtbcal->Draw("colz");
   l_kp_dtbcal1->Draw("same");
   l_kp_dtbcal2->Draw("same");
   h_kp_dtbcal->Write(Form("h%s_kp_dtbcal",name.Data()),TObject::kWriteDelete);
   c_kp_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtbcal.root",name.Data()), "root");
   c_kp_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtbcal.eps",name.Data()), "eps");
+  c_kp_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtbcal.png",name.Data()), "png");
   // FCAL
-  TCanvas *c_kp_dtfcal = new TCanvas("c_kp_dtfcal", "c_kp_dtfcal", 600, 400);
+  TCanvas *c_kp_dtfcal = new TCanvas("c_kp_dtfcal", "c_kp_dtfcal", 900,600);
   c_kp_dtfcal->cd();
-  TH2D *h_kp_dtfcal = new TH2D("h_kp_dtfcal", Form("K^{+} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.5, 2.5);
+  TH2D *h_kp_dtfcal = new TH2D("h_kp_dtfcal", "K^{+}; p (GeV/c); FCAL #Delta T (ns)", 250, 0.0, 10.0, 500,-2.5, 2.5);
   t->Project("h_kp_dtfcal", "kp_dtfcal:kp_p4_kin.P()","");
   cout << "h_kp_dtfcal = " << h_kp_dtfcal << endl;
   TLine *l_kp_dtfcal1 = new TLine(0, 1.0, 8, 1.0);
   TLine *l_kp_dtfcal2 = new TLine(0, -1.0, 8, -1.0); 
   l_kp_dtfcal1->SetLineColor(kRed);
   l_kp_dtfcal2->SetLineColor(kRed);
-  l_kp_dtfcal1->SetLineStyle(10);
-  l_kp_dtfcal2->SetLineStyle(10);  
+  l_kp_dtfcal1->SetLineWidth(2);
+  l_kp_dtfcal2->SetLineWidth(2);  
   h_kp_dtfcal->Draw("colz");
   l_kp_dtfcal1->Draw("same");
   l_kp_dtfcal2->Draw("same");
   h_kp_dtfcal->Write(Form("h%s_kp_dtfcal",name.Data()),TObject::kWriteDelete);
   c_kp_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtfcal.root",name.Data()), "root");
   c_kp_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtfcal.eps",name.Data()), "eps");
+  c_kp_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_kp_dtfcal.png",name.Data()), "png");
 
-  // km
-  // TOF
-  TCanvas *c_km_dttof = new TCanvas("c_km_dttof", "c_km_dttof", 600, 400);
-  c_km_dttof->cd();
-  TH2D *h_km_dttof = new TH2D("h_km_dttof", Form("K^{-} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.3, 0.3);
-  t->Project("h_km_dttof", "km_dttof:km_p4_kin.P()","");
-  cout << "h_km_dttof = " << h_km_dttof << endl;
-  h_km_dttof->Draw("colz");
-  h_km_dttof->Write(Form("h%s_km_dttof",name.Data()),TObject::kWriteDelete);
-  c_km_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dttof.root",name.Data()), "root");
-  c_km_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dttof.eps",name.Data()), "eps");
-  // BCAL
-  TCanvas *c_km_dtbcal = new TCanvas("c_km_dtbcal", "c_km_dtbcal", 600, 400);
-  c_km_dtbcal->cd();
-  TH2D *h_km_dtbcal = new TH2D("h_km_dtbcal", Form("K^{-} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.75, 0.75);
-  t->Project("h_km_dtbcal", "km_dtbcal:km_p4_kin.P()","");
-  cout << "h_km_dtbcal = " << h_km_dtbcal << endl;
-  h_km_dtbcal->Draw("colz");
-  h_km_dtbcal->Write(Form("h%s_km_dtbcal",name.Data()),TObject::kWriteDelete);
-  c_km_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtbcal.root",name.Data()), "root");
-  c_km_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtbcal.eps",name.Data()), "eps");
-  // FCAL
-  TCanvas *c_km_dtfcal = new TCanvas("c_km_dtfcal", "c_km_dtfcal", 600, 400);
-  c_km_dtfcal->cd();
-  TH2D *h_km_dtfcal = new TH2D("h_km_dtfcal", Form("K^{-} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.5, 2.5);
-  t->Project("h_km_dtfcal", "km_dtfcal:km_p4_kin.P()","");
-  cout << "h_km_dtfcal = " << h_km_dtfcal << endl;
-  h_km_dtfcal->Draw("colz");
-  h_km_dtfcal->Write(Form("h%s_km_dtfcal",name.Data()),TObject::kWriteDelete);
-  c_km_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtfcal.root",name.Data()), "root");
-  c_km_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtfcal.eps",name.Data()), "eps");  
+  // // km
+  // // TOF
+  // TCanvas *c_km_dttof = new TCanvas("c_km_dttof", "c_km_dttof", 600, 400);
+  // c_km_dttof->cd();
+  // TH2D *h_km_dttof = new TH2D("h_km_dttof", Form("K^{-} (%s); p (GeV/c); TOF #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.3, 0.3);
+  // t->Project("h_km_dttof", "km_dttof:km_p4_kin.P()","");
+  // cout << "h_km_dttof = " << h_km_dttof << endl;
+  // h_km_dttof->Draw("colz");
+  // h_km_dttof->Write(Form("h%s_km_dttof",name.Data()),TObject::kWriteDelete);
+  // c_km_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dttof.root",name.Data()), "root");
+  // c_km_dttof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dttof.eps",name.Data()), "eps");
+  // // BCAL
+  // TCanvas *c_km_dtbcal = new TCanvas("c_km_dtbcal", "c_km_dtbcal", 600, 400);
+  // c_km_dtbcal->cd();
+  // TH2D *h_km_dtbcal = new TH2D("h_km_dtbcal", Form("K^{-} (%s); p (GeV/c); BCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-0.75, 0.75);
+  // t->Project("h_km_dtbcal", "km_dtbcal:km_p4_kin.P()","");
+  // cout << "h_km_dtbcal = " << h_km_dtbcal << endl;
+  // h_km_dtbcal->Draw("colz");
+  // h_km_dtbcal->Write(Form("h%s_km_dtbcal",name.Data()),TObject::kWriteDelete);
+  // c_km_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtbcal.root",name.Data()), "root");
+  // c_km_dtbcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtbcal.eps",name.Data()), "eps");
+  // // FCAL
+  // TCanvas *c_km_dtfcal = new TCanvas("c_km_dtfcal", "c_km_dtfcal", 600, 400);
+  // c_km_dtfcal->cd();
+  // TH2D *h_km_dtfcal = new TH2D("h_km_dtfcal", Form("K^{-} (%s); p (GeV/c); FCAL #Delta T (ns)",name.Data()), 250, 0.0, 10.0, 500,-2.5, 2.5);
+  // t->Project("h_km_dtfcal", "km_dtfcal:km_p4_kin.P()","");
+  // cout << "h_km_dtfcal = " << h_km_dtfcal << endl;
+  // h_km_dtfcal->Draw("colz");
+  // h_km_dtfcal->Write(Form("h%s_km_dtfcal",name.Data()),TObject::kWriteDelete);
+  // c_km_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtfcal.root",name.Data()), "root");
+  // c_km_dtfcal->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_y2175/c%s_km_dtfcal.eps",name.Data()), "eps");  
 */
 /*
   // ********************************* Phi(1020) Mass: Measured & KinFit *************************************
@@ -800,7 +820,7 @@ if(name == "data")
 /*
   // +++ Phi Mass
   TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", Form("%s;m_{K^{+}K^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 0.98, 1.2);
-  t->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni)");//+cutlist+" && kin_chisq<25)"
+  t->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni)");//+cutlist+" && kin_chisq<25)",  && is_truecombo
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 900, 600);
   TLine *lphicutmin = new TLine(1.005, 0, 1.005, h_PhiMass_postcuts->GetMaximum());
   lphicutmin->SetLineColor(kRed);
@@ -857,7 +877,7 @@ if(name == "data")
   // +++ fo Mass
   TCanvas *c_foMass_postcuts = new TCanvas("c_foMass_postcuts", "c_foMass_postcuts", 900, 600);
   TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", Form("%s;m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 0.3, 1.2);
-  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)"); // && abs(pippim_mf-0.97)<0.1
+  t->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)"); // && abs(pippim_mf-0.97)<0.1,  && is_truecombo
   c_foMass_postcuts->cd();
   h_foMass_postcuts->Draw("e");
 
@@ -899,7 +919,7 @@ if(name == "data")
   // TH1F *h_YMass_focut = new TH1F("h_YMass_focut", Form("%s 0.87<f_{0}<1.07;m_{#phi f_{0}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
   // TH1F *h_YMass_deltacut = new TH1F("h_YMass_deltacut", Form("%s 1.4<#Delta^{++}<1;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
   // TH1F *h_YMass_nstarcut = new TH1F("h_YMass_nstarcut", Form("%s 1.7<N^{*}<1.3;m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts",name.Data()), 100, 1.6, 3.2);
-  t->Project("h_YMass_postcuts", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)");
+  t->Project("h_YMass_postcuts", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035)"); //  && is_truecombo
   // t->Project("h_YMass_focut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.97)<0.1)");
   // t->Project("h_YMass_deltacut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pipp_mf-1.2)>0.2)");
   // t->Project("h_YMass_nstarcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pipp_mf-1.2)>0.2 && abs(pimp_mf-1.5)>0.2)");

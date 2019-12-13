@@ -51,9 +51,10 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   TFile *fdata = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_%s_flat.root", name.Data()));
   TFile *fmc = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_phi2pi_%s_flat.root", name.Data()));
   TFile *ftru = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/thrown_phi2pi_%s.root", name.Data()));
+  // TFile *fthr = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_thrown_phi2pi_genr8_%s.root", name.Data()));
   TTree *tdata = (TTree*)fdata->Get("ntp");
   TTree *tmc = (TTree *)fmc->Get("ntp");
-  TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
+  // TTree *tthr = (TTree *)fthr->Get("Thrown_Tree");
   TFile *fps = NULL;
   if(name == "16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
   if(name == "17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
@@ -80,11 +81,12 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   RooWorkspace w("w", kTRUE);
 
   double mkk_min = 0.98, mkk_max = 1.2; //mkk_min = 0.98, mkk_max = 1.2;
+  double Eg_min = 6.5, Eg_max = 11.6;
 
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
-
+/*
   // ======================================== Phi vs. Eg ===============================================
 
   //root -l 'xsec_phi2pi.C+("data_17",100,10,1)'
@@ -99,7 +101,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
   c_tagged_flux->cd();
   TH1F *h_tagged_flux = (TH1F *)fps->Get("tagged_flux");
-  cout << "h_tagged_flux" << h_tagged_flux << endl;
+  cout << "h_tagged_flux = " << h_tagged_flux << endl;
   h_tagged_flux->Rebin(10);
   h_tagged_flux->SetMarkerStyle(20);
   h_tagged_flux->SetMarkerSize(1.5);
@@ -108,9 +110,9 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   // +++ Thrown Beam Energy
   TCanvas *c_beame_tru = new TCanvas("cbeame_tru", "cbeame_tru", 900, 600);
   c_beame_tru->cd();
-  TH1F *h_beame_tru = (TH1F *)ftru->Get("h_beame_Thrown");// new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", ne, 5.9, 11.9);
-  // ttru->Project("h_beame_tru", "ThrownBeam__P4.E()");
-  cout << "h_beame_tru" << h_beame_tru << endl;
+  TH1F *h_beame_tru = (TH1F *)ftru->Get("h_beame_Thrown"); // new TH1F("h_beame_tru", "MC truth; E_{#gamma} [GeV]; Counts", ne, Eg_min, Eg_max)
+  // tthr->Project("h_beame_tru", "ThrownBeam__P4.E()");
+  cout << "h_beame_tru = " << h_beame_tru << endl;
   h_beame_tru->Rebin(10);
   h_beame_tru->SetMarkerStyle(20);
   h_beame_tru->SetMarkerSize(1.5);
@@ -119,7 +121,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   // Data
   TCanvas *cphie = new TCanvas("cphie", "cphie", 900, 600);
   cphie->cd();
-  TH2D *h2phie = new TH2D("h2phie", "Data; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, mkk_min, mkk_max);
+  TH2D *h2phie = new TH2D("h2phie", "Data; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, Eg_min, Eg_max, n2k, mkk_min, mkk_max);
   tdata->Project("h2phie", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");
 
   h2phie->Draw("colz");
@@ -137,7 +139,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   // Monte Carlo
   TCanvas *cphie_mc = new TCanvas("cphie_mc", "cphie_mc", 900, 600);
   cphie_mc->cd();
-  TH2D *h2phie_mc = new TH2D("h2phie_mc", "MC; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, 5.9, 11.9, n2k, mkk_min, mkk_max);//0.98, 1.2
+  TH2D *h2phie_mc = new TH2D("h2phie_mc", "MC; E_{#gamma} [GeV]; m_{K^{+}K^{-}} [GeV/c^{2}]", ne, Eg_min, Eg_max, n2k, mkk_min, mkk_max);//0.98, 1.2
   tmc->Project("h2phie_mc", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");
   h2phie_mc->Draw("colz");
 
@@ -394,15 +396,17 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphie->SetPointError(i - 1, 0, dN_phie_data);    
 
     // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
-    if (N_phie_mc <= 0)
-    {
-      //gphiexsec->RemovePoint(i - 1);
-      continue;
-    }
+    // if (N_phie_mc <= 0)
+    // {
+    //   //gphiexsec->RemovePoint(i - 1);
+    //   continue;
+    // }
     double eff_phi = N_phie_mc / h_beame_tru->GetBinContent(i); // Efficiency = N_observed/N_generated
     double deff_phi = eff_phi * (dN_phie_mc / N_phie_mc);
-    gphieeff->SetPoint(gphieeff->GetN(), h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
-    gphieeff->SetPointError(gphieeff->GetN()-1, 0, deff_phi*100); //->GetBinError(i)
+    gphieeff->SetPoint(i-1, h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
+    gphieeff->SetPointError(i-1, 0, deff_phi*100); //->GetBinError(i)
+    // gphieeff->SetPoint(gphieeff->GetN(), h2phie_mc->GetXaxis()->GetBinCenter(i), eff_phi*100);
+    // gphieeff->SetPointError(gphieeff->GetN()-1, 0, deff_phi*100); //->GetBinError(i)
 
     // +++++++++++++++++++ Systematic Errors 
     // double width_value[3] = {-169.74, -141.06, -197.77}; // Y Width value : 0.079, 0.065, 0.093  
@@ -428,11 +432,11 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
 
     // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
     double lumi_phi = h_tagged_flux->GetBinContent(i); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
-    if (lumi_phi <= 0)
-    {
-      //gphiexsec->RemovePoint(i - 1);
-      continue;
-    }
+    // if (lumi_phi <= 0)
+    // {
+    //   //gphiexsec->RemovePoint(i - 1);
+    //   continue;
+    // }
     double T = 1.273; //Target thickness [b^{-1}]
     double br_phi = 0.492;
     double dbr_phi = 0.005;
@@ -441,8 +445,10 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dxsec_phi2pi_sys = xsec_phi2pi * TMath::Sqrt((err_sys / N_phie_data)*(err_sys / N_phie_data) + (deff_phi / eff_phi)*(deff_phi / eff_phi) + (dbr_phi / br_phi)*(dbr_phi / br_phi));
     // double xsec_phi = N_phie / lumi_phi;
     // double dxsec_phi = dN_phie / lumi_phi;  
-    gphiexsec->SetPoint(gphiexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
-    gphiexsec->SetPointError(gphiexsec->GetN() - 1, 0, dxsec_phi2pi_stat);
+    gphiexsec->SetPoint(i-1, h2phie->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    gphiexsec->SetPointError(i-1, 0, dxsec_phi2pi_stat);
+    // gphiexsec->SetPoint(gphiexsec->GetN(), h2phie->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    // gphiexsec->SetPointError(gphiexsec->GetN() - 1, 0, dxsec_phi2pi_stat);
 
     fprintf(table_xsec_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phie_mc->GetXaxis()->GetBinCenter(i), h_beame_tru->GetBinContent(i), N_phie_mc, dN_phie_mc, N_phie_data, dN_phie_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
     
@@ -639,7 +645,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
 
-/*
+*/
   // ======================================== Phi vs. -t ===============================================
 
 
@@ -978,11 +984,11 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
 
     // ++++++++++++++++++++++++++++ cross-section  +++++++++++++++++++++++
     double lumi_phi = h_tagged_flux->GetBinContent(1); // * 1.273;   // Luminosity = N_gama * T ,  T = 1.26 barns^-1
-    if (lumi_phi <= 0)
-    {
-      //gphitxsec->RemovePoint(i - 1);
-      continue;
-    }
+    // if (lumi_phi <= 0)
+    // {
+    //   //gphitxsec->RemovePoint(i - 1);
+    //   continue;
+    // }
     double T = 1.273; //Target thickness [b^{-1}]
     double br_phi = 0.492;
     double dbr_phi = 0.005;
@@ -991,8 +997,10 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dxsec_phi2pi_sys = xsec_phi2pi * TMath::Sqrt((err_sys / N_phit_data)*(err_sys / N_phit_data) + (deff_phi / eff_phi)*(deff_phi / eff_phi) + (dbr_phi / br_phi)*(dbr_phi / br_phi));
     // double xsec_phi = N_phit / lumi_phi;
     // double dxsec_phi = dN_phit / lumi_phi;  
-    gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
-    gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
+    gphitxsec->SetPoint(i-1, h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    gphitxsec->SetPointError(i-1, 0, dxsec_phi2pi_stat);
+    // gphitxsec->SetPoint(gphitxsec->GetN(), h2phit->GetXaxis()->GetBinCenter(i), xsec_phi2pi);
+    // gphitxsec->SetPointError(gphitxsec->GetN() - 1, 0, dxsec_phi2pi_stat);
 
     fprintf(table_xsec_phi2pi, "%0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f \\\\ \n", h2phit_mc->GetXaxis()->GetBinCenter(i), h_t_Thrown->GetBinContent(i), N_phit_mc, dN_phit_mc, N_phit_data, dN_phit_data, eff_phi*100, deff_phi*100, xsec_phi2pi, dxsec_phi2pi_stat, dxsec_phi2pi_sys);
     
@@ -1189,6 +1197,6 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi << "\\end{document}" << endl;
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
-*/
+    
 
 }
