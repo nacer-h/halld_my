@@ -88,11 +88,11 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
   // ##############################################  fo ALL ##############################################
 
-  FILE *table_xsec_phifo = fopen("table_xsec_phifo.tex","w");
-  fprintf(table_xsec_phifo,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma \\times BR_{f_{0}\\rightarrow\\pi^{+}\\pi^{-}}$ [nb] \\\\ \n \\hline\n");
+  FILE *table_xsec_phifo = fopen(Form("table_xsec_phifo_%s.tex", name.Data()),"w");
+  fprintf(table_xsec_phifo,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections}\n \\begin{tabular}{|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma \\times BR_{f_{0}\\rightarrow\\pi^{+}\\pi^{-}}$ [nb] \\\\ \n \\hline\n");
 
-  // FILE *table_xsec_phifo_sys = fopen("table_xsec_phifo_sys.tex","w");
-  // fprintf(table_xsec_phifo_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors in beam energy bins}\n \\begin{tabularx}{\\textwidth}{|X|X|X|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
+  // FILE *table_xsec_phifo_sys = fopen(Form("table_xsec_phifo_sys_%s.tex", name.Data()),"w");
+  // fprintf(table_xsec_phifo_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Systematic errors in beam energy bins}\n \\begin{tabular}{|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
 
   // +++ PS flux
   TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
@@ -117,7 +117,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
   // *********************** Phi(1020) MC *********************************
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 1000, 600);
-  TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "MC signal; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.005, 1.035);
+  TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.005, 1.035);
   tmc->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni)");//+cutlist+" && kin_chisq<25)"
   c_PhiMass_postcuts->cd();
   h_PhiMass_postcuts->Draw("e");
@@ -129,7 +129,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
   w.var("m_PhiMass_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
   RooDataHist dh_PhiMass_mc("dh_PhiMass_mc", "dh_PhiMass_mc", *w.var("m_PhiMass_mc"), Import(*h_PhiMass_postcuts));
-  RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title("K^{+}K^{-}"));
+  RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title(" "));
   // fr_PhiMass_mc->SetTitleOffset(0.90, "X");
   // fr_PhiMass_mc->SetTitleSize(0.06, "XYZ");
   // fr_PhiMass_mc->SetLabelSize(0.06, "xyz");
@@ -157,11 +157,11 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   lat_PhiMass_mc.SetTextAlign(13); //align at top
   lat_PhiMass_mc.SetNDC();
   lat_PhiMass_mc.SetTextColor(kBlue);
-  lat_PhiMass_mc.DrawLatex(0.62, 0.87, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_PhiMass_mc")->getVal(), w.var("nsig_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.62, 0.78, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_PhiMass_mc")->getVal(), w.var("nbkg_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.62, 0.68, Form("#mu = %0.3f#pm%0.3f", w.var("mean_PhiMass_mc")->getVal(), w.var("mean_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.62, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
-  lat_PhiMass_mc.DrawLatex(0.62, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.86, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_PhiMass_mc")->getVal(), w.var("nsig_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.80, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_PhiMass_mc")->getVal(), w.var("nbkg_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.74, Form("#mu = %0.3f#pm%0.3f", w.var("mean_PhiMass_mc")->getVal(), w.var("mean_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.68, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
+  lat_PhiMass_mc.DrawLatex(0.62, 0.62, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
 
   // TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", 1.005, 1.035);
   // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
@@ -191,7 +191,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
   // *********************** f0(980) MC *********************************
   TCanvas *c_foMass_postcuts = new TCanvas("c_foMass_postcuts", "c_foMass_postcuts", 1000, 600);
-  TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", "MC signal; m_{#pi^{+}#pi^{-}} [GeV/c^{2}]; Counts", 200, 0.85, 1.05);
+  TH1F *h_foMass_postcuts = new TH1F("h_foMass_postcuts", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 0.85, 1.05);
   tmc->Project("h_foMass_postcuts", "pippim_mf", "w8*(pippim_uni)");//+cutlist+" && kin_chisq<25)"
   c_foMass_postcuts->cd();
   h_foMass_postcuts->Draw("e");
@@ -270,10 +270,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
    lat_fo_mc.SetTextAlign(13); //align at top
    lat_fo_mc.SetNDC();
    lat_fo_mc.SetTextColor(kBlue);
-   lat_fo_mc.DrawLatex(0.2, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_fo_mc->GetChisquare() / fsb_fo_mc->GetNDF()));
-   lat_fo_mc.DrawLatex(0.2, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N_fo_mc, dN_fo_mc));
-   lat_fo_mc.DrawLatex(0.2, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb_fo_mc->GetParameter(1), fsb_fo_mc->GetParError(1)));
-   lat_fo_mc.DrawLatex(0.2, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb_fo_mc->GetParameter(2), fsb_fo_mc->GetParError(2)));
+   lat_fo_mc.DrawLatex(0.2, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb_fo_mc->GetChisquare() / fsb_fo_mc->GetNDF()));
+   lat_fo_mc.DrawLatex(0.2, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_fo_mc, dN_fo_mc));
+   lat_fo_mc.DrawLatex(0.2, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_fo_mc->GetParameter(1), fsb_fo_mc->GetParError(1)));
+   lat_fo_mc.DrawLatex(0.2, 0.68, Form("#Gamma = %0.3f#pm%0.3f", fsb_fo_mc->GetParameter(2), fsb_fo_mc->GetParError(2)));
 
    // ======================================== fo vs. Phi(1020) ===============================================
    // root -l 'xsec_phifo.C+(100,50,1,1)'
@@ -312,7 +312,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
    gphifo->SetMarkerSize(1.0);
    gphifo->SetMarkerColor(1);
    gphifo->SetMinimum(0.);
-   gphifo->SetTitle("(Data);m_{#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}");
+   gphifo->SetTitle(";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];N_{#phi}");
 
    // gphifo_width = new TGraphErrors(n2pi);
    // gphifo_width->SetMarkerStyle(20);
@@ -389,15 +389,15 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
      // gphifo_mean[j]->SetPointError(i - 1, 0, fsb->GetParError(3));
 
      TLatex lat_phifo;
-     lat_phifo.SetTextSize(0.09);
+     lat_phifo.SetTextSize(0.05);
      lat_phifo.SetTextAlign(13); //align at top
      lat_phifo.SetNDC();
      lat_phifo.SetTextColor(kBlue);
-     lat_phifo.DrawLatex(0.45, 0.88, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
-     lat_phifo.DrawLatex(0.45, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
-     lat_phifo.DrawLatex(0.45, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
-     lat_phifo.DrawLatex(0.45, 0.58, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
-     lat_phifo.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
+     lat_phifo.DrawLatex(0.45, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb->GetChisquare() / fsb->GetNDF()));
+     lat_phifo.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N2, dN2));
+     lat_phifo.DrawLatex(0.45, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb->GetParameter(1), fsb->GetParError(1)));
+     lat_phifo.DrawLatex(0.45, 0.68, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
+     lat_phifo.DrawLatex(0.45, 0.62, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(3), fsb->GetParError(3)));
 
      // gnophifo->SetPoint(i - 1, h2d2->GetXaxis()->GetBinCenter(i), Nbkg);
      // gnophifo->SetPointError(i - 1, 0, dNbkg);
@@ -448,10 +448,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     lat_phifo.SetTextAlign(13); //align at top
     lat_phifo.SetNDC();
     lat_phifo.SetTextColor(kBlue);
-    lat_phifo.DrawLatex(0.6, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_fo_data->GetChisquare() / fsb_fo_data->GetNDF()));
-    lat_phifo.DrawLatex(0.6, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N_fo_data, dN_fo_data));
-    lat_phifo.DrawLatex(0.6, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(1), fsb_fo_data->GetParError(1)));
-    lat_phifo.DrawLatex(0.6, 0.58, Form("#Gamma = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(2), fsb_fo_data->GetParError(2)));
+    lat_phifo.DrawLatex(0.6, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb_fo_data->GetChisquare() / fsb_fo_data->GetNDF()));
+    lat_phifo.DrawLatex(0.6, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_fo_data, dN_fo_data));
+    lat_phifo.DrawLatex(0.6, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(1), fsb_fo_data->GetParError(1)));
+    lat_phifo.DrawLatex(0.6, 0.68, Form("#Gamma = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(2), fsb_fo_data->GetParError(2)));
 
    // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
     double eff_phifo = N_fo_mc / h_beame_tru->Integral(0,100); // Efficiency = N_observed/N_generated
@@ -503,13 +503,13 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
    outputfig->Print();
 
-   fprintf(table_xsec_phifo, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+   fprintf(table_xsec_phifo, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
    fclose(table_xsec_phifo);
-   gSystem->Exec("pdflatex table_xsec_phifo.tex");
+   gSystem->Exec(Form("pdflatex table_xsec_phifo_%s.tex", name.Data()));
 
-  //  fprintf(table_xsec_phifo_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+  //  fprintf(table_xsec_phifo_sys, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
   //  fclose(table_xsec_phifo_sys);
-  //  gSystem->Exec("pdflatex table_xsec_phifo_sys.tex");
+  //  gSystem->Exec(Form("pdflatex table_xsec_phifo_sys_%s.tex", name.Data()));
 
    // cgphifo_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_width.root", "root");
    // cgphifo_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_width.eps", "eps");

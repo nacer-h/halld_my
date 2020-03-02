@@ -119,23 +119,23 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, false, "meas_precut"));
 	dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, true, "precut"));
     
-	// PID cut
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.135, KPlus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.135, KMinus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.4125, KPlus, SYS_BCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.4125, KMinus, SYS_BCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.0, KPlus, SYS_FCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.0, KMinus, SYS_FCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.15, PiPlus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.15, PiMinus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.85, PiPlus, SYS_BCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.85, PiMinus, SYS_BCAL));
+	// PID cuts	
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.22, -0.22, KPlus, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.22, -0.22, KMinus, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.65, KPlus, SYS_BCAL)); //0.2 (2018 Fall), 0.3 (all)
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.65, KMinus, SYS_BCAL)); //0.2 (2018 Fall), 0.3 (all)
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.0, KPlus, SYS_FCAL)); //1.0 (2018 Fall), 0.8 (all)
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.0, KMinus, SYS_FCAL)); //1.0 (2018 Fall), 0.8 (all)
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.3, PiPlus, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.3, PiMinus, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiPlus, SYS_BCAL));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiMinus, SYS_BCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.5, PiPlus, SYS_FCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.5, PiMinus, SYS_FCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.27, Proton, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.25, Proton, SYS_TOF));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.0, Proton, SYS_BCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.9, Proton, SYS_FCAL));
-	// dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, false, "meas_postcut"));     
+	dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, false, "meas_postcut"));     
 
 	// Invariant mass plots
 	//Measured
@@ -148,9 +148,9 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	dAnalysisActions.push_back(new DHistogramAction_InvariantMass(dComboWrapper, true, 0, locYPIDs, 600, 1.6, 3.2, "y_PreCut"));
 
 	// MISSING MASS
-	dAnalysisActions.push_back(new DHistogramAction_MissingMassSquared(dComboWrapper, false, 600, -0.01, 0.01, "mm2_meas"));
-	// MISSING MASS cut
-	dAnalysisActions.push_back(new DCutAction_MissingMassSquared(dComboWrapper, false, -0.01, 0.01));
+	dAnalysisActions.push_back(new DHistogramAction_MissingMassSquared(dComboWrapper, false, 600, -0.1, 0.1, "mm2_meas"));
+	// MISSING MASS cuts
+	dAnalysisActions.push_back(new DCutAction_MissingMassSquared(dComboWrapper, false, -0.03, 0.03));
 
 	// Cuts
 	// dAnalysisActions.push_back(new DCutAction_KinFitFOM(dComboWrapper, 60, "CLcut")
@@ -159,11 +159,11 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// PID after cut
 	// dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, true, "postcut"));
 
-    deque<Particle_t> locPiPlusPIDs;
+	deque<Particle_t> locPiPlusPIDs;
 	locPiPlusPIDs.push_back(PiPlus);
-    deque<Particle_t> locPiMinusPIDs;
+	deque<Particle_t> locPiMinusPIDs;
 	locPiMinusPIDs.push_back(PiMinus);
-    deque<Particle_t> locProtonPIDs;
+	deque<Particle_t> locProtonPIDs;
 	locProtonPIDs.push_back(Proton);		
 	dAnalysisActions.push_back(new DHistogramAction_vanHoveFour(dComboWrapper, true, locPhiPIDs, locPiPlusPIDs, locPiMinusPIDs, locProtonPIDs, "precut"));
 	// dAnalysisActions.push_back(new DCutAction_VanHoveAngleFour(dComboWrapper, true, locPhiPIDs, locPiPlusPIDs, locPiMinusPIDs, locProtonPIDs, 0.4, 1.5, 1, 2.2,"cut"));
@@ -179,8 +179,8 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// ANALYZE CUT ACTIONS
 	// // Change MyPhi to match reaction
 	dAnalyzeCutActions = new DHistogramAction_AnalyzeCutActions(dAnalysisActions, dComboWrapper, true, 0, locPhiPIDs, 600, 0.98, 1.2, "Phi_CutActionEffect");
-    dAnalyzeCutActions = new DHistogramAction_AnalyzeCutActions(dAnalysisActions, dComboWrapper, true, 0, locf0PIDs, 600, 0.3, 1.2, "fo_CutActionEffect");
-    dAnalyzeCutActions = new DHistogramAction_AnalyzeCutActions(dAnalysisActions, dComboWrapper, true, 0, locYPIDs, 600, 1.6, 3.2, "Y_CutActionEffect");
+	dAnalyzeCutActions = new DHistogramAction_AnalyzeCutActions(dAnalysisActions, dComboWrapper, true, 0, locf0PIDs, 600, 0.3, 1.2, "fo_CutActionEffect");
+	dAnalyzeCutActions = new DHistogramAction_AnalyzeCutActions(dAnalysisActions, dComboWrapper, true, 0, locYPIDs, 600, 1.6, 3.2, "Y_CutActionEffect");
 
 	//INITIALIZE ACTIONS
 	//If you create any actions that you want to run manually (i.e. don't add to dAnalysisActions), be sure to initialize them here as well
@@ -198,7 +198,7 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// h_foMass_Thrown = new TH1F("foMass_Thrown", "Generated ;m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 0.3, 1.2);
 	// h_YMass_Thrown = new TH1F("YMass_Thrown", "Generated ;m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 1.6, 3.2);
 	// h_t_Thrown = new TH1F("h_t_Thrown", "Generated ;-t [GeV^{2}];Counts", 100, 0, 4);
-    // h2_beamevst_Thrown = new TH2D("h2_beamevst_Thrown", "Generated; -t [GeV^{2}]; E_{#gamma} [GeV]", 10, 0, 4, 10, 6, 12);
+	// h2_beamevst_Thrown = new TH2D("h2_beamevst_Thrown", "Generated; -t [GeV^{2}]; E_{#gamma} [GeV]", 10, 0, 4, 10, 6, 12);
 
 	// Measured masses: Phi(1020), fo(980), Y(2175)
 	h_PhiMass_Measured = new TH1F("PhiMass_Measured", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 0.98, 1.2);
@@ -222,15 +222,15 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 
 	// 2D
 	// KinFit
-	h2_PhiVsfoMass_KinFit = new TH2D("h2_PhiVsfoMass_KinFit", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 1, 1.2, 600, 0.3, 1.2);
-	h2_PhiVsYMass_KinFit = new TH2D("h2_PhiVsYMass_KinFit", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 1, 1.2, 600, 1.6, 3.2);
-	h2_foVsYMass_KinFit = new TH2D("h2_foVsYMass_KinFit", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 0.3, 1.2, 600, 1.6, 3.2);
-	// //after cuts
+	h2_PhiVsfoMass_KinFit = new TH2D("h2_PhiVsfoMass_KinFit", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{#pi^{+}#pi^{-}} [GeV/c^{2}]", 100, 1, 1.2, 100, 0.3, 1.2);
+	h2_PhiVsYMass_KinFit = new TH2D("h2_PhiVsYMass_KinFit", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]", 100, 0.98, 1.2, 100, 1.7, 3.2);
+	h2_foVsYMass_KinFit = new TH2D("h2_foVsYMass_KinFit", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]", 100, 0.3, 1.2, 100, 1.7, 3.2);
+	// //after cut
 	// h2_PhiVsfoMass_postcut = new TH2D("h2_PhiVsfoMass_postcut", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 1, 1.04, 600, 0.3, 1.2);
 	// h2_PhiVsYMass_postcut = new TH2D("h2_PhiVsYMass_postcut", ";m_{K^{+}K^{-}} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 1, 1.04, 600, 1.6, 3.2);
 	// h2_foVsYMass_postcut = new TH2D("h2_foVsYMass_postcut", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}]", 600, 0.3, 1.04, 600, 1.6, 3.2);
 
-	// cuts
+	// cut
 	h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", "Vertex time - RF (ns);#Deltat_{Beam-RF}(ns)", 300, -18, 18);
 	h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut", "Vertex time - RF (ns);#Deltat_{Beam-RF}(ns)", 300, -18, 18);
 	h_mm2 = new TH1F("h_mm2", ";Missing Mass Squared (GeV/c^{2})^{2}", 600, -0.01, 0.01);
@@ -308,7 +308,7 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("vhtheta");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("vhr");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("t_kin");
-	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("t_meas");
+	// dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("t_meas");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("mm2_piask");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("me");
 	dFlatTreeInterface->Create_Branch_Fundamental<Double_t>("pt");
@@ -316,8 +316,8 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// dFlatTreeInterface->Create_Branch_NoSplitTObject<TObjString>("thrtop"); //bggen
 
 	//CREATE HELPER AND INITIALIZE WITH DESIRED COMBINATIONS TO BE STORED
-	dComboTreeHelper = new DComboTreeHelper(dTreeInterface, dComboWrapper, dFlatTreeInterface, "K+ K-; pi+ pi-; K+ K- pi+ pi-; K+ pi-;K+ pi+; K+ p; K- pi-; K- pi+; K- p; pi+ p; pi- p; K+ K- p; K+ K- pi+; K+ K- pi-; pi+ pi- p; pi+ pi- K+; pi+ pi- K-; K+ pi- p; K- pi+ p", dThrownWrapper ,"acc");
-
+	dComboTreeHelper = new DComboTreeHelper(dTreeInterface, dComboWrapper, dFlatTreeInterface, "K+ K-; pi+ pi-; K+ K- pi+ pi-", dThrownWrapper ,"acc"); //:pid
+	//; K+ pi-;K+ pi+; K+ p; K- pi-; K- pi+; K- p; pi+ p; pi- p; K+ K- p; K+ K- pi+; K+ K- pi-; pi+ pi- p; pi+ pi- K+; pi+ pi- K-; K+ pi- p; K- pi+ p
 	/************************************* ADVANCED EXAMPLE: CHOOSE BRANCHES TO READ ************************************/
 
 	//TO SAVE PROCESSING TIME
@@ -504,7 +504,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		// ********************************    Mandelstam variable   **************************************
 		// compute invariant t for Y(2175) with proton as a recoil
 		Double_t t_kin = -2 * locProtonP4.M() * (locProtonP4.E() - locProtonP4.M());
-		Double_t t_meas = -2 * locProtonP4_Measured.M() * (locProtonP4_Measured.E() - locProtonP4_Measured.M());
+		// Double_t t_meas = -2 * locProtonP4_Measured.M() * (locProtonP4_Measured.E() - locProtonP4_Measured.M());
 		// Double_t t_p2p4 = (locBeamP4 - locPiPlusP4 - locPiMinusP4 - locKPlusP4 - locKMinusP4).M2();
 
 		// ********************************         total Pt        **************************************
@@ -518,11 +518,11 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		TLorentzVector locKMinusX4 = dKMinusWrapper->Get_X4();
 		TLorentzVector locProtonX4 = dProtonWrapper->Get_X4();
 		// Vertex-Z cut
-		if((locProtonX4.Z()<50 || locProtonX4.Z()>80) || (locPiPlusX4.Z()<50 || locPiPlusX4.Z()>80) || (locPiMinusX4.Z()<50 || locPiMinusX4.Z()>80)  || (locKPlusX4.Z()<50 || locKPlusX4.Z()>80)  || (locKMinusX4.Z()<50 || locKMinusX4.Z()>80))	
-		{
-			dComboWrapper->Set_IsComboCut(true);
-			continue;
-		}
+		// if((locProtonX4.Z()<50 || locProtonX4.Z()>80) || (locPiPlusX4.Z()<50 || locPiPlusX4.Z()>80) || (locPiMinusX4.Z()<50 || locPiMinusX4.Z()>80)  || (locKPlusX4.Z()<50 || locKPlusX4.Z()>80)  || (locKMinusX4.Z()<50 || locKMinusX4.Z()>80))	
+		// {
+		// 	dComboWrapper->Set_IsComboCut(true);
+		// 	continue;
+		// }
 
 		// ******************************** Missing Mass with diferent hypothesis  **************************************
 		TLorentzVector locPipAsKp = locKPlusP4_Measured;
@@ -544,8 +544,8 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		// +++ get chi2 of 4-pi hypothesis
 		// Float_t chi2pi = getchi2pi(Get_RunNumber(), Get_EventNumber(), locBeamID, locKPlusTrackID, locPiPlusTrackID, locKMinusTrackID, locPiMinusTrackID, locProtonTrackID);
 
-        // Chi2 cut
-		if (locKinFitChiSq > 25)
+		// Chi2 cuts
+		if (locKinFitChiSq > 60) //60
 		{
 			dComboWrapper->Set_IsComboCut(true);
 			continue;
@@ -607,7 +607,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		/*
 		TLorentzVector locMyComboP4(8.0, 7.0, 6.0, 5.0);
 		//for arrays below: 2nd argument is value, 3rd is array index
-		//NOTE: By filling here, AFTER the cuts above, some indices won't be updated (and will be whatever they were from the last event)
+		//NOTE: By filling here, AFTER the cut above, some indices won't be updated (and will be whatever they were from the last event)
 			//So, when you draw the branch, be sure to cut on "IsComboCut" to avoid these.
 		dTreeInterface->Fill_Fundamental<Float_t>("my_combo_array", -2*loc_i, loc_i);
 		dTreeInterface->Fill_TObject<TLorentzVector>("my_p4_array", locMyComboP4, loc_i);
@@ -680,7 +680,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		locUsedThisCombo_YMass[abs(PDGtype(PiMinus))].insert(locPiMinusTrackID);
 		locUsedThisCombo_YMass[Unknown].insert(locBeamID); //beam
 
-		// ********* cuts
+		// ********* cut
 		h_TaggerAccidentals_postcut->Fill(locBeamDeltaT, AccWeight);
 		h_chi2->Fill(locKinFitChiSq, AccWeight);
 		h_KinFitCL->Fill(dComboWrapper->Get_ConfidenceLevel_KinFit(), AccWeight);
@@ -801,7 +801,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("vhtheta", vhtheta);
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("vhr", vhr);
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("t_kin", t_kin);
-		dFlatTreeInterface->Fill_Fundamental<Double_t>("t_meas", t_meas);
+		// dFlatTreeInterface->Fill_Fundamental<Double_t>("t_meas", t_meas);
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("mm2_piask", locMissingP4_PiAsK.M2());
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("me", locMissingP4_Measured.E());
 		dFlatTreeInterface->Fill_Fundamental<Double_t>("pt", pt);

@@ -59,6 +59,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   if(name == "16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
   if(name == "17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
   if(name == "18") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_40856_42577.root");
+  if(name == "18l") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_50677_51768.root");
 
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/xsec_phi2pi.root", "UPDATE");
   
@@ -86,16 +87,16 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
-/*
+
   // ======================================== Phi vs. Eg ===============================================
 
   //root -l 'xsec_phi2pi.C+("data_17",100,10,1)'
 
-  FILE *table_xsec_phi2pi = fopen("table_xsec_phi2pi.tex","w");
-  fprintf(table_xsec_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections in photon energy bins}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
+  FILE *table_xsec_phi2pi = fopen(Form("table_xsec_phi2pi_%s.tex", name.Data()),"w");
+  fprintf(table_xsec_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections in photon energy bins}\n \\begin{tabular}{|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
 
-  FILE *table_xsec_phi2pi_sys = fopen("table_xsec_phi2pi_sys.tex","w");
-  fprintf(table_xsec_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors in beam energy bins}\n \\begin{tabularx}{\\textwidth}{|X|X|X|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
+  FILE *table_xsec_phi2pi_sys = fopen(Form("table_xsec_phi2pi_sys_%s.tex", name.Data()),"w");
+  fprintf(table_xsec_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Systematic errors in beam energy bins}\n \\begin{tabular}{|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");
 
   // +++ PS flux
   TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
@@ -241,7 +242,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dN_phie_mc = N_phie_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
 
     TLatex lat_phie_mc;
-    lat_phie_mc.SetTextSize(0.06);
+    lat_phie_mc.SetTextSize(0.05);
     lat_phie_mc.SetTextAlign(13); //align at top
     lat_phie_mc.SetNDC();
     lat_phie_mc.SetTextColor(kBlue);
@@ -382,7 +383,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dN_phie_data = N_phie_data * fsb_data->GetParError(0) / fsb_data->GetParameter(0);
 
     TLatex lat_phie_data;
-    lat_phie_data.SetTextSize(0.06);
+    lat_phie_data.SetTextSize(0.05);
     lat_phie_data.SetTextAlign(13); //align at top
     lat_phie_data.SetNDC();
     lat_phie_data.SetTextColor(kBlue);
@@ -475,8 +476,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Yields
     TMultiGraph *mgphie = new TMultiGraph();
     TCanvas *cmgphie = new TCanvas("cmgphie", "cmgphie", 900, 600);
-    TLegend *lmgphie = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgphie->SetTextSize(0.04);
+    TLegend *lmgphie = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgphie->SetTextSize(0.05);
     lmgphie->SetBorderSize(0);
     cmgphie->cd();
     cmgphie->SetGrid();
@@ -501,13 +502,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphie->SetLineColor(kRed);
     h18_gphie->SetMarkerStyle(20);
     mgphie->Add(h18_gphie);
-    mgphie->SetTitle("#phi(1020) Yield vs. E_{#gamma} (data); E_{#gamma} [GeV]; N_{#phi}");
+    TGraphErrors *h18l_gphie = (TGraphErrors *)outputfig->Get("h18l_gphie");
+    cout << " ***** h18l_gphie = " << h18l_gphie << endl;
+    h18l_gphie->SetMarkerColor(kMagenta);
+    h18l_gphie->SetMarkerSize(1.5);
+    h18l_gphie->SetLineColor(kMagenta);
+    h18l_gphie->SetMarkerStyle(20);
+    mgphie->Add(h18l_gphie);
+    mgphie->SetTitle("; E_{#gamma} [GeV]; N_{#phi}");
     mgphie->Draw("AP");
     mgphie->SetMinimum(0.);
     cmgphie->Modified();
     lmgphie->AddEntry(h16_gphie, "2016", "p");
     lmgphie->AddEntry(h17_gphie, "2017", "p");
-    lmgphie->AddEntry(h18_gphie, "2018", "p");
+    lmgphie->AddEntry(h18_gphie, "2018 S", "p");
+    lmgphie->AddEntry(h18l_gphie, "2018 F", "p");
     lmgphie->Draw();
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphie.eps", "eps");
     cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphie.png", "png");
@@ -516,8 +525,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Efficiency
     TMultiGraph *mgeeff = new TMultiGraph();
     TCanvas *cmgeeff = new TCanvas("cmgeeff", "cmgeeff", 900, 600);
-    TLegend *lmgeeff = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgeeff->SetTextSize(0.04);
+    TLegend *lmgeeff = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgeeff->SetTextSize(0.05);
     lmgeeff->SetBorderSize(0);
     cmgeeff->cd();
     cmgeeff->SetGrid();
@@ -542,13 +551,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphieeff->SetLineColor(kRed);
     h18_gphieeff->SetMarkerStyle(20);
     mgeeff->Add(h18_gphieeff);
-    mgeeff->SetTitle("#phi#pi^{+}#pi^{-} Effeciency vs. E_{#gamma}; E_{#gamma} [GeV]; #epsilon [%]");
+    TGraphErrors *h18l_gphieeff = (TGraphErrors *)outputfig->Get("h18l_gphieeff");
+    cout << " ***** h18l_gphieeff = " << h18l_gphieeff << endl;
+    h18l_gphieeff->SetMarkerColor(kMagenta);
+    h18l_gphieeff->SetMarkerSize(1.5);
+    h18l_gphieeff->SetLineColor(kMagenta);
+    h18l_gphieeff->SetMarkerStyle(20);
+    mgeeff->Add(h18l_gphieeff);
+    mgeeff->SetTitle("; E_{#gamma} [GeV]; #epsilon [%]");
     mgeeff->Draw("AP");
     mgeeff->SetMinimum(0.);
     cmgeeff->Modified();
     lmgeeff->AddEntry(h16_gphieeff, "2016", "p");
     lmgeeff->AddEntry(h17_gphieeff, "2017", "p");
-    lmgeeff->AddEntry(h18_gphieeff, "2018", "p");
+    lmgeeff->AddEntry(h18_gphieeff, "2018 S", "p");
+    lmgeeff->AddEntry(h18l_gphieeff, "2018 F", "p");
     lmgeeff->Draw();
     cmgeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgeeff.eps", "eps");
     cmgeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgeeff.png", "png");
@@ -557,8 +574,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Cross-sections
     TMultiGraph *mgexsec = new TMultiGraph();
     TCanvas *cmgexsec = new TCanvas("cmgexsec", "cmgexsec", 900, 600);
-    TLegend *lmgexsec = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgexsec->SetTextSize(0.04);
+    TLegend *lmgexsec = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgexsec->SetTextSize(0.05);
     lmgexsec->SetBorderSize(0);
     cmgexsec->cd();
     cmgexsec->SetGrid();
@@ -583,13 +600,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphiexsec->SetLineColor(kRed);
     h18_gphiexsec->SetMarkerStyle(20);
     mgexsec->Add(h18_gphiexsec);
-    mgexsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Beam Energy; E_{#gamma} [GeV]; #sigma [nb]");
+    TGraphErrors *h18l_gphiexsec = (TGraphErrors *)outputfig->Get("h18l_gphiexsec");
+    cout << " ***** h18l_gphiexsec = " << h18l_gphiexsec << endl;
+    h18l_gphiexsec->SetMarkerColor(kMagenta);
+    h18l_gphiexsec->SetMarkerSize(1.5);
+    h18l_gphiexsec->SetLineColor(kMagenta);
+    h18l_gphiexsec->SetMarkerStyle(20);
+    mgexsec->Add(h18l_gphiexsec);
+    mgexsec->SetTitle("; E_{#gamma} [GeV]; #sigma [nb]");
     mgexsec->Draw("AP");
     mgexsec->SetMinimum(0.);
     cmgexsec->Modified();
     lmgexsec->AddEntry(h16_gphiexsec, "2016", "p");
     lmgexsec->AddEntry(h17_gphiexsec, "2017", "p");
-    lmgexsec->AddEntry(h18_gphiexsec, "2018", "p");
+    lmgexsec->AddEntry(h18_gphiexsec, "2018 S", "p");
+    lmgexsec->AddEntry(h18l_gphiexsec, "2018 F", "p");
     lmgexsec->Draw();
     cmgexsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgexsec.eps", "eps");
     cmgexsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgexsec.png", "png");
@@ -628,13 +653,13 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     
     outputfig->Print();
 
-    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_xsec_phi2pi);
-    gSystem->Exec("pdflatex table_xsec_phi2pi.tex");
+    gSystem->Exec(Form("pdflatex table_xsec_phi2pi_%s.tex", name.Data()));
 
-    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_xsec_phi2pi_sys);
-    gSystem->Exec("pdflatex table_xsec_phi2pi_sys.tex");
+    gSystem->Exec(Form("pdflatex table_xsec_phi2pi_sys_%s.tex", name.Data()));
 
     // table_phi << "\\hline" << endl;
     // table_phi << "\\end{tabularx}" << endl;
@@ -645,17 +670,17 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
 
-*/
+/*
   // ======================================== Phi vs. -t ===============================================
 
 
   //root -l 'xsec_phi2pi.C+("data_17",100,1,10)'
 
-  FILE *table_xsec_phi2pi = fopen("table_xsec_phi2pi.tex","w");
-  fprintf(table_xsec_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections in momentum transfer bins}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n -t $[GeV^{2}]$ & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
+  FILE *table_xsec_phi2pi = fopen(Form("table_xsec_phi2pi_%s.tex", name.Data()),"w");
+  fprintf(table_xsec_phi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections in momentum transfer bins}\n \\begin{tabular}{|c|c|c|c|c|c|}\n \\hline\n -t $[GeV^{2}]$ & $N_{generated}~(MC)$ & $N_{measured}~(MC)$ & $N_{measured}~(Data)$ & $\\epsilon$ [ \\% ] & $\\sigma$ [nb] \\\\ \n \\hline\n");
 
-  FILE *table_xsec_phi2pi_sys = fopen("table_xsec_phi2pi_sys.tex","w");
-  fprintf(table_xsec_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors in momentum transfer bins}\n \\begin{tabularx}{\\textwidth}{|X|X|X|}\n \\hline\n -t $[GeV^{2}]$ & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
+  FILE *table_xsec_phi2pi_sys = fopen(Form("table_xsec_phi2pi_sys_%s.tex", name.Data()),"w");
+  fprintf(table_xsec_phi2pi_sys,"\\documentclass[12pt]{extarticle}\n \\usepackage{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Systematic errors in momentum transfer bins}\n \\begin{tabular}{|c|c|c|}\n \\hline\n -t $[GeV^{2}]$ & polynomial degrees [ \\% ] & Fit range [ \\% ]  \\\\ \n \\hline\n");  
   
   // +++ PS flux
   TCanvas *c_tagged_flux = new TCanvas("c_tagged_flux", "c_tagged_flux", 900, 600);
@@ -800,15 +825,15 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dN_phit_mc = N_phit_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
 
     TLatex lat_phit_mc;
-    lat_phit_mc.SetTextSize(0.06);
+    lat_phit_mc.SetTextSize(0.05);
     lat_phit_mc.SetTextAlign(13); //align at top
     lat_phit_mc.SetNDC();
     lat_phit_mc.SetTextColor(kBlue);
-    lat_phit_mc.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
+    lat_phit_mc.DrawLatex(0.45, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
     lat_phit_mc.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phit_mc, dN_phit_mc));
-    lat_phit_mc.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
-    lat_phit_mc.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
-    lat_phit_mc.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
+    lat_phit_mc.DrawLatex(0.45, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
+    lat_phit_mc.DrawLatex(0.45, 0.68, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
+    lat_phit_mc.DrawLatex(0.45, 0.62, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
 
     gphit_mc->SetPoint(i - 1, h2phit_mc->GetXaxis()->GetBinCenter(i), N_phit_mc);
     gphit_mc->SetPointError(i - 1, 0, dN_phit_mc);
@@ -941,15 +966,15 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     double dN_phit_data = N_phit_data * fsb_data->GetParError(0) / fsb_data->GetParameter(0);
 
     TLatex lat_phit_data;
-    lat_phit_data.SetTextSize(0.06);
+    lat_phit_data.SetTextSize(0.05);
     lat_phit_data.SetTextAlign(13); //align at top
     lat_phit_data.SetNDC();
     lat_phit_data.SetTextColor(kBlue);
-    lat_phit_data.DrawLatex(0.45, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
+    lat_phit_data.DrawLatex(0.45, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
     lat_phit_data.DrawLatex(0.45, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_phit_data, dN_phit_data));
-    lat_phit_data.DrawLatex(0.45, 0.73, Form("#mu = %0.3f#pm%0.3f", fsb_data->GetParameter(1), fsb_data->GetParError(1)));
-    lat_phit_data.DrawLatex(0.45, 0.66, Form("#sigma = %0.3f#pm%0.3f", fsb_data->GetParameter(2), fsb_data->GetParError(2)));
-    lat_phit_data.DrawLatex(0.45, 0.59, Form("#Gamma = %0.3f#pm%0.3f", fsb_data->GetParameter(3), fsb_data->GetParError(3)));
+    lat_phit_data.DrawLatex(0.45, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_data->GetParameter(1), fsb_data->GetParError(1)));
+    lat_phit_data.DrawLatex(0.45, 0.68, Form("#sigma = %0.3f#pm%0.3f", fsb_data->GetParameter(2), fsb_data->GetParError(2)));
+    lat_phit_data.DrawLatex(0.45, 0.62, Form("#Gamma = %0.3f#pm%0.3f", fsb_data->GetParameter(3), fsb_data->GetParError(3)));
 
     gphit->SetPoint(i - 1, h2phit->GetXaxis()->GetBinCenter(i), N_phit_data);
     gphit->SetPointError(i - 1, 0, dN_phit_data);    
@@ -1027,8 +1052,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Yields
     TMultiGraph *mgphit = new TMultiGraph();
     TCanvas *cmgphit = new TCanvas("cmgphit", "cmgphit", 900, 600);
-    TLegend *lmgphit = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgphit->SetTextSize(0.04);
+    TLegend *lmgphit = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgphit->SetTextSize(0.05);
     lmgphit->SetBorderSize(0);
     cmgphit->cd();
     cmgphit->SetGrid();
@@ -1053,13 +1078,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphit->SetLineColor(kRed);
     h18_gphit->SetMarkerStyle(20);
     mgphit->Add(h18_gphit);
-    mgphit->SetTitle("#phi(1020) Yield vs. -t (data); -t [GeV^{2}]; N_{#phi}");
+    TGraphErrors *h18l_gphit = (TGraphErrors *)outputfig->Get("h18l_gphit");
+    cout << " ***** h18l_gphit = " << h18l_gphit << endl;
+    h18l_gphit->SetMarkerColor(kMagenta);
+    h18l_gphit->SetMarkerSize(1.5);
+    h18l_gphit->SetLineColor(kMagenta);
+    h18l_gphit->SetMarkerStyle(20);
+    mgphit->Add(h18l_gphit);
+    mgphit->SetTitle("; -t [GeV^{2}]; N_{#phi}");
     mgphit->Draw("AP");
     mgphit->SetMinimum(0.);
     cmgphit->Modified();
     lmgphit->AddEntry(h16_gphit, "2016", "p");
     lmgphit->AddEntry(h17_gphit, "2017", "p");
-    lmgphit->AddEntry(h18_gphit, "2018", "p");
+    lmgphit->AddEntry(h18_gphit, "2018 S", "p");
+    lmgphit->AddEntry(h18l_gphit, "2018 F", "p");
     lmgphit->Draw();
     cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphit.eps", "eps");
     cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgphit.png", "png");
@@ -1068,8 +1101,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Efficiency
     TMultiGraph *mgteff = new TMultiGraph();
     TCanvas *cmgteff = new TCanvas("cmgteff", "cmgteff", 900, 600);
-    TLegend *lmgteff = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgteff->SetTextSize(0.04);
+    TLegend *lmgteff = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgteff->SetTextSize(0.05);
     lmgteff->SetBorderSize(0);
     cmgteff->cd();
     cmgteff->SetGrid();
@@ -1094,13 +1127,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphiteff->SetLineColor(kRed);
     h18_gphiteff->SetMarkerStyle(20);
     mgteff->Add(h18_gphiteff);
-    mgteff->SetTitle("#phi#pi^{+}#pi^{-} Effeciency vs. Momentum transfer; -t [GeV^{2}]; #epsilon [%]");
+    TGraphErrors *h18l_gphiteff = (TGraphErrors *)outputfig->Get("h18l_gphiteff");
+    cout << " ***** h18l_gphiteff = " << h18l_gphiteff << endl;
+    h18l_gphiteff->SetMarkerColor(kMagenta);
+    h18l_gphiteff->SetMarkerSize(1.5);
+    h18l_gphiteff->SetLineColor(kMagenta);
+    h18l_gphiteff->SetMarkerStyle(20);
+    mgteff->Add(h18l_gphiteff);
+    mgteff->SetTitle("; -t [GeV^{2}]; #epsilon [%]");
     mgteff->Draw("AP");
     mgteff->SetMinimum(0.);
     cmgteff->Modified();
     lmgteff->AddEntry(h16_gphiteff, "2016", "p");
     lmgteff->AddEntry(h17_gphiteff, "2017", "p");
-    lmgteff->AddEntry(h18_gphiteff, "2018", "p");
+    lmgteff->AddEntry(h18_gphiteff, "2018 S", "p");
+    lmgteff->AddEntry(h18l_gphiteff, "2018 F", "p");
     lmgteff->Draw();
     cmgteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgteff.eps", "eps");
     cmgteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgteff.png", "png");
@@ -1109,8 +1150,8 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // total Cross-sections
     TMultiGraph *mgtxsec = new TMultiGraph();
     TCanvas *cmgtxsec = new TCanvas("cmgtxsec", "cmgtxsec", 900, 600);
-    TLegend *lmgtxsec = new TLegend(0.86, 0.86, 0.98, 0.98);
-    lmgtxsec->SetTextSize(0.04);
+    TLegend *lmgtxsec = new TLegend(0.87, 0.82, 0.98, 0.98);
+    lmgtxsec->SetTextSize(0.05);
     lmgtxsec->SetBorderSize(0);
     cmgtxsec->cd();
     cmgtxsec->SetGrid();
@@ -1135,13 +1176,21 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     h18_gphitxsec->SetLineColor(kRed);
     h18_gphitxsec->SetMarkerStyle(20);
     mgtxsec->Add(h18_gphitxsec);
-    mgtxsec->SetTitle("#phi#pi^{+}#pi^{-} total Cross-section vs. Momentum transfer; -t [GeV^{2}]; #sigma [nb]");
+    TGraphErrors *h18l_gphitxsec = (TGraphErrors *)outputfig->Get("h18l_gphitxsec");
+    cout << " ***** h18l_gphitxsec = " << h18l_gphitxsec << endl;
+    h18l_gphitxsec->SetMarkerColor(kMagenta);
+    h18l_gphitxsec->SetMarkerSize(1.5);
+    h18l_gphitxsec->SetLineColor(kMagenta);
+    h18l_gphitxsec->SetMarkerStyle(20);
+    mgtxsec->Add(h18l_gphitxsec);
+    mgtxsec->SetTitle("; -t [GeV^{2}]; #sigma [nb]");
     mgtxsec->Draw("AP");
     mgtxsec->SetMinimum(0.);
     cmgtxsec->Modified();
     lmgtxsec->AddEntry(h16_gphitxsec, "2016", "p");
     lmgtxsec->AddEntry(h17_gphitxsec, "2017", "p");
-    lmgtxsec->AddEntry(h18_gphitxsec, "2018", "p");
+    lmgtxsec->AddEntry(h18_gphitxsec, "2018 S", "p");
+    lmgtxsec->AddEntry(h18l_gphitxsec, "2018 F", "p");
     lmgtxsec->Draw();
     cmgtxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgtxsec.eps", "eps");
     cmgtxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phi2pi/cmgtxsec.png", "png");
@@ -1181,13 +1230,13 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
 
     outputfig->Print();
 
-    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_xsec_phi2pi, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_xsec_phi2pi);
-    gSystem->Exec("pdflatex table_xsec_phi2pi.tex");
+    gSystem->Exec(Form("pdflatex table_xsec_phi2pi_%s.tex", name.Data()));
 
-    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_xsec_phi2pi_sys, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_xsec_phi2pi_sys);
-    gSystem->Exec("pdflatex table_xsec_phi2pi_sys.tex");
+    gSystem->Exec(Form("pdflatex table_xsec_phi2pi_sys_%s.tex", name.Data()));
 
     // table_phi << "\\hline" << endl;
     // table_phi << "\\end{tabularx}" << endl;
@@ -1197,6 +1246,6 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi << "\\end{document}" << endl;
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
-    
+*/   
 
 }

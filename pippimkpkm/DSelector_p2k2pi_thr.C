@@ -9,8 +9,18 @@ void DSelector_p2k2pi_thr::Init(TTree *locTree)
 	// Init() will be called many times when running on PROOF (once per file to be processed).
 
 	//USERS: SET OUTPUT FILE NAME //can be overriden by user in PROOF
-	dOutputFileName = "p2k2pi_thr.root"; //"" for none
+	// dOutputFileName = "p2k2pi_thr.root"; //"" for none
+
+    TString option = GetOption();
+    if (option=="") option = "pippimkpkm";
+
+    dOutputFileName = option + ".root";//option + ".root"; //"" for none
+	// dOutputTreeFileName = option +  ".root"; //"" for none
+	// dFlatTreeFileName = option + ".root"; //output flat tree (one combo per tree entry), "" for none
+	// dFlatTreeName = "ntp"; //if blank, default name will be chosen
+
 	//USERS: SET OUTPUT TREE FILES/NAMES //e.g. binning into separate files for AmpTools
+	// dOutputTreeFileNameMap["Bin1"] = "mcgen_bin1.root"; //key is user-defined, value is output file name
 	//dOutputTreeFileNameMap["Bin1"] = "mcgen_bin1.root"; //key is user-defined, value is output file name
 	//dOutputTreeFileNameMap["Bin2"] = "mcgen_bin2.root"; //key is user-defined, value is output file name
 	//dOutputTreeFileNameMap["Bin3"] = "mcgen_bin3.root"; //key is user-defined, value is output file name
@@ -27,11 +37,12 @@ void DSelector_p2k2pi_thr::Init(TTree *locTree)
 
 	/******************************** EXAMPLE USER INITIALIZATION: STAND-ALONE HISTOGRAMS *******************************/
 	// Thrown  masses: Phi(1020), fo(980), Y(2175)
-	h_PhiMass_Thrown = new TH1F("PhiMass_Thrown", "Generated ;m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 1, 1.2);
+	h_PhiMass_Thrown = new TH1F("PhiMass_Thrown", "Generated ;m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 600, 0.98, 1.2);
 	h_foMass_Thrown = new TH1F("foMass_Thrown", "Generated ;m_{#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 0.3, 1.2);
-	h_YMass_Thrown = new TH1F("YMass_Thrown", "Generated ;m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 1.6, 3.2);
+	h_YMass_Thrown = new TH1F("YMass_Thrown", "Generated ;m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 600, 1.7, 3.2);
+	h_beame_Thrown = new TH1F("h_beame_Thrown", "Generated ;E_{#gamma} [GeV];Counts", 100, 6.5, 11.6);
 	h_t_Thrown = new TH1F("h_t_Thrown", "Generated ;-t [GeV^{2}];Counts", 100, 0, 4);
-	h2_beamevst_Thrown = new TH2D("h2_beamevst_Thrown", "Generated; -t [GeV^{2}]; E_{#gamma} [GeV]", 100, 0, 4, 100, 6, 12);
+	h2_beamevst_Thrown = new TH2D("h2_beamevst_Thrown", "Generated; -t [GeV^{2}]; E_{#gamma} [GeV]", 100, 0, 4, 100, 6.5, 11.6);
 	
 	/************************************* ADVANCED EXAMPLE: CHOOSE BRANCHES TO READ ************************************/
 
@@ -43,6 +54,7 @@ void DSelector_p2k2pi_thr::Init(TTree *locTree)
 
 	//dTreeInterface->Clear_GetEntryBranches(); //now get none
 	//dTreeInterface->Register_GetEntryBranch("Proton__P4"); //manually set the branches you want
+	// dFlatTreeInterface->Register_GetEntryBranch("t_thr");
 }
 
 Bool_t DSelector_p2k2pi_thr::Process(Long64_t locEntry)
@@ -125,10 +137,11 @@ Bool_t DSelector_p2k2pi_thr::Process(Long64_t locEntry)
 	h_PhiMass_Thrown->Fill(PhiMass_Thrown);
 	h_foMass_Thrown->Fill(foMass_Thrown);
 	h_YMass_Thrown->Fill(YMass_Thrown);
+	h_beame_Thrown->Fill(locBeamEnergyUsedForBinning);
 	h_t_Thrown->Fill(-t_thr);
 	h2_beamevst_Thrown->Fill(-t_thr,locBeamEnergyUsedForBinning);
 
-	if (locEntry%100000==0) cout <<"locBeamEnergyUsedForBinning = "<<locBeamEnergyUsedForBinning<<" | t_thr = " <<-t_thr<< endl;
+	// if (locEntry%100000==0) cout <<"locBeamEnergyUsedForBinning = "<<locBeamEnergyUsedForBinning<<" | t_thr = " <<-t_thr<< endl;
 	
 	//OR Manually:
 	//BEWARE: Do not expect the particles to be at the same array indices from one event to the next!!!!
@@ -137,6 +150,19 @@ Bool_t DSelector_p2k2pi_thr::Process(Long64_t locEntry)
 	//BRANCHES: https://halldweb.jlab.org/wiki/index.php/Analysis_TTreeFormat#TTree_Format:_Simulated_Data
 	TClonesArray** locP4Array = dTreeInterface->Get_PointerToPointerTo_TClonesArray("Thrown__P4");
 	TBranch* locPIDBranch = dTreeInterface->Get_Branch("Thrown__PID");
+
+	// Particle_t locKPlusPID_Thrown = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[0]);
+	// locKPlusP4_Thrown = *((TLorentzVector*)(*locP4Array)->At(0));
+	// Particle_t locKMinusPID_Thrown = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[1]);
+	// locKMinusP4_Thrown = *((TLorentzVector*)(*locP4Array)->At(1));
+	// Particle_t locPiPlusPID_Thrown = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[2]);
+	// locPiPlusP4_Thrown = *((TLorentzVector*)(*locP4Array)->At(2));
+	// Particle_t locPiMinusPID_Thrown = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[3]);
+	// locPiMinusP4_Thrown = *((TLorentzVector*)(*locP4Array)->At(3));
+	// Particle_t locProtonPID_Thrown = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[4]);
+	// locProtonP4_Thrown = *((TLorentzVector*)(*locP4Array)->At(4));
+
+    // dFlatTreeInterface->Fill_Fundamental<Double_t>("t_thr", t_thr);
 /*
 	Particle_t locThrown1PID = PDGtoPType(((Int_t*)locPIDBranch->GetAddress())[0]);
 	TLorentzVector locThrown1P4 = *((TLorentzVector*)(*locP4Array)->At(0));
@@ -148,7 +174,6 @@ Bool_t DSelector_p2k2pi_thr::Process(Long64_t locEntry)
 
 
 	/******************************************* BIN THROWN DATA INTO SEPARATE TREES FOR AMPTOOLS ***************************************/
-
 /*
 	//THESE KEYS MUST BE DEFINED IN THE INIT SECTION (along with the output file names)
 	if((locBeamEnergyUsedForBinning >= 8.0) && (locBeamEnergyUsedForBinning < 9.0))

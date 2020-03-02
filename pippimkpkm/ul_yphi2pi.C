@@ -65,11 +65,12 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
 
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");
 
-  FILE *table_ul_yphi2pi = fopen("table_ul_yphi2pi.tex","w");
-  fprintf(table_ul_yphi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\usepackage{pbox}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Total cross-sections and upper limit}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & \\pbox{10cm}{$N_{generated}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(Data)} & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & \\pbox{10cm}{$90\\%$ CL limit [nb]\\\\(Bayesian)} & \\pbox{10cm}{$90\\%$ CL limit [nb]\\\\(Frequentist)} \\\\ \n \\hline\n");
+  FILE *table_ul_yphi2pi = fopen(Form("table_ul_yphi2pi_%s.tex", name.Data()),"w");
+  fprintf(table_ul_yphi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\usepackage{pbox}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections and upper limit}\n \\begin{tabular}{|c|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & \\pbox{10cm}{$N_{generated}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(Data)} & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & $90\\%$ CL limit [nb] \\\\ \n \\hline\n");
+  //  \\pbox{10cm}{$90\\%$ CL limit [nb]\\\\(Bayesian)} & 
 
-  FILE *table_ul_yphi2pi_sys = fopen("table_ul_yphi2pi_sys.tex","w");
-  fprintf(table_ul_yphi2pi_sys,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\begin{minipage}{\\textwidth}\n \\begin{center}\n \\caption{Systematic errors}\n \\begin{tabularx}{\\textwidth}{|c|X|X|X|X|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ $\\%$ ] & Fit Range [$\\%$] & $\\phi$-mass bins [$\\%$]  & Y Mean [$\\%$] & Y width [$\\%$] \\\\ \n \\hline\n");
+  FILE *table_ul_yphi2pi_sys = fopen(Form("table_ul_yphi2pi_sys_%s.tex", name.Data()),"w");
+  fprintf(table_ul_yphi2pi_sys,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Systematic errors}\n \\begin{tabular}{|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & polynomial degrees [ $\\%$ ] & Fit Range [$\\%$] & $\\phi$-mass bins [$\\%$]  & Y Mean [$\\%$] & Y width [$\\%$] \\\\ \n \\hline\n");
 
   RooWorkspace w("w", kTRUE);
 
@@ -181,7 +182,7 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
 
   // *********************** Y(2175) MC *********************************
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts", "c_YMass_postcuts", 900, 600);
-  TH1F *h_YMass_postcuts = new TH1F("h_YMass_postcuts", "(MC);m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 2, 2.5); //[2, 2.5]
+  TH1F *h_YMass_postcuts = new TH1F("h_YMass_postcuts", ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 2, 2.5); //[2, 2.5]
   tmc->Project("h_YMass_postcuts", "kpkmpippim_mf", "w8*(kpkmpippim_uni && is_truecombo && kpkm_mf>1.005 && kpkm_mf<1.035)");
   // TH1F *h_YMass_postcuts = new TH1F("h_YMass_beambunchcut", ";m_{#phif_{0}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);
   // t->Project("h_YMass_beambunchcut", "kpkmpippim_mf", "w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && abs(pippim_mf-0.99)<0.1)");
@@ -250,12 +251,13 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
 
   fs_mc->Draw("same");
   fb_mc->Draw("same");
+  fsb_mc->Draw("same");
 
   double N_y_mc = fs_mc->Integral(2, 2.5) / h_YMass_postcuts->GetBinWidth(1);
   double dN_y_mc = N_y_mc * fsb_mc->GetParError(0) / fsb_mc->GetParameter(0);
 
   TLegend *l_y_mc = new TLegend(0.2, 0.65, 0.35, 0.85);
-  l_y_mc->SetTextSize(0.04);
+  l_y_mc->SetTextSize(0.05);
   l_y_mc->SetFillColor(kWhite);
   l_y_mc->SetLineColor(kWhite);
   // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("ldh_PhiMass_mc"), "Data", "p");
@@ -269,11 +271,11 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   lat_mc.SetTextAlign(13); //align at top
   lat_mc.SetNDC();
   lat_mc.SetTextColor(kBlue);
-  lat_mc.DrawLatex(0.6, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
-  lat_mc.DrawLatex(0.6, 0.78, Form("N_{sig} = %0.2f#pm%0.2f", N_y_mc, dN_y_mc));
-  lat_mc.DrawLatex(0.6, 0.68, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
-  lat_mc.DrawLatex(0.6, 0.58, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
-  lat_mc.DrawLatex(0.6, 0.48, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
+  lat_mc.DrawLatex(0.6, 0.86, Form("#chi^{2}/NDF = %0.2f", fsb_mc->GetChisquare() / fsb_mc->GetNDF()));
+  lat_mc.DrawLatex(0.6, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_y_mc, dN_y_mc));
+  lat_mc.DrawLatex(0.6, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_mc->GetParameter(1), fsb_mc->GetParError(1)));
+  lat_mc.DrawLatex(0.6, 0.68, Form("#sigma = %0.3f#pm%0.3f", fsb_mc->GetParameter(2), fsb_mc->GetParError(2)));
+  lat_mc.DrawLatex(0.6, 0.62, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
   // lat_mc.Draw("same");
 
   c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.root", "root");
@@ -294,6 +296,7 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
 
   TCanvas *cgphiy=new TCanvas("cgphiy","cgphiy",900, 600);//1500, 800
   TGraphErrors *gphiy = scanphi("y", "yphi2pi", Form("%s",name.Data()), n2k, n2pi2k);
+  
   // gphiy = new TGraphErrors(); //n2pi2k
   // gphiy->SetMarkerStyle(20);
   // gphiy->SetMarkerSize(1.0);
@@ -414,13 +417,13 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     hgphiy->Draw("e");
     hgphiy->SetMinimum(-100.);
     // save the histo to root file
-    w.factory(Form("Voigtian::sig_y_data(m_y_data[1.93,3],mean_y_data[%f],width_y_data[%f],sigma_y_data[%f])", fsb_mc->GetParameter(1),fsb_mc->GetParameter(3), fsb_mc->GetParameter(2))); //  m2pi2k_min, m2pi2k_max,  //sigma_y_data[0.0001,0.01], mean_y_data[1.011,1.030]
+    w.factory(Form("Voigtian::sig_y_data(m_y_data[2, 3],mean_y_data[%f],width_y_data[%f],sigma_y_data[%f])", fsb_mc->GetParameter(1),fsb_mc->GetParameter(3), fsb_mc->GetParameter(2))); //  m2pi2k_min, m2pi2k_max,  //sigma_y_data[0.0001,0.01], mean_y_data[1.011,1.030], m_y_data[1.93,3]
     // w.factory(Form("BreitWigner::sig_y_data(m_y_data[%f,%f],mean_y_data[1.018,1.021],width_y_data[0.004])", mkk_min, mkk_max));
-    w.factory("Chebychev::bkg_y_data(m_y_data,{c0_y_data[-1,+1], c1_y_data[-1,+1], c2_y_data[-1,+1]})");
-    w.factory("SUM:::model_y_data(nsig_y_data[-100000,+100000]*sig_y_data, nbkg_y_data[0,+100000]*bkg_y_data)"); //nsig[0,100000000]*sig2,
+    w.factory("Chebychev::bkg_y_data(m_y_data,{c0_y_data[-100000,+100000], c1_y_data[-100000,+100000], c2_y_data[-100000,+100000]})");//, c2_y_data[-100000,+100000]
+    w.factory("SUM:::model_y_data(nsig_y_data[-1000,+100000]*sig_y_data, nbkg_y_data[0,+100000]*bkg_y_data)"); //nsig[0,100000000]*sig2,
     w.var("m_y_data")->SetTitle("#phi#pi^{+}#pi^{-} [GeV/c^{2}]");
     RooDataHist dh_y_data("dh_y_data", "dh_y_data", *w.var("m_y_data"), Import(*hgphiy));
-    RooPlot *fr_y_data = w.var("m_y_data")->frame(Title("N_{#phi} vs. #phi#pi^{+}#pi^{-}"));
+    RooPlot *fr_y_data = w.var("m_y_data")->frame(Title(" "));
     w.pdf("model_y_data")->fitTo(dh_y_data);
 
     // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
@@ -440,16 +443,16 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     double N_y_data = w.var("nsig_y_data")->getVal();
     double dN_y_data = w.var("nsig_y_data")->getError();
 
-     TLatex lat_phiye;
+    TLatex lat_phiye;
     lat_phiye.SetTextSize(0.04);
     lat_phiye.SetTextAlign(13); //align at top
     lat_phiye.SetNDC();
     lat_phiye.SetTextColor(kBlue);
     // lat_phiye.DrawLatex(0.68, 0.87, Form("#chi^{2}/NDF = %0.2f", fsb_data->GetChisquare() / fsb_data->GetNDF()));
-    lat_phiye.DrawLatex(0.68, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_y_data, dN_y_data));
-    lat_phiye.DrawLatex(0.68, 0.73, Form("#mu = %0.3f#pm%0.3f", w.var("mean_y_data")->getVal(), w.var("mean_y_data")->getError()));
-    lat_phiye.DrawLatex(0.68, 0.67, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_y_data")->getVal(), w.var("sigma_y_data")->getError()));
-    lat_phiye.DrawLatex(0.68, 0.60, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_y_data")->getVal(), w.var("width_y_data")->getError()));
+    lat_phiye.DrawLatex(0.60, 0.40, Form("N_{sig} = %0.2f#pm%0.2f", N_y_data, dN_y_data));
+    lat_phiye.DrawLatex(0.60, 0.34, Form("#mu = %0.3f#pm%0.3f", w.var("mean_y_data")->getVal(), w.var("mean_y_data")->getError()));
+    lat_phiye.DrawLatex(0.60, 0.28, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_y_data")->getVal(), w.var("sigma_y_data")->getError()));
+    lat_phiye.DrawLatex(0.60, 0.22, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_y_data")->getVal(), w.var("width_y_data")->getError()));
 
     // +++++++++++++++++++ Systematic Errors
     double bkg_poln[3] = {-274, -286, -261}; // Bkg pol degree: 4, 3, 5
@@ -527,15 +530,15 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     l_sigma->Draw("same");
     TLine *l_ul = new TLine(ul, 0, ul, 0.45);
     l_ul->SetLineWidth(2);
-    l_ul->SetLineColor(28);
+    l_ul->SetLineColor(kBlue);
     l_ul->Draw("same");
-    TLine *l_ul2 = new TLine(ul2, 0, ul2, 0.45);
-    l_ul2->SetLineWidth(2);
-    l_ul2->SetLineColor(kBlue);
-    l_ul2->Draw("same");
+    // TLine *l_ul2 = new TLine(ul2, 0, ul2, 0.45);
+    // l_ul2->SetLineWidth(2);
+    // l_ul2->SetLineColor(28);
+    // l_ul2->Draw("same");
     //  +++++++++++++++++++
 
-    fprintf(table_ul_yphi2pi, "%0.2f - %0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.2f & %0.2f $\\pm$ %0.2f $\\pm$ %0.2f & %0.3f & %0.3f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), N_y_gen, N_y_mc, dN_y_mc, N_y_data, dN_y_data, eff_y * 100, deff_y * 100, xsec_y, dxsec_y_stat, dxsec_y_sys, ul, ul2);    
+    fprintf(table_ul_yphi2pi, "%0.2f - %0.2f & %0.f & %0.f $\\pm$ %0.f & %0.f $\\pm$ %0.f & %0.2f $\\pm$ %0.3f & %0.3f $\\pm$ %0.3f $\\pm$ %0.3f & %0.3f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), N_y_gen, N_y_mc, dN_y_mc, N_y_data, dN_y_data, eff_y * 100, deff_y * 100, xsec_y, dxsec_y_stat, dxsec_y_sys, ul);    
 
     fprintf(table_ul_yphi2pi_sys, "%0.2f - %0.2f & %0.2f & %0.2f & %0.2f & %0.2f & %0.2f \\\\ \n", h_beame_tru->GetXaxis()->GetXmin(), h_beame_tru->GetXaxis()->GetXmax(), abs(err_bkg_poln*100/bkg_poln[0]), abs(err_fit_range*100/fit_range[0]), abs(err_slice_numb*100/slice_numb[0]), abs(err_mean_value*100/mean_value[0]), abs(err_width_value*100/width_value[0]));    
 
@@ -577,13 +580,13 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
 
     outputfig->Print();
 
-    fprintf(table_ul_yphi2pi, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_ul_yphi2pi, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_ul_yphi2pi);
-    gSystem->Exec("pdflatex table_ul_yphi2pi.tex");
+    gSystem->Exec(Form("pdflatex table_ul_yphi2pi_%s.tex",name.Data()));
 
-    fprintf(table_ul_yphi2pi_sys, "\\hline\n \\end{tabularx}\n \\end{center}\n \\end{minipage}\n \\end{table}\n \\end{document}\n");
+    fprintf(table_ul_yphi2pi_sys, "\\hline\n \\end{tabular}\n \\end{table}\n \\end{document}\n");
     fclose(table_ul_yphi2pi_sys);
-    gSystem->Exec("pdflatex table_ul_yphi2pi_sys.tex");
+    gSystem->Exec(Form("pdflatex table_ul_yphi2pi_sys_%s.tex",name.Data()));
 }
 
 

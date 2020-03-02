@@ -85,9 +85,10 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
 
   // w.factory("BreitWigner::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004])");
   // w.factory("ArgusBG::bkg_Phi_mc(m_Phi_mc, 1.04, c0_Phi_mc[-50,-10])");
-  w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])"); //0.0001,0.01sigma_PhiMass_mc[0.001,0.01], mean_PhiMass_mc[1.015,1.022]
-  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-10,10], c1_PhiMass_mc[-10,10]})");
-  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
+  if(name == "y") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
+  if(name == "fo") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.1])");
+  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-100000,100000], c1_PhiMass_mc[-100000,100000]})");
+  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
   w.var("m_PhiMass_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
   RooDataHist dh_PhiMass_mc("dh_PhiMass_mc", "dh_PhiMass_mc", *w.var("m_PhiMass_mc"), Import(*h_PhiMass_postcuts));
   RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title("K^{+}K^{-}"));
