@@ -48,9 +48,9 @@ using namespace RooStats;
 TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", double n2k=100, int n=50)
 //, TString cut="kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
-  TFile *fmc = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_%s_%s_flat.root", fname_mc.Data(), fname_data.Data()));
+  TFile *fmc = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_%s_%s_flat.root", fname_mc.Data(), fname_data.Data()));
   TTree *tmc = (TTree *)fmc->Get("ntp");
-  TFile *fdata = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_%s_flat.root", fname_data.Data()));
+  TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_flat.root", fname_data.Data()));
   TTree *tdata = (TTree *)fdata->Get("ntp");
 
   TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/scanphi.root", "UPDATE");

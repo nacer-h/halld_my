@@ -120,19 +120,19 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, true, "precut"));
     
 	// PID cuts	
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.22, -0.22, KPlus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.22, -0.22, KMinus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.65, KPlus, SYS_BCAL)); //0.2 (2018 Fall), 0.3 (all)
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.65, KMinus, SYS_BCAL)); //0.2 (2018 Fall), 0.3 (all)
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.0, KPlus, SYS_FCAL)); //1.0 (2018 Fall), 0.8 (all)
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.0, KMinus, SYS_FCAL)); //1.0 (2018 Fall), 0.8 (all)
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.3, PiPlus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.3, PiMinus, SYS_TOF));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiPlus, SYS_BCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiMinus, SYS_BCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.2, -0.3, KPlus, SYS_TOF));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.2, -0.3, KMinus, SYS_TOF));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.75, KPlus, SYS_BCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.75, KMinus, SYS_BCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.5, KPlus, SYS_FCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.8, -2.5, KMinus, SYS_FCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.25, PiPlus, SYS_TOF));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.25, PiMinus, SYS_TOF));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiPlus, SYS_BCAL));
+	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.6, -0.6, PiMinus, SYS_BCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.5, PiPlus, SYS_FCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.5, PiMinus, SYS_FCAL));
-	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.25, -0.25, Proton, SYS_TOF));
+	dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 0.3, -0.3, Proton, SYS_TOF));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.0, Proton, SYS_BCAL));
 	// dAnalysisActions.push_back(new DCutAction_PIDDeltaT(dComboWrapper, false, 1.9, Proton, SYS_FCAL));
 	dAnalysisActions.push_back(new DHistogramAction_ParticleID(dComboWrapper, false, "meas_postcut"));     
@@ -150,7 +150,7 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// MISSING MASS
 	dAnalysisActions.push_back(new DHistogramAction_MissingMassSquared(dComboWrapper, false, 600, -0.1, 0.1, "mm2_meas"));
 	// MISSING MASS cuts
-	dAnalysisActions.push_back(new DCutAction_MissingMassSquared(dComboWrapper, false, -0.03, 0.03));
+	// dAnalysisActions.push_back(new DCutAction_MissingMassSquared(dComboWrapper, false, -0.035, 0.035));
 
 	// Cuts
 	// dAnalysisActions.push_back(new DCutAction_KinFitFOM(dComboWrapper, 60, "CLcut")
@@ -233,7 +233,7 @@ void DSelector_pippimkpkm::Init(TTree *locTree)
 	// cut
 	h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", "Vertex time - RF (ns);#Deltat_{Beam-RF}(ns)", 300, -18, 18);
 	h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut", "Vertex time - RF (ns);#Deltat_{Beam-RF}(ns)", 300, -18, 18);
-	h_mm2 = new TH1F("h_mm2", ";Missing Mass Squared (GeV/c^{2})^{2}", 600, -0.01, 0.01);
+	h_mm2 = new TH1F("h_mm2", ";Missing Mass Squared (GeV/c^{2})^{2}", 600, -0.1, 0.1);
 	h_chi2 = new TH1F("h_chi2", "#chi^{2} of the Kinematic Fit (P4 + Vertex) ;#chi^{2};Counts", 600, 0, 25);
 	h_KinFitCL = new TH1F("KinFitCL", ";Kinematic Fit Confidence Level", 100, 0., 1.);
 
@@ -545,7 +545,7 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		// Float_t chi2pi = getchi2pi(Get_RunNumber(), Get_EventNumber(), locBeamID, locKPlusTrackID, locPiPlusTrackID, locKMinusTrackID, locPiMinusTrackID, locProtonTrackID);
 
 		// Chi2 cuts
-		if (locKinFitChiSq > 60) //60
+		if (locKinFitChiSq > 55)
 		{
 			dComboWrapper->Set_IsComboCut(true);
 			continue;
@@ -647,11 +647,12 @@ Bool_t DSelector_pippimkpkm::Process(Long64_t locEntry)
 		}
 
 		//E.g. Cut
-		//if((locMissingMassSquared < -0.04) || (locMissingMassSquared > 0.04))
-		//{
-		//	dComboWrapper->Set_IsComboCut(true);
-		//	continue;
-		//}
+		// mm2 cuts
+		if((locMissingMassSquared < -0.035) || (locMissingMassSquared > 0.035))
+		{
+			dComboWrapper->Set_IsComboCut(true);
+			continue;
+		}
 
 		// **************************** Phi, fo and Y invariant masses *********************************************
 

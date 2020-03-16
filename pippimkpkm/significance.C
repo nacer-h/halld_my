@@ -59,14 +59,14 @@ void significance(TString cut, TString name)
   //RooFitResult* result = NULL;
 
   // ***************** cuts
-  // TString cutlist="&& kpkm_mf>1.005 && kpkm_mf<1.035 && kin_chisq<30 && abs(mm2)<0.015 && (abs(kp_dttof)<0.18 || kp_dttof==-999) && p_x4_kin.Z()<78 && p_x4_kin.Z()>52 && beam_p4_kin.E()>6 &&";
-  //  && (abs(kp_dtbcal)<0.75 || kp_dtbcal==-999) && (abs(kp_dtfcal)<0.5 || kp_dtfcal==-999) && (abs(pip_dttof)<0.5 || pip_dttof==-999) && (abs(pip_dtbcal)<1.0 || pip_dtbcal==-999) && (abs(pip_dtfcal)<1.1 || pip_dtfcal==-999) && (abs(p_dttof)<0.6 || p_dttof==-999) && (abs(p_dtbcal)<1.0 || p_dtbcal==-999)
-  TString cutlist = "&& kpkm_mf>1.005 && kpkm_mf<1.035 && ((kp_dttof>-0.22 && kp_dttof<0.22) || kp_dttof == -999) && ((kp_dtbcal>-0.65 && kp_dtbcal<0.3) || kp_dtbcal == -999) && ((kp_dtfcal>-2.0 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.3 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999) && ((p_dttof>-0.25 && p_dttof<0.25) || p_dttof == -999) && abs(mm2)<0.03 &&";// abs(mm2)<0.03 &&
-  
-  //  (abs(kp_dttof)<0.135 || kp_dttof == -999) && (abs(kp_dtbcal)<0.4125 || kp_dtbcal == -999) && (abs(kp_dtfcal)<1 || kp_dtfcal == -999) && (abs(pip_dttof)<0.15 || pip_dttof == -999) && (abs(pip_dtbcal)<0.85 || pip_dtbcal == -999) && (abs(p_dttof)<0.27 || p_dttof == -999) && abs(mm2)<0.01 &&>7.95 &&
+
+  // TString cutlist = "&& ((kp_dttof>-0.3 && kp_dttof<0.2) || kp_dttof == -999) && ((kp_dtbcal>-0.75 && kp_dtbcal<0.25) || kp_dtbcal == -999) && ((kp_dtfcal>-2.5 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.25 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999) && ((p_dttof>-0.25 && p_dttof<0.25) || p_dttof == -999) && abs(mm2)<0.02 &&";// abs(mm2)<0.02 && kin_chisq<70 && kpkm_mf>1.0 && kpkm_mf<1.05 && 
+
+  TString cutlist = "&& (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 &&";//kin_chisq<55 && abs(mm2)<0.035
+  // ((kp_dttof>-0.3 && kp_dttof<0.2) || kp_dttof == -999) && ((kp_dtbcal>-0.75 && kp_dtbcal<0.25) || kp_dtbcal == -999) && ((kp_dtfcal>-2.5 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.25 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999) && ((p_dttof>-0.25 && p_dttof<0.25) || p_dttof == -999) && abs(mm2)<0.02 &&";// abs(mm2)<0.02 && kin_chisq<70 && kpkm_mf>1.0 && kpkm_mf<1.05 && 
 
   double cutsmin = 0; //= hdata_postcut->GetXaxis()->GetBinLowEdge(1);
-  double cutsmax = 100;//= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
+  double cutsmax = 0.1;//= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
 	double cutsstep = (cutsmax-cutsmin) / 20.;
   double cuts[20];
   for (int i = 0; i < 20; ++i)
@@ -75,7 +75,6 @@ void significance(TString cut, TString name)
     // cuts[i] = cutsmin + (i * cutsstep); //i * cutsstep;
     cout<<"########  i = "<<i<<" | cuts[i] = "<<cuts[i]<<endl;
   }
-
 /*
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Y(2175) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -94,14 +93,16 @@ void significance(TString cut, TString name)
     cdata_YMass->cd(j+1);
     // hdata_YMass = (TH1F *)fdata->Get(Form("h_YMass_cuts_%d", j));
     hdata_YMass[j] = new TH1F(Form("hdata_YMass_%d",j), ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);//2.5, 3.2
-    tdata->Project(Form("hdata_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni"+cutlist+"kin_chisq<%f)",cuts[j])); //cuts[j] -t_kin<1 && beam_p4_kin.E()>6 && pt<0.4
+    tdata->Project(Form("hdata_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.0 && kpkm_mf<1.05"+cutlist+"abs(mm2)<%f)",cuts[j])); //cuts[j] -t_kin<1 && beam_p4_kin.E()>6 && pt<0.4
     cout << "hdata_YMass = " << hdata_YMass[j] << endl;
     // hdata_YMass->Rebin(4);
     // double xmin = hdata_YMass->GetXaxis()->GetXmin();
     // double xmax = hdata_YMass->GetXaxis()->GetXmax();
     hdata_YMass[j]->SetMarkerStyle(20);
     hdata_YMass[j]->SetMarkerSize(0.7);
-    hdata_YMass[j]->SetTitle(Form("mm^{2} < %.2f",cuts[j]));//#chi^{2}
+    if(cut == "mm2") hdata_YMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
+    else if (cut == "chi2") hdata_YMass[j]->SetTitle(Form("|#chi^{2}| < %0.f",cuts[j]));
+    else hdata_YMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
 
     TF1 *fbkg_y = new TF1("fbkg_y","pol2");
     fbkg_y->SetParameters(1.,1.);
@@ -142,12 +143,14 @@ void significance(TString cut, TString name)
   {
     csim_YMass->cd(j + 1);
     hsim_YMass[j] = new TH1F(Form("hsim_YMass_%d",j), ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 2.0, 2.5); //2.05, 2.35
-    tsim->Project(Form("hsim_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni"+cutlist+"kin_chisq<%f)",cuts[j]));
+    tsim->Project(Form("hsim_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.0 && kpkm_mf<1.05"+cutlist+"abs(mm2)<%f)",cuts[j]));
     // hsim_YMass->Rebin(4);
     hsim_YMass[j]->SetMarkerStyle(20);
     hsim_YMass[j]->SetMarkerSize(0.7);
     cout << "hsim_YMass = " << hsim_YMass[j] << endl;
-    hsim_YMass[j]->SetTitle(Form("mm^{2} < %.2f",cuts[j]));//#chi^{2}
+    if(cut == "mm2") hsim_YMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
+    else if (cut == "chi2") hsim_YMass[j]->SetTitle(Form("#chi^{2} < %0.f",cuts[j]));
+    else hsim_YMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
     hsim_YMass[j]->Draw("e");
 
     nsig_y[j] = hsim_YMass[j]->Integral(1, 100);
@@ -170,13 +173,12 @@ void significance(TString cut, TString name)
 
   // // result->Print();
   grsim_YMass->Write();
-  grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC); cut; relative significance");
+  grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC/Data); cut; S/#sqrt{B}");
   cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%s_%scut.root",name.Data(),cut.Data()),"root");
   cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%s_%scut.eps",name.Data(),cut.Data()),"eps");
 
   ofs_YMass.close();
   outputfig->Print();
-
 */
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Phi(1020) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
@@ -190,6 +192,7 @@ void significance(TString cut, TString name)
   TCanvas *cgrdata_PhiMass = new TCanvas("cgrdata_PhiMass","cgrdata_PhiMass",900,600);
   cgrdata_PhiMass->SetGrid();
   TGraphErrors *grdata_PhiMass = new TGraphErrors();
+  grdata_PhiMass->SetMinimum(0.);
   grdata_PhiMass->SetMarkerStyle(20);
   grdata_PhiMass->GetXaxis()->SetNdivisions(510, kFALSE);
 
@@ -204,24 +207,29 @@ void significance(TString cut, TString name)
     // cdata_PhiMass->cd(k + 1);
     cdata_PhiMass->cd(j + 1);
     // hdata_PhiMass = (TH1F *)fdata->Get(Form("h_PhiMass_cuts_%d", j));
-    hdata_PhiMass[j] = new TH1F(Form("hdata_PhiMass_%d",j), ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 1.005, 1.035);
-    tdata->Project(Form("hdata_PhiMass_%d",j), "kpkm_mf", Form("w8*(kpkm_uni"+cutlist+"kin_chisq<%f)",cuts[j]));//kin_chisq
+    hdata_PhiMass[j] = new TH1F(Form("hdata_PhiMass_%d",j), ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 1.0, 1.05);
+    tdata->Project(Form("hdata_PhiMass_%d",j), "kpkm_mf", Form("w8*(kpkm_uni"+cutlist+"abs(mm2)<%f)",cuts[j]));//kin_chisq, abs(mm2)
     //(pip_dttof<-990 || abs(pip_dttof)<0.5) && (pip_dtbcal<-990 || abs(pip_dtbcal)<1.0) && (pip_dtfcal<-990 || abs(pip_dtfcal)<0.5) && (kp_dttof<-990 || abs(kp_dttof)<0.3) && (kp_dtbcal<-990 || abs(kp_dtbcal)<0.6) && (kp_dtfcal<-990 || abs(kp_dtfcal)<2.375) && (p_dttof<-990 || abs(p_dttof)<0.48) && (p_dtbcal<-990 || abs(p_dtbcal)<%f) && (p_dtfcal<-990 || abs(p_dtfcal)<1.9))",cuts[j]));
     // hdata_PhiMass->Rebin(4);
     hdata_PhiMass[j]->SetMarkerStyle(20);
     hdata_PhiMass[j]->SetMarkerSize(0.7);
     cout << "hdata_PhiMass = " << hdata_PhiMass[j] << endl;
-    hdata_PhiMass[j]->SetTitle(Form("#chi^{2} < %0.f",cuts[j])); //|#Delta T| #chi^{2}
+    // if(cut == "mm2") hdata_PhiMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
+    // else if (cut == "chi2") hdata_PhiMass[j]->SetTitle(Form("#chi^{2} < %0.f",cuts[j]));
+    // else hdata_PhiMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
     hdata_PhiMass[j]->Draw("e");
 
-    w.factory("Voigtian::sig_PhiMass_data(m_PhiMass_data[1.005,1.035],mean_PhiMass_data[1.017,1.021],width_PhiMass_data[0.004],sigma_PhiMass_data[0.001,0.01])");//sigma_PhiMass_data[0.001,0.01], mean_PhiMass_data[1.015,1.022]
+    w.factory("Voigtian::sig_PhiMass_data(m_PhiMass_data[1.0, 1.05],mean_PhiMass_data[1.017,1.021],width_PhiMass_data[0.004],sigma_PhiMass_data[0.001,0.1])");//sigma_PhiMass_data[0.001,0.01], mean_PhiMass_data[1.015,1.022]
     // w.factory("BreitWigner::sig(m[0.99,1.05],mean[1.017,1.021],width[0.0001,0.01])");
     // w.factory("ArgusBG::bkg_Phi_data(m_Phi_data, 1.04, c0_Phi_data[-50,-10])");
-    w.factory("Chebychev::bkg_PhiMass_data(m_PhiMass_data,{c0_PhiMass_data[-10,10], c1_PhiMass_data[-10,10]})");
+    w.factory("Chebychev::bkg_PhiMass_data(m_PhiMass_data,{c0_PhiMass_data[-INF,INF], c1_PhiMass_data[-INF,INF], c2_PhiMass_data[-INF,INF]})");
     w.factory("SUM:::model_PhiMass_data(nsig_PhiMass_data[0,100000000]*sig_PhiMass_data, nbkg_PhiMass_data[0,100000000]*bkg_PhiMass_data)"); //nsig[0,100000000]*sig2,
     w.var("m_PhiMass_data")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
     RooDataHist dh_PhiMass_data("dh_PhiMass_data", "dh_PhiMass_data", *w.var("m_PhiMass_data"), Import(*hdata_PhiMass[j]));
-    RooPlot *fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title("K^{+}K^{-}"));
+    RooPlot *fr_PhiMass_data;
+    if (cut == "chi2") fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("#chi^{2} < %0.f", cuts[j])));
+    else if (cut == "mm2") fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("|mm^{2}| < %.3f",cuts[j])));
+    else fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("|#Delta T| < %.3f",cuts[j])));
     // fr_PhiMass_data->SetTitleOffset(0.90, "X");
     // fr_PhiMass_data->SetTitleSize(0.06, "XYZ");
     // fr_PhiMass_data->SetLabelSize(0.06, "xyz");

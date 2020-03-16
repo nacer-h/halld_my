@@ -51,19 +51,19 @@ using namespace RooStats;
 void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) // , TString cut="&& kin_chisq<30 && abs(mm2)<0.015"
 {
 
-  TFile *fdata = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_pippimkpkm_%s_flat.root", name.Data()));
-  TFile *fmc = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/tree_yphi2pi_%s_flat.root", name.Data()));
-  TFile *ftru = new TFile(Form("/data.local/nacer/halld_my/pippimkpkm/input/thrown_yphi2pi_%s.root", name.Data()));
+  TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_flat.root", name.Data()));
+  TFile *fmc = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_yphi2pi_%s_flat.root", name.Data()));
+  TFile *ftru = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/thrown_yphi2pi_%s.root", name.Data()));
   TTree *tdata = (TTree*)fdata->Get("ntp");
   TTree *tmc = (TTree *)fmc->Get("ntp");
   // TTree *ttru = (TTree *)ftru->Get("Thrown_Tree");
   TFile *fps = NULL;
-  if(name == "16") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_11366_11555.root");
-  if(name == "17") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_30274_31057.root");
-  if(name == "18") fps = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/flux_40856_42577.root");
+  if(name == "16") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_11366_11555.root");
+  if(name == "17") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_30274_31057.root");
+  if(name == "18") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_40856_42577.root");
  
 
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");
+  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");//UPDATE
 
   FILE *table_ul_yphi2pi = fopen(Form("table_ul_yphi2pi_%s.tex", name.Data()),"w");
   fprintf(table_ul_yphi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\usepackage{pbox}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections and upper limit}\n \\begin{tabular}{|c|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & \\pbox{10cm}{$N_{generated}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(Data)} & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & $90\\%$ CL limit [nb] \\\\ \n \\hline\n");
