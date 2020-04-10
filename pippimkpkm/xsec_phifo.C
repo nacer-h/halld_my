@@ -1,6 +1,6 @@
 #include "TCanvas.h"
 #include "TFile.h"
-#include "TH2F.h"
+#include "TH2.h"
 #include "TString.h"
 #include "TTree.h"
 #include "TF1.h"
@@ -57,8 +57,9 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   if(name == "16") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_11366_11555.root");
   if(name == "17") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_30274_31057.root");
   if(name == "18") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_40856_42577.root");
+  if(name == "18l") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_50677_51768.root");
 
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/xsec_phifo.root", "UPDATE");
+  TFile *outputfig = new TFile("output/fig_xsec_phifo/xsec_phifo.root", "UPDATE");
   
   // ofstream table_phi("table_phi.tex", ofstream::out);
   // table_phi <<"\\documentclass[8pt]{extarticle}" << endl;
@@ -80,7 +81,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
   RooWorkspace w("w", kTRUE);
 
-  double mkk_min = 0.98, mkk_max = 1.2; //mkk_min = 0.98, mkk_max = 1.2;
+  double mkk_min = 0.99, mkk_max = 1.2; //mkk_min = 0.98, mkk_max = 1.2;
   double m2pi_min = 0.3, m2pi_max = 1.2;
 
   gStyle->SetOptStat(0);
@@ -124,9 +125,9 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
   // w.factory("BreitWigner::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004])");
   // w.factory("ArgusBG::bkg_Phi_mc(m_Phi_mc, 1.04, c0_Phi_mc[-50,-10])");
-  w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.001,0.01])"); //sigma_PhiMass_mc[0.001,0.01], mean_PhiMass_mc[1.015,1.022]
-  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-10,10], c1_PhiMass_mc[-10,10]})");
-  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
+  w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.001,0.1])"); //m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.001,0.01]
+  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-10000,10000], c1_PhiMass_mc[-10000,10000], c2_PhiMass_mc[-10000,10000]})");
+  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,1000000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,1000000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
   w.var("m_PhiMass_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
   RooDataHist dh_PhiMass_mc("dh_PhiMass_mc", "dh_PhiMass_mc", *w.var("m_PhiMass_mc"), Import(*h_PhiMass_postcuts));
   RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title(" "));
@@ -303,8 +304,11 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
    // tdata->SetAlias("w4","((abs(delta_t)<2.004)*1.25-0.25)");
 
    cphifo->cd();
-   TH2F *h2d2 = new TH2F("h2d2", "(Data);m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n2pi, m2pi_min, m2pi_max, n2k, mkk_min, mkk_max);
-   tdata->Project("h2d2", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni) && beam_p4_kin.E()>6.5 && beam_p4_kin.E()<11.6)");
+   TH2D *h2d2 = new TH2D("h2d2", "(Data);m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n2pi, m2pi_min, m2pi_max, n2k, mkk_min, mkk_max);
+   tdata->Project("h2d2", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni))");// && beam_p4_kin.E()>6.5 && beam_p4_kin.E()<11.6
+   // TH2D *h2d2 = (TH2D *)fdata->Get("h2_PhiVsfoMass_KinFit");
+  //  h2d2->RebinX(2);
+   cout << " ***** h2d2 = " << h2d2 << endl;
    h2d2->Draw("colz");
 
    gphifo = new TGraphErrors(); //n2pi
@@ -354,10 +358,10 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
      // TF1 *fsb = new TF1("fsb", "[0]*TMath::BreitWigner(x,[1],[2]) + pol2(3)", mkk_min, mkk_max);
      fsb->SetLineColor(2);
      fsb->SetParameters(1433, 1.019, 0.004, 0.002, 1, 1, 1);
-     fsb->SetParLimits(0, 0, 10000);
+    //  fsb->SetParLimits(0, 0, 10000);
      fsb->SetParLimits(1, 1.015, 1.022); // 1.018, 1.021
-     fsb->FixParameter(2, 0.004);        //fsb->SetParLimits(2, 0.008, 0.010);
-     fsb->FixParameter(3, 0.002);        //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
+     fsb->FixParameter(2, w.var("sigma_PhiMass_mc")->getVal());  //fsb->SetParLimits(2, 0.008, 0.010);
+     fsb->FixParameter(3, w.var("width_PhiMass_mc")->getVal()); //fsb->SetParLimits(3, 0.001,0.01);// 0.001,0.01
 
      TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
      // TF1 *fs = new TF1("fs", "[0]*TMath::BreitWigner(x,[1],[2])", mkk_min, mkk_max);
@@ -413,31 +417,36 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
 
     cgphifo->cd();
     gphifo->Draw("AP");
-    // TF1 *fsb = new TF1("fsb", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol2(4)", mkk_min, mkk_max);
-    TF1 *fsb_fo_data = new TF1("fsb_fo_data", "[0]*TMath::BreitWigner(x,[1],[2]) + pol3(3)", 0.85, 1.05);
+
+    double m2pi_min2 = 0.83, m2pi_max2 = 1.14;
+    // TF1 *fsb_fo_data = new TF1("fsb_fo_data", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", m2pi_min2, m2pi_max2);
+    TF1 *fsb_fo_data = new TF1("fsb_fo_data", "[0]*TMath::BreitWigner(x,[1],[2]) + expo(3)+pol0(5)", m2pi_min2, m2pi_max2);//0.85, 1.05, pol3(3)
     fsb_fo_data->SetLineColor(2);
-    fsb_fo_data->SetParameters(30, 0.980, 0.01, 1,1,1,1);
-    // fsb->SetParLimits(0, 0, 10000);
-    fsb_fo_data->SetParLimits(1, 0.95, 0.99); 
-    fsb_fo_data->SetParLimits(2, 0.01, 0.1); 
+    // fsb_fo_data->SetParameters(540, 0.980, 0.08, 1,1,1,1); // pol3
+    fsb_fo_data->SetParameters(80, 0.976, 0.06, 6.7,2.8,1); 
+    // expo(3)+pol3(5):18/18l: 80, 0.974, 0.05, 6.7,2.8,1
+    // fsb_fo_data->SetParLimits(0, 0, 10000);
+    fsb_fo_data->SetParLimits(1, 0.96, 0.99); // 1, 0.93, 0.99
+    fsb_fo_data->SetParLimits(2, 0.01, 0.2); // 2, 0.005, 0.1
+    // fsb_fo_data->SetParLimits(3, 0.01, 0.1);
     // fsb_fo_data->FixParameter(1, fsb_fo_mc->GetParameter(1)); 
     // fsb_fo_data->FixParameter(2, fsb_fo_mc->GetParameter(2));
 
-    // TF1 *fs = new TF1("fs", "[0]*TMath::Voigt(x - [1], [2], [3])", mkk_min, mkk_max);
-    TF1 *fs_fo_data = new TF1("fs_fo_data", "[0]*TMath::BreitWigner(x,[1],[2])", 0.85, 1.05);
+    // TF1 *fs_fo_data = new TF1("fs_fo_data", "[0]*TMath::Voigt(x - [1], [2], [3])", m2pi_min2, m2pi_max2);
+    TF1 *fs_fo_data = new TF1("fs_fo_data", "[0]*TMath::BreitWigner(x,[1],[2])", m2pi_min2, m2pi_max2);
     fs_fo_data->SetLineColor(4);
 
-    TF1 *fb_fo_data = new TF1("fb", "pol3(3)", 0.85, 1.05); //pol2(3)
+    TF1 *fb_fo_data = new TF1("fb_fo_data", "expo(3)+pol0(5)", m2pi_min2, m2pi_max2); //pol2(3)
     fb_fo_data->SetLineColor(28);
     fb_fo_data->SetLineStyle(2);
 
-    gphifo->Fit("fsb_fo_data", "R", "", 0.85, 1.05);
-    double par_fo_data[10]; //6
+    gphifo->Fit("fsb_fo_data", "R", "", m2pi_min2, m2pi_max2);
+    double par_fo_data[fsb_fo_data->GetNpar()]; //fsb_fo_data->GetNpar()
     fsb_fo_data->GetParameters(&par_fo_data[0]);
     fs_fo_data->SetParameters(&par_fo_data[0]);
     fb_fo_data->SetParameters(&par_fo_data[3]); //3
 
-    double N_fo_data = fs_fo_data->Integral(0.85, 1.05)*n2pi/(m2pi_max-m2pi_min);
+    double N_fo_data = fs_fo_data->Integral(m2pi_min2, m2pi_max2)*n2pi/(m2pi_max-m2pi_min);
     double dN_fo_data = N_fo_data * fsb_fo_data->GetParError(0) / fsb_fo_data->GetParameter(0); 
 
     fs_fo_data->Draw("same");
@@ -452,6 +461,7 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     lat_phifo.DrawLatex(0.6, 0.80, Form("N_{sig} = %0.2f#pm%0.2f", N_fo_data, dN_fo_data));
     lat_phifo.DrawLatex(0.6, 0.74, Form("#mu = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(1), fsb_fo_data->GetParError(1)));
     lat_phifo.DrawLatex(0.6, 0.68, Form("#Gamma = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(2), fsb_fo_data->GetParError(2)));
+    // lat_phifo.DrawLatex(0.6, 0.62, Form("#sigma = %0.3f#pm%0.3f", fsb_fo_data->GetParameter(3), fsb_fo_data->GetParError(3)));
 
    // ++++++++++++++++++++++++++++ efficiency  +++++++++++++++++++++++
     double eff_phifo = N_fo_mc / h_beame_tru->Integral(0,100); // Efficiency = N_observed/N_generated
@@ -475,31 +485,31 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     // table_phi <<h2phie_mc->GetXaxis()->GetBinCenter(i)<<"&"<<h_beame_tru->GetBinContent(i)<<"&"<<N_fo_mc<<"$\\pm$"<<dN_fo_mc<<"&"<<N_fo_data<<"$\\pm$"<<dN_fo_data<<"&"<<eff_phi*100<<"$\\pm$"<<deff_phi*100<<"&"<<xsec_phifo<<"$\\pm$"<<dxsec_phifo_stat<<"$\\pm$"<<dxsec_phifo_sys<<" \\\\"<< endl;  
 
 
-   c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.root", name.Data()), "root");
-   c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.eps", name.Data()), "eps");
-   c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.png", name.Data()), "png");
-   c_foMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.root", name.Data()), "root");
-   c_foMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.eps", name.Data()), "eps");
-   c_foMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.png", name.Data()), "png");
-   cphifo1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c1_phifo_%s.root", name.Data()), "root");
-   cphifo1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c1_phifo_%s.eps", name.Data()), "eps");
-   cphifo1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c1_phifo_%s.png", name.Data()), "png");
-   cphifo2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c2_phifo_%s.root", name.Data()), "root");
-   cphifo2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c2_phifo_%s.eps", name.Data()), "eps");
-   cphifo2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c2_phifo_%s.png", name.Data()), "png");
-   cphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_phifo_%s.root", name.Data()), "root");
-   cphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_phifo_%s.eps", name.Data()), "eps");
-   cphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_phifo_%s.png", name.Data()), "png");
-   cgphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_%s.root", name.Data()), "root");
-   cgphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_%s.eps", name.Data()), "eps");
-   cgphifo->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_%s.png", name.Data()), "png");
+   c_PhiMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.root", name.Data()), "root");
+   c_PhiMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.eps", name.Data()), "eps");
+   c_PhiMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_PhiMass_postcuts_fitted_%s.png", name.Data()), "png");
+   c_foMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.root", name.Data()), "root");
+   c_foMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.eps", name.Data()), "eps");
+   c_foMass_postcuts->Print(Form("output/fig_xsec_phifo/cmc_foMass_postcuts_fitted_%s.png", name.Data()), "png");
+   cphifo1->Print(Form("output/fig_xsec_phifo/c1_phifo_%s.root", name.Data()), "root");
+   cphifo1->Print(Form("output/fig_xsec_phifo/c1_phifo_%s.eps", name.Data()), "eps");
+   cphifo1->Print(Form("output/fig_xsec_phifo/c1_phifo_%s.png", name.Data()), "png");
+   cphifo2->Print(Form("output/fig_xsec_phifo/c2_phifo_%s.root", name.Data()), "root");
+   cphifo2->Print(Form("output/fig_xsec_phifo/c2_phifo_%s.eps", name.Data()), "eps");
+   cphifo2->Print(Form("output/fig_xsec_phifo/c2_phifo_%s.png", name.Data()), "png");
+   cphifo->Print(Form("output/fig_xsec_phifo/c_phifo_%s.root", name.Data()), "root");
+   cphifo->Print(Form("output/fig_xsec_phifo/c_phifo_%s.eps", name.Data()), "eps");
+   cphifo->Print(Form("output/fig_xsec_phifo/c_phifo_%s.png", name.Data()), "png");
+   cgphifo->Print(Form("output/fig_xsec_phifo/c_gphifo_%s.root", name.Data()), "root");
+   cgphifo->Print(Form("output/fig_xsec_phifo/c_gphifo_%s.eps", name.Data()), "eps");
+   cgphifo->Print(Form("output/fig_xsec_phifo/c_gphifo_%s.png", name.Data()), "png");
 
-   c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_tagged_flux.root", name.Data()), "root");
-   c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_tagged_flux.eps", name.Data()), "eps");
-   c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_tagged_flux.png", name.Data()), "png");
-   c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_beame_tru_%s.root", name.Data()), "root");
-   c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_beame_tru_%s.eps", name.Data()), "eps");
-   c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_beame_tru_%s.png", name.Data()), "png");
+   c_tagged_flux->Print(Form("output/fig_xsec_phifo/c%s_tagged_flux.root", name.Data()), "root");
+   c_tagged_flux->Print(Form("output/fig_xsec_phifo/c%s_tagged_flux.eps", name.Data()), "eps");
+   c_tagged_flux->Print(Form("output/fig_xsec_phifo/c%s_tagged_flux.png", name.Data()), "png");
+   c_beame_tru->Print(Form("output/fig_xsec_phifo/c_beame_tru_%s.root", name.Data()), "root");
+   c_beame_tru->Print(Form("output/fig_xsec_phifo/c_beame_tru_%s.eps", name.Data()), "eps");
+   c_beame_tru->Print(Form("output/fig_xsec_phifo/c_beame_tru_%s.png", name.Data()), "png");
 
    outputfig->Print();
 
@@ -511,13 +521,13 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   //  fclose(table_xsec_phifo_sys);
   //  gSystem->Exec(Form("pdflatex table_xsec_phifo_sys_%s.tex", name.Data()));
 
-   // cgphifo_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_width.root", "root");
-   // cgphifo_width->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_width.eps", "eps");
-   // cgphifo_mean->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_mean.root", "root");
-   // cgphifo_mean->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gphifo_mean.eps", "eps");
+   // cgphifo_width->Print("output/fig_xsec_phifo/c_gphifo_width.root", "root");
+   // cgphifo_width->Print("output/fig_xsec_phifo/c_gphifo_width.eps", "eps");
+   // cgphifo_mean->Print("output/fig_xsec_phifo/c_gphifo_mean.root", "root");
+   // cgphifo_mean->Print("output/fig_xsec_phifo/c_gphifo_mean.eps", "eps");
 
-   // cgnophifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gnophifo.root", "root");
-   // cgnophifo->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c_gnophifo.eps", "eps");
+   // cgnophifo->Print("output/fig_xsec_phifo/c_gnophifo.root", "root");
+   // cgnophifo->Print("output/fig_xsec_phifo/c_gnophifo.eps", "eps");
 
    /*
   // ========================= Phi vs. Eg ======================
@@ -990,9 +1000,9 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   // lmgxsec->AddEntry(hdata_17_gphiexsec, "2017", "p");
   // lmgxsec->AddEntry(hdata_18_gphiexsec, "2018", "p");
   // lmgxsec->Draw();
-  // cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.eps", "eps");
-  // cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.png", "png");
-  // cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.root", "root");
+  // cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.eps", "eps");
+  // cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.png", "png");
+  // cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.root", "root");
 
   // // total Yields
   // TMultiGraph *mgphie = new TMultiGraph();
@@ -1031,34 +1041,34 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
   // lmgphie->AddEntry(hdata_17_gphie, "2017", "p");
   // lmgphie->AddEntry(hdata_18_gphie, "2018", "p");
   // lmgphie->Draw();
-  // cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphie.eps", "eps");
-  // cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphie.png", "png");
-  // cmgphie->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphie.root", "root");
+  // cmgphie->Print("output/fig_xsec_phifo/cmgphie.eps", "eps");
+  // cmgphie->Print("output/fig_xsec_phifo/cmgphie.png", "png");
+  // cmgphie->Print("output/fig_xsec_phifo/cmgphie.root", "root");
 
-  cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie.root", name.Data()), "root");
-  cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie.eps", name.Data()), "eps");
-  cphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie.png", name.Data()), "png");
-  cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie1.root", name.Data()), "root");
-  cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie1.eps", name.Data()), "eps");
-  cphie1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phie1.png", name.Data()), "png");
-  cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphie.root", name.Data()), "root");
-  cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphie.eps", name.Data()), "eps");
-  cgphie->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphie.png", name.Data()), "png");
-  cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie_mc.root", "root");
-  cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie_mc.eps", "eps");
-  cphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie_mc.png", "png");
-  cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie1_mc.root", "root");
-  cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie1_mc.eps", "eps");
-  cphie1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphie1_mc.png", "png");
-  cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphie_mc.root", "root");
-  cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphie_mc.eps", "eps");
-  cgphie_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphie_mc.png", "png");
-  cgphifoeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphifoeeff.root", "root");
-  cgphifoeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphifoeeff.eps", "eps");
-  cgphifoeeff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphifoeeff.png", "png");
-  cgphifoexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphifoexsec.root", name.Data()), "root");
-  cgphifoexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphifoexsec.eps", name.Data()), "eps");
-  cgphifoexsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphifoexsec.png", name.Data()), "png");
+  cphie->Print(Form("output/fig_xsec_phifo/c%s_phie.root", name.Data()), "root");
+  cphie->Print(Form("output/fig_xsec_phifo/c%s_phie.eps", name.Data()), "eps");
+  cphie->Print(Form("output/fig_xsec_phifo/c%s_phie.png", name.Data()), "png");
+  cphie1->Print(Form("output/fig_xsec_phifo/c%s_phie1.root", name.Data()), "root");
+  cphie1->Print(Form("output/fig_xsec_phifo/c%s_phie1.eps", name.Data()), "eps");
+  cphie1->Print(Form("output/fig_xsec_phifo/c%s_phie1.png", name.Data()), "png");
+  cgphie->Print(Form("output/fig_xsec_phifo/c%s_gphie.root", name.Data()), "root");
+  cgphie->Print(Form("output/fig_xsec_phifo/c%s_gphie.eps", name.Data()), "eps");
+  cgphie->Print(Form("output/fig_xsec_phifo/c%s_gphie.png", name.Data()), "png");
+  cphie_mc->Print("output/fig_xsec_phifo/cphie_mc.root", "root");
+  cphie_mc->Print("output/fig_xsec_phifo/cphie_mc.eps", "eps");
+  cphie_mc->Print("output/fig_xsec_phifo/cphie_mc.png", "png");
+  cphie1_mc->Print("output/fig_xsec_phifo/cphie1_mc.root", "root");
+  cphie1_mc->Print("output/fig_xsec_phifo/cphie1_mc.eps", "eps");
+  cphie1_mc->Print("output/fig_xsec_phifo/cphie1_mc.png", "png");
+  cgphie_mc->Print("output/fig_xsec_phifo/cgphie_mc.root", "root");
+  cgphie_mc->Print("output/fig_xsec_phifo/cgphie_mc.eps", "eps");
+  cgphie_mc->Print("output/fig_xsec_phifo/cgphie_mc.png", "png");
+  cgphifoeeff->Print("output/fig_xsec_phifo/cgphifoeeff.root", "root");
+  cgphifoeeff->Print("output/fig_xsec_phifo/cgphifoeeff.eps", "eps");
+  cgphifoeeff->Print("output/fig_xsec_phifo/cgphifoeeff.png", "png");
+  cgphifoexsec->Print(Form("output/fig_xsec_phifo/c%s_gphifoexsec.root", name.Data()), "root");
+  cgphifoexsec->Print(Form("output/fig_xsec_phifo/c%s_gphifoexsec.eps", name.Data()), "eps");
+  cgphifoexsec->Print(Form("output/fig_xsec_phifo/c%s_gphifoexsec.png", name.Data()), "png");
 */
    /*
   // ======================================== Phi vs. -t ===============================================
@@ -1475,9 +1485,9 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     lmgxsec->AddEntry(hdata_17_gphitxsec, "2017", "p");
     lmgxsec->AddEntry(hdata_18_gphitxsec, "2018", "p");
     lmgxsec->Draw();
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.eps", "eps");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.png", "png");
-    cmgxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgxsec.root", "root");
+    cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.eps", "eps");
+    cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.png", "png");
+    cmgxsec->Print("output/fig_xsec_phifo/cmgxsec.root", "root");
 
     // total Yields
     TMultiGraph *mgphit = new TMultiGraph();
@@ -1516,34 +1526,34 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     lmgphit->AddEntry(hdata_17_gphit, "2017", "p");
     lmgphit->AddEntry(hdata_18_gphit, "2018", "p");
     lmgphit->Draw();
-    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphit.eps", "eps");
-    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphit.png", "png");
-    cmgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cmgphit.root", "root");
+    cmgphit->Print("output/fig_xsec_phifo/cmgphit.eps", "eps");
+    cmgphit->Print("output/fig_xsec_phifo/cmgphit.png", "png");
+    cmgphit->Print("output/fig_xsec_phifo/cmgphit.root", "root");
 
-    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit.root", name.Data()), "root");
-    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit.eps", name.Data()), "eps");
-    cphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit.png", name.Data()), "png");
-    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit1.root", name.Data()), "root");
-    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit1.eps", name.Data()), "eps");
-    cphit1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_phit1.png", name.Data()), "png");
-    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphit.root", name.Data()), "root");
-    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphit.eps", name.Data()), "eps");
-    cgphit->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphit.png", name.Data()), "png");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.root", "root");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.eps", "eps");
-    cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.png", "png");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_mc.root", "root");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_mc.eps", "eps");
-    cphit1_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_mc.png", "png");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.root", "root");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.eps", "eps");
-    cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.png", "png");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.root", "root");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.eps", "eps");
-    cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.png", "png");
-    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphitxsec.root", name.Data()), "root");
-    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphitxsec.eps", name.Data()), "eps");
-    cgphitxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/c%s_gphitxsec.png", name.Data()), "png");
+    cphit->Print(Form("output/fig_xsec_phifo/c%s_phit.root", name.Data()), "root");
+    cphit->Print(Form("output/fig_xsec_phifo/c%s_phit.eps", name.Data()), "eps");
+    cphit->Print(Form("output/fig_xsec_phifo/c%s_phit.png", name.Data()), "png");
+    cphit1->Print(Form("output/fig_xsec_phifo/c%s_phit1.root", name.Data()), "root");
+    cphit1->Print(Form("output/fig_xsec_phifo/c%s_phit1.eps", name.Data()), "eps");
+    cphit1->Print(Form("output/fig_xsec_phifo/c%s_phit1.png", name.Data()), "png");
+    cgphit->Print(Form("output/fig_xsec_phifo/c%s_gphit.root", name.Data()), "root");
+    cgphit->Print(Form("output/fig_xsec_phifo/c%s_gphit.eps", name.Data()), "eps");
+    cgphit->Print(Form("output/fig_xsec_phifo/c%s_gphit.png", name.Data()), "png");
+    cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.root", "root");
+    cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.eps", "eps");
+    cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.png", "png");
+    cphit1_mc->Print("output/fig_xsec_phifo/cphit1_mc.root", "root");
+    cphit1_mc->Print("output/fig_xsec_phifo/cphit1_mc.eps", "eps");
+    cphit1_mc->Print("output/fig_xsec_phifo/cphit1_mc.png", "png");
+    cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.root", "root");
+    cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.eps", "eps");
+    cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.png", "png");
+    cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.root", "root");
+    cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.eps", "eps");
+    cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.png", "png");
+    cgphitxsec->Print(Form("output/fig_xsec_phifo/c%s_gphitxsec.root", name.Data()), "root");
+    cgphitxsec->Print(Form("output/fig_xsec_phifo/c%s_gphitxsec.eps", name.Data()), "eps");
+    cgphitxsec->Print(Form("output/fig_xsec_phifo/c%s_gphitxsec.png", name.Data()), "png");
 */
    /*
   // ======================================== Phi vs. (-t,E) ==================================================
@@ -1749,36 +1759,36 @@ void xsec_phifo(TString name, int n2k=100, int n2pi=50, int ne=1, int nt=1)//, T
     cgphitxsec->cd(j);
     gphitxsec[j]->Draw("AP");
 
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_%d.root", j), "root");
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_%d.eps", j), "eps");
-    cphit1[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_%d.png", j), "png");
-    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_mc_%d.root", j), "root");
-    cphit1_mc[j]->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit1_mc_%d.png", j), "png");
+    cphit1[j]->Print(Form("output/fig_xsec_phifo/cphit1_%d.root", j), "root");
+    cphit1[j]->Print(Form("output/fig_xsec_phifo/cphit1_%d.eps", j), "eps");
+    cphit1[j]->Print(Form("output/fig_xsec_phifo/cphit1_%d.png", j), "png");
+    cphit1_mc[j]->Print(Form("output/fig_xsec_phifo/cphit1_mc_%d.root", j), "root");
+    cphit1_mc[j]->Print(Form("output/fig_xsec_phifo/cphit1_mc_%d.png", j), "png");
   }
   // int j =1;
   // gphit->Write(Form("grphit_%d", j), TObject::kWriteDelete);
 
- cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cbeamet.root", "root");
-  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cbeamet.eps", "eps");
-  cbeamet->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cbeamet.png", "png");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit.root", "root");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit.eps", "eps");
-  cphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit.png", "png");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit.root", "root");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit.eps", "eps");
-  cgphit->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit.png", "png");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.root", "root");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.eps", "eps");
-  cphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cphit_mc.png", "png");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.root", "root");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.eps", "eps");
-  cgphit_mc->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphit_mc.png", "png");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.root", "root");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.eps", "eps");
-  cgphiteff->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphiteff.png", "png");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphitxsec.root", "root");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphitxsec.eps", "eps");
-  cgphitxsec->Print("/data.local/nacer/halld_my/pippimkpkm/fig_xsec_phifo/cgphitxsec.png", "png");
+ cbeamet->Print("output/fig_xsec_phifo/cbeamet.root", "root");
+  cbeamet->Print("output/fig_xsec_phifo/cbeamet.eps", "eps");
+  cbeamet->Print("output/fig_xsec_phifo/cbeamet.png", "png");
+  cphit->Print("output/fig_xsec_phifo/cphit.root", "root");
+  cphit->Print("output/fig_xsec_phifo/cphit.eps", "eps");
+  cphit->Print("output/fig_xsec_phifo/cphit.png", "png");
+  cgphit->Print("output/fig_xsec_phifo/cgphit.root", "root");
+  cgphit->Print("output/fig_xsec_phifo/cgphit.eps", "eps");
+  cgphit->Print("output/fig_xsec_phifo/cgphit.png", "png");
+  cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.root", "root");
+  cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.eps", "eps");
+  cphit_mc->Print("output/fig_xsec_phifo/cphit_mc.png", "png");
+  cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.root", "root");
+  cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.eps", "eps");
+  cgphit_mc->Print("output/fig_xsec_phifo/cgphit_mc.png", "png");
+  cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.root", "root");
+  cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.eps", "eps");
+  cgphiteff->Print("output/fig_xsec_phifo/cgphiteff.png", "png");
+  cgphitxsec->Print("output/fig_xsec_phifo/cgphitxsec.root", "root");
+  cgphitxsec->Print("output/fig_xsec_phifo/cgphitxsec.eps", "eps");
+  cgphitxsec->Print("output/fig_xsec_phifo/cgphitxsec.png", "png");
 */
 
 

@@ -53,7 +53,7 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_flat.root", fname_data.Data()));
   TTree *tdata = (TTree *)fdata->Get("ntp");
 
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/scanphi.root", "UPDATE");
+  // TFile *outputfig = new TFile("output/fig_scanphi/scanphi.root", "UPDATE");
 
   RooWorkspace w("w", kTRUE);
 
@@ -78,17 +78,21 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
 
   // *********************** Phi(1020) MC *********************************
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 1000, 600);
-  TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "MC signal; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.005, 1.035);
-  tmc->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni && is_truecombo)");//+cutlist+" && kin_chisq<25)"
+  TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "MC signal; m_{K^{+}K^{-}} [GeV/c^{2}]; Counts", 200, 1.0, 1.04);
+  tmc->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni && is_truecombo)");// && is_truecombo +cutlist+" && kin_chisq<25)"
   c_PhiMass_postcuts->cd();
   h_PhiMass_postcuts->Draw("e");
 
   // w.factory("BreitWigner::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.015,1.022],width_PhiMass_mc[0.004])");
   // w.factory("ArgusBG::bkg_Phi_mc(m_Phi_mc, 1.04, c0_Phi_mc[-50,-10])");
-  if(name == "y") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
-  if(name == "fo") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.1])");
-  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-100000,100000], c1_PhiMass_mc[-100000,100000]})");
-  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000]*bkg_PhiMass_mc)");//, nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
+  // if(name == "y") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
+  // if(name == "fo") w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.005, 1.035],mean_PhiMass_mc[1.017,1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.1])");
+  
+
+  w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.0, 1.04],mean_PhiMass_mc[1.016,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
+  // w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.0, 1.04],mean_PhiMass_mc[1.016,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
+  w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-100000,100000], c1_PhiMass_mc[-100000,100000], c2_PhiMass_mc[-100000,100000]})");//[-1000,1000], , c3_PhiMass_mc[-100000,100000]
+  w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000]*bkg_PhiMass_mc)");// [0,100000], nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
   w.var("m_PhiMass_mc")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
   RooDataHist dh_PhiMass_mc("dh_PhiMass_mc", "dh_PhiMass_mc", *w.var("m_PhiMass_mc"), Import(*h_PhiMass_postcuts));
   RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title("K^{+}K^{-}"));
@@ -129,13 +133,19 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   TH2D *h2d;
   if (name == "y")
   {
-  h2d = new TH2D("h2d",";m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n, m2pi2k_min, m2pi2k_max, n2k, m2k_min, m2k_max);
-  tdata->Project("h2d", "kpkm_mf:kpkmpippim_mf", "w8*(kpkm_uni || kpkmpippim_uni)");
+  // h2d = new TH2D("h2d",";m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n, m2pi2k_min, m2pi2k_max, n2k, m2k_min, m2k_max);
+  // tdata->Project("h2d", "kpkm_mf:kpkmpippim_mf", "w8*(kpkm_uni || kpkmpippim_uni)");
+  h2d = (TH2D *)fdata->Get("h2_PhiVsYMass_KinFit");
+  cout << " ***** h2d = " << h2d << endl;
+  h2d->RebinX(2);
   }
   if(name=="fo")
   {
-  h2d = new TH2D("h2d", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n, m2pi_min, m2pi_max, n2k, m2k_min, m2k_max);
-  tdata->Project("h2d", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni))");  
+  // h2d = new TH2D("h2d", ";m_{#pi^{+}#pi^{-}} [GeV/c^{2}];m_{K^{+}K^{-}} [GeV/c^{2}]", n, m2pi_min, m2pi_max, n2k, m2k_min, m2k_max);
+  // tdata->Project("h2d", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni))");
+  h2d = (TH2D *)fdata->Get("h2_PhiVsfoMass_KinFit");
+  cout << " ***** h2d = " << h2d << endl;
+  h2d->RebinX(2);  
   }
   cout << "h2d = " <<h2d<< endl;
 
@@ -255,7 +265,7 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
     // lat_PhiMass.DrawLatex(0.62, 0.58, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass")->getVal(), w.var("width_PhiMass")->getError()));
     // lat_PhiMass.DrawLatex(0.62, 0.48, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass")->getVal(), w.var("sigma_PhiMass")->getError()));
 
-    hphi_py->Write();
+    // hphi_py->Write();
     cgphi->Update();
     // c2->Update();
     //sleep(1);
@@ -304,23 +314,23 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   // // lat_phiye.DrawLatex(0.68, 0.58, Form("#sigma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
   // lat_phiye.DrawLatex(0.45, 0.48, Form("#Gamma = %0.3f#pm%0.3f", fsb->GetParameter(2), fsb->GetParError(2)));
 
-  c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_PhiMass_postcuts_%s.root", name.Data()), "root");
-  c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_PhiMass_postcuts_%s.eps", name.Data()), "eps");
-  c_PhiMass_postcuts->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_PhiMass_postcuts_%s.png", name.Data()), "png");
-  cphi1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c1_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
-  cphi1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c1_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
-  cphi1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c1_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
-  cphi2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c2_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
-  cphi2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c2_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
-  cphi2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c2_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
-  cphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
-  cphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
-  cphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
-  cgphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_gphi_%s_%s.root", name.Data(), fname_data.Data()), "root");
-  cgphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_gphi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
-  cgphi->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_scanphi/c_gphi_%s_%s.png", name.Data(), fname_data.Data()), "png");
+  c_PhiMass_postcuts->Print(Form("output/fig_scanphi/c_PhiMass_postcuts_%s_%s.root", fname_mc.Data(), fname_data.Data()), "root");
+  c_PhiMass_postcuts->Print(Form("output/fig_scanphi/c_PhiMass_postcuts_%s_%s.eps", fname_mc.Data(), fname_data.Data()), "eps");
+  c_PhiMass_postcuts->Print(Form("output/fig_scanphi/c_PhiMass_postcuts_%s_%s.png", fname_mc.Data(), fname_data.Data()), "png");
+  cphi1->Print(Form("output/fig_scanphi/c1_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
+  cphi1->Print(Form("output/fig_scanphi/c1_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
+  cphi1->Print(Form("output/fig_scanphi/c1_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
+  cphi2->Print(Form("output/fig_scanphi/c2_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
+  cphi2->Print(Form("output/fig_scanphi/c2_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
+  cphi2->Print(Form("output/fig_scanphi/c2_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
+  cphi->Print(Form("output/fig_scanphi/c_phi_%s_%s.root", name.Data(), fname_data.Data()), "root");
+  cphi->Print(Form("output/fig_scanphi/c_phi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
+  cphi->Print(Form("output/fig_scanphi/c_phi_%s_%s.png", name.Data(), fname_data.Data()), "png");
+  cgphi->Print(Form("output/fig_scanphi/c_gphi_%s_%s.root", name.Data(), fname_data.Data()), "root");
+  cgphi->Print(Form("output/fig_scanphi/c_gphi_%s_%s.eps", name.Data(), fname_data.Data()), "eps");
+  cgphi->Print(Form("output/fig_scanphi/c_gphi_%s_%s.png", name.Data(), fname_data.Data()), "png");
 
-  outputfig->Print();
+  // outputfig->Print();
 
   return gphi;
 }

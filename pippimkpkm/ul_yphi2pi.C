@@ -61,9 +61,9 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   if(name == "16") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_11366_11555.root");
   if(name == "17") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_30274_31057.root");
   if(name == "18") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_40856_42577.root");
- 
+ if(name == "18l") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_50677_51768.root");
 
-  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");//UPDATE
+  TFile *outputfig = new TFile("output/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");//UPDATE
 
   FILE *table_ul_yphi2pi = fopen(Form("table_ul_yphi2pi_%s.tex", name.Data()),"w");
   fprintf(table_ul_yphi2pi,"\\documentclass[8pt]{extarticle}\n \\usepackage[margin=0.1in]{geometry}\n \\usepackage{tabularx}\n \\usepackage{caption} \n \\captionsetup{labelformat=empty}\n \\usepackage{pbox}\n \\begin{document}\n \\begin{table}[!htbp]\n \\centering\n \\caption{Total cross-sections and upper limit}\n \\begin{tabular}{|c|c|c|c|c|c|c|}\n \\hline\n $E_{\\gamma}$ [GeV] & \\pbox{10cm}{$N_{generated}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(MC)} & \\pbox{10cm}{$N_{measured}$\\\\(Data)} & $\\epsilon$ [$\\%$] & $\\sigma$ [nb] & $90\\%$ CL limit [nb] \\\\ \n \\hline\n");
@@ -176,9 +176,9 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   // // fs->Draw("same");
   // // fb->Draw("same");
 
-  // c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.root", "root");
-  // c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.eps", "eps");
-  // c_PhiMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.png", "png");
+  // c_PhiMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.root", "root");
+  // c_PhiMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.eps", "eps");
+  // c_PhiMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_PhiMass_postcuts_fitted.png", "png");
 
   // *********************** Y(2175) MC *********************************
   TCanvas *c_YMass_postcuts = new TCanvas("c_YMass_postcuts", "c_YMass_postcuts", 900, 600);
@@ -278,9 +278,9 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   lat_mc.DrawLatex(0.6, 0.62, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
   // lat_mc.Draw("same");
 
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.root", "root");
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.eps", "eps");
-  c_YMass_postcuts->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.png", "png");
+  c_YMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.root", "root");
+  c_YMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.eps", "eps");
+  c_YMass_postcuts->Print("output/fig_ul_yphi2pi/cmc_YMass_postcuts_fitted.png", "png");
 
   // cout<<"=============================  no problem up to here ! ========================"<<endl;
 
@@ -417,10 +417,14 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     hgphiy->Draw("e");
     hgphiy->SetMinimum(-100.);
     // save the histo to root file
-    w.factory(Form("Voigtian::sig_y_data(m_y_data[2, 3],mean_y_data[%f],width_y_data[%f],sigma_y_data[%f])", fsb_mc->GetParameter(1),fsb_mc->GetParameter(3), fsb_mc->GetParameter(2))); //  m2pi2k_min, m2pi2k_max,  //sigma_y_data[0.0001,0.01], mean_y_data[1.011,1.030], m_y_data[1.93,3]
+    w.factory(Form("Voigtian::sig_y_data(m_y_data[2.0, 3.0],mean_y_data[%f],width_y_data[%f],sigma_y_data[%f])", fsb_mc->GetParameter(1),fsb_mc->GetParameter(3), fsb_mc->GetParameter(2))); //  m2pi2k_min, m2pi2k_max,  //sigma_y_data[0.0001,0.01], mean_y_data[1.011,1.030], m_y_data[1.93,3]
     // w.factory(Form("BreitWigner::sig_y_data(m_y_data[%f,%f],mean_y_data[1.018,1.021],width_y_data[0.004])", mkk_min, mkk_max));
-    w.factory("Chebychev::bkg_y_data(m_y_data,{c0_y_data[-100000,+100000], c1_y_data[-100000,+100000], c2_y_data[-100000,+100000]})");//, c2_y_data[-100000,+100000]
-    w.factory("SUM:::model_y_data(nsig_y_data[-1000,+100000]*sig_y_data, nbkg_y_data[0,+100000]*bkg_y_data)"); //nsig[0,100000000]*sig2,
+     w.factory("Chebychev::bkg_y_data(m_y_data,{c0_y_data[-1000000,+1000000], c1_y_data[-1000000,+1000000], c2_y_data[-1000000,+1000000]})"); //c0_y_data[-100000,+100000], c1_y_data[-100000,+100000], c2_y_data[-100000,+100000]
+    // if(name == "17" || name == "18" || name == "18l")
+    w.factory("SUM:::model_y_data(nsig_y_data[0,-1000000,+1000000]*sig_y_data, nbkg_y_data[0,+1000000]*bkg_y_data)"); //nsig_y_data[0,-100000,+100000]*sig_y_data, nbkg_y_data[0,+100000]*bkg_y_data
+    // if(name == "16")
+    // w.factory("SUM:::model_y_data(nsig_y_data[0,-1000000,+1000000]*sig_y_data, nbkg_y_data[0,+1000000]*bkg_y_data)");
+    //nsig_y_data[0,-10000,+10000], nbkg_y_data[0,+10000]
     w.var("m_y_data")->SetTitle("#phi#pi^{+}#pi^{-} [GeV/c^{2}]");
     RooDataHist dh_y_data("dh_y_data", "dh_y_data", *w.var("m_y_data"), Import(*hgphiy));
     RooPlot *fr_y_data = w.var("m_y_data")->frame(Title(" "));
@@ -488,8 +492,9 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     // double ul = xsec_y + ROOT::Math::gaussian_quantile(0.9 + 0.1 * ROOT::Math::gaussian_cdf(0, dxsec_y_tot, xsec_y), dxsec_y_tot);
 
     // ++++++++++ profile likelihood method
-    double dN_y_tot = sqrt(dN_y_data*dN_y_data + err_sys*err_sys);
-    TGraph *gprof = profileLikelihoodScan(dh_y_data, *(w.pdf("model_y_data")), w.var("nsig_y_data"), N_y_data - 5 * dN_y_tot, N_y_data + 5 * dN_y_tot);
+    // double dN_y_tot = sqrt(dN_y_data*dN_y_data + err_sys*err_sys);
+    double dN_y_tot = dN_y_data;
+    TGraph *gprof = profileLikelihoodScan(dh_y_data, *(w.pdf("model_y_data")), w.var("nsig_y_data"), N_y_data - 5 * dN_y_tot, N_y_data + 5 * dN_y_tot);//N_y_data - 5 * dN_y_tot, N_y_data + 5 * dN_y_tot
     TCanvas *cprof = new TCanvas("cprof","",900,600);
     cprof->cd();
     cprof->SetGrid();
@@ -545,38 +550,38 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
     // int j =1;
     // gphiy->Write(Form("grphiy_%d", j), TObject::kWriteDelete);
 
-    // cphiy1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c1_phiy_%s.root", name.Data()), "root");
-    // cphiy1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c1_phiy_%s.eps", name.Data()), "eps");
-    // cphiy1->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c1_phiy_%s.png", name.Data()), "png");
-    // cphiy2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c2_phiy_%s.root", name.Data()), "root");
-    // cphiy2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c2_phiy_%s.eps", name.Data()), "eps");
-    // cphiy2->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c2_phiy_%s.png", name.Data()), "png");
-    // cphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_phiy_%s.root", name.Data()), "root");
-    // cphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_phiy_%s.eps", name.Data()), "eps");
-    // cphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_phiy_%s.png", name.Data()), "png");
-    // cgnophiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gnophiy.root", "root");
-    // cgnophiy->Print("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gnophiy.eps", "eps");
+    // cphiy1->Print(Form("output/fig_ul_yphi2pi/c1_phiy_%s.root", name.Data()), "root");
+    // cphiy1->Print(Form("output/fig_ul_yphi2pi/c1_phiy_%s.eps", name.Data()), "eps");
+    // cphiy1->Print(Form("output/fig_ul_yphi2pi/c1_phiy_%s.png", name.Data()), "png");
+    // cphiy2->Print(Form("output/fig_ul_yphi2pi/c2_phiy_%s.root", name.Data()), "root");
+    // cphiy2->Print(Form("output/fig_ul_yphi2pi/c2_phiy_%s.eps", name.Data()), "eps");
+    // cphiy2->Print(Form("output/fig_ul_yphi2pi/c2_phiy_%s.png", name.Data()), "png");
+    // cphiy->Print(Form("output/fig_ul_yphi2pi/c_phiy_%s.root", name.Data()), "root");
+    // cphiy->Print(Form("output/fig_ul_yphi2pi/c_phiy_%s.eps", name.Data()), "eps");
+    // cphiy->Print(Form("output/fig_ul_yphi2pi/c_phiy_%s.png", name.Data()), "png");
+    // cgnophiy->Print("output/fig_ul_yphi2pi/c_gnophiy.root", "root");
+    // cgnophiy->Print("output/fig_ul_yphi2pi/c_gnophiy.eps", "eps");
 
-    cgphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gphiy_%s.root", name.Data()), "root");
-    cgphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gphiy_%s.eps", name.Data()), "eps");
-    cgphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gphiy_%s.png", name.Data()), "png");
-    cgphiy->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_gphiy_%s.pdf", name.Data()), "pdf");
-    cprof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_prof_%s.root", name.Data()), "root");
-    cprof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_prof_%s.eps", name.Data()), "eps");
-    cprof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_prof_%s.png", name.Data()), "png");
-    cprof->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c_prof_%s.pdf", name.Data()), "pdf");
-    cprofxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_profxsec.root", name.Data()), "root");
-    cprofxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_profxsec.eps", name.Data()), "eps");
-    cprofxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_profxsec.png", name.Data()), "png");
-    cprofxsec->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_profxsec.pdf", name.Data()), "pdf");
+    cgphiy->Print(Form("output/fig_ul_yphi2pi/c_gphiy_%s.root", name.Data()), "root");
+    cgphiy->Print(Form("output/fig_ul_yphi2pi/c_gphiy_%s.eps", name.Data()), "eps");
+    cgphiy->Print(Form("output/fig_ul_yphi2pi/c_gphiy_%s.png", name.Data()), "png");
+    cgphiy->Print(Form("output/fig_ul_yphi2pi/c_gphiy_%s.pdf", name.Data()), "pdf");
+    cprof->Print(Form("output/fig_ul_yphi2pi/c_prof_%s.root", name.Data()), "root");
+    cprof->Print(Form("output/fig_ul_yphi2pi/c_prof_%s.eps", name.Data()), "eps");
+    cprof->Print(Form("output/fig_ul_yphi2pi/c_prof_%s.png", name.Data()), "png");
+    cprof->Print(Form("output/fig_ul_yphi2pi/c_prof_%s.pdf", name.Data()), "pdf");
+    cprofxsec->Print(Form("output/fig_ul_yphi2pi/c%s_profxsec.root", name.Data()), "root");
+    cprofxsec->Print(Form("output/fig_ul_yphi2pi/c%s_profxsec.eps", name.Data()), "eps");
+    cprofxsec->Print(Form("output/fig_ul_yphi2pi/c%s_profxsec.png", name.Data()), "png");
+    cprofxsec->Print(Form("output/fig_ul_yphi2pi/c%s_profxsec.pdf", name.Data()), "pdf");
 
 
-    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_tagged_flux.root", name.Data()), "root");
-    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_tagged_flux.eps", name.Data()), "eps");
-    c_tagged_flux->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_tagged_flux.png", name.Data()), "png");
-    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_beame_tru.root", name.Data()), "root");
-    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_beame_tru.eps", name.Data()), "eps");
-    c_beame_tru->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_ul_yphi2pi/c%s_beame_tru.png", name.Data()), "png");
+    c_tagged_flux->Print(Form("output/fig_ul_yphi2pi/c%s_tagged_flux.root", name.Data()), "root");
+    c_tagged_flux->Print(Form("output/fig_ul_yphi2pi/c%s_tagged_flux.eps", name.Data()), "eps");
+    c_tagged_flux->Print(Form("output/fig_ul_yphi2pi/c%s_tagged_flux.png", name.Data()), "png");
+    c_beame_tru->Print(Form("output/fig_ul_yphi2pi/c%s_beame_tru.root", name.Data()), "root");
+    c_beame_tru->Print(Form("output/fig_ul_yphi2pi/c%s_beame_tru.eps", name.Data()), "eps");
+    c_beame_tru->Print(Form("output/fig_ul_yphi2pi/c%s_beame_tru.png", name.Data()), "png");
 
     outputfig->Print();
 
