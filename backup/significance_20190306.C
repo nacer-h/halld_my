@@ -2,21 +2,32 @@
 
 #include "TCanvas.h"
 #include "TFile.h"
-#include "TH2F.h"
+#include "TGraph.h"
 #include "TString.h"
 #include "TTree.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "THStack.h"
+#include "TMath.h"
+#include "TStyle.h"
+#include "vector"
 #include "TF1.h"
-#include "TGraphErrors.h"
 #include "TFormula.h"
 #include "TLatex.h"
 #include "TLegend.h"
 #include "TLegendEntry.h"
-#include <fstream>
-#include "TStyle.h"
-#include <TMultiGraph.h>
-#include <iostream>
+#include "iostream"
+#include "iomanip"
+#include "TLorentzVector.h"
+#include "TGraphErrors.h"
+#include "TAxis.h"
+#include "TROOT.h"
 #include "TSystem.h"
-#include "TLine.h"
+#include "TApplication.h"
+#include "TPaveStats.h"
+#include "TSpectrum.h"
+#include <fstream>
+using namespace std;
 
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
@@ -48,91 +59,78 @@
 using namespace RooFit;
 using namespace RooStats;
 
-void significance(TString cut, TString name)
+void significance(TString cut)
 {
-  // TFile *fsim = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_yphifo_%s_chi100_flat.root", name.Data()));
-  // TTree *tsim=(TTree*)fsim->Get("ntp");
-  TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_chi100_flat.root", name.Data()));
+  // TFile *fsim = new TFile(Form("/u/ahamdi/halld_my/pippimkpkm/pippimkpkm__B4_sim_recon17_1v03_%scut.root",cut.Data()));
+  TFile *fsim = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/phifo_genr8_17v03.root");
+  TFile *fdata = new TFile("/data.local/nacer/halld_my/pippimkpkm/input/pippimkpkm_17v21.root");
+  TFile *outputfig = new TFile("/data.local/nacer/halld_my/pippimkpkm/fig_significance/significance.root","UPDATE");
 	TTree *tdata=(TTree*)fdata->Get("ntp");
-  TFile *outputfig = new TFile("output/fig_significance/significance.root","UPDATE");
+  TTree *tsim=(TTree*)fsim->Get("ntp");
 
   RooWorkspace w("w", kTRUE);
   //RooFitResult* result = NULL;
 
   // ***************** cuts
+  TString cutlist="&& kpkm_mf>1.005 && kpkm_mf<1.035 && kin_chisq<30 && abs(mm2)<0.015 && (abs(kp_dttof)<0.18 || kp_dttof==-999) && p_x4_kin.Z()<78 && p_x4_kin.Z()>52 && beam_p4_kin.E()>6 &&";
+  //  && (abs(kp_dtbcal)<0.75 || kp_dtbcal==-999) && (abs(kp_dtfcal)<0.5 || kp_dtfcal==-999) && (abs(pip_dttof)<0.5 || pip_dttof==-999) && (abs(pip_dtbcal)<1.0 || pip_dtbcal==-999) && (abs(pip_dtfcal)<1.1 || pip_dtfcal==-999) && (abs(p_dttof)<0.6 || p_dttof==-999) && (abs(p_dtbcal)<1.0 || p_dtbcal==-999)
 
-  // TString cutlist = "&& ((kp_dttof>-0.3 && kp_dttof<0.2) || kp_dttof == -999) && ((kp_dtbcal>-0.75 && kp_dtbcal<0.25) || kp_dtbcal == -999) && ((kp_dtfcal>-2.5 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.25 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999) && ((p_dttof>-0.25 && p_dttof<0.25) || p_dttof == -999) && abs(mm2)<0.02 &&";// abs(mm2)<0.02 && kin_chisq<70 && kpkm_mf>1.0 && kpkm_mf<1.05 && 
-
-  TString cutlist = "&& (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 &&";//kin_chisq<55 && abs(mm2)<0.035
-  // ((kp_dttof>-0.3 && kp_dttof<0.2) || kp_dttof == -999) && ((kp_dtbcal>-0.75 && kp_dtbcal<0.25) || kp_dtbcal == -999) && ((kp_dtfcal>-2.5 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.25 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999) && ((p_dttof>-0.25 && p_dttof<0.25) || p_dttof == -999) && abs(mm2)<0.02 &&";// abs(mm2)<0.02 && kin_chisq<70 && kpkm_mf>1.0 && kpkm_mf<1.05 && 
-
-  double cutsmin = 0; //= hdata_postcut->GetXaxis()->GetBinLowEdge(1);
-  double cutsmax = 0.1;//= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
+  double cutsmin = 0;//= hdata_postcut->GetXaxis()->GetBinLowEdge(1);
+	double cutsmax = 6;//= hdata_postcut->GetXaxis()->GetBinUpEdge(600);
 	double cutsstep = (cutsmax-cutsmin) / 20.;
   double cuts[20];
   for (int i = 0; i < 20; ++i)
   {
-    cuts[i] = cutsmax - (i * cutsstep); //i * cutsstep;
-    // cuts[i] = cutsmin + (i * cutsstep); //i * cutsstep;
+    cuts[i] = cutsmax - i * cutsstep; //i * cutsstep;
+    // cuts[i] = cutsmin + i * cutsstep; //i * cutsstep;
     cout<<"########  i = "<<i<<" | cuts[i] = "<<cuts[i]<<endl;
   }
-/*
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Y(2175) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+ // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Y(2175) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
-  // *********************************************** Data  ***********************************************
-  gStyle->SetOptFit(0);
+  // ********************** Data  *******************
 
   TCanvas *cdata_YMass = new TCanvas("cdata_YMass", "cdata_YMass", 1500, 800);
   cdata_YMass->Divide(5, 4);
   // cdata_YMass->Divide(1, 1);
-  TH1F *hdata_YMass[20];
+  TH1F *hdata_YMass;
 
-  double nbkg_y[20], nbkgerr_y[20], test[20];
+  double nbkg_y[20], nbkgerr_y[20];
 
   for (int j = 0; j < 20; j++)
   {
-    cdata_YMass->cd(j+1);
+    cdata_YMass->cd(j + 1);
     // hdata_YMass = (TH1F *)fdata->Get(Form("h_YMass_cuts_%d", j));
-    hdata_YMass[j] = new TH1F(Form("hdata_YMass_%d",j), ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 1.6, 3.2);//2.5, 3.2
-    tdata->Project(Form("hdata_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.0 && kpkm_mf<1.05"+cutlist+"abs(mm2)<%f)",cuts[j])); //cuts[j] -t_kin<1 && beam_p4_kin.E()>6 && pt<0.4
-    cout << "hdata_YMass = " << hdata_YMass[j] << endl;
+    hdata_YMass = new TH1F("hdata_YMass", ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 50, 2.5, 3.2);
+    tdata->Project("hdata_YMass", "kpkmpippim_mf", Form("w8*(kpkmpippim_uni"+cutlist+"-t_kin<%f)",cuts[j])); //cuts[j] -t_kin<1 && beam_p4_kin.E()>6 && pt<0.4
+    cout << "hdata_YMass = " << hdata_YMass << endl;
     // hdata_YMass->Rebin(4);
     // double xmin = hdata_YMass->GetXaxis()->GetXmin();
     // double xmax = hdata_YMass->GetXaxis()->GetXmax();
-    hdata_YMass[j]->SetMarkerStyle(20);
-    hdata_YMass[j]->SetMarkerSize(0.7);
-    if(cut == "mm2") hdata_YMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
-    else if (cut == "chi2") hdata_YMass[j]->SetTitle(Form("|#chi^{2}| < %0.f",cuts[j]));
-    else hdata_YMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
+    hdata_YMass->SetMarkerStyle(20);
+    hdata_YMass->SetMarkerSize(0.7);
+    hdata_YMass->SetTitle(Form("-t < %f",cuts[j]));
+    hdata_YMass->Draw("e");
 
-    TF1 *fbkg_y = new TF1("fbkg_y","pol2");
-    fbkg_y->SetParameters(1.,1.);
-    hdata_YMass[j]->Fit(fbkg_y,"","mR",2.5, 3.2);
-    hdata_YMass[j]->Draw("e");
-
-    // nbkg_y[j] = hdata_YMass[j]->Integral(1, 100);
-    nbkg_y[j] = fbkg_y->Integral(2.0, 2.5)/hdata_YMass[j]->GetBinWidth(1);
+    nbkg_y[j] = hdata_YMass->Integral(1, 50);
     nbkgerr_y[j] = sqrt(nbkg_y[j]);
 
-    test[j] = hdata_YMass[j]->Integral(hdata_YMass[j]->FindBin(2.0),hdata_YMass[j]->FindBin(2.5))/hdata_YMass[j]->Integral(hdata_YMass[j]->FindBin(2.5),hdata_YMass[j]->FindBin(3.2)); //  / hdata_YMass[j]->Integral(hdata_YMass[j]->FindBin(2.5),hdata_YMas[j]s->FindBin(3.2)); //fbkg_y->Integral(2.0, 2.5) / fbkg_y->Integral(2.5, 3.2);
-
-    hdata_YMass[j]->Write();
+    hdata_YMass->Write();
   }
 
-  cdata_YMass->Print(Form("output/fig_significance/cdata_YMass_%s_%scut.root", name.Data(), cut.Data()), "root");
-  cdata_YMass->Print(Form("output/fig_significance/cdata_YMass_%s_%scut.eps", name.Data(), cut.Data()), "eps");
+  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.root", cut.Data()), "root");
+  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.eps", cut.Data()), "eps");
 
- // *********************************************** Sim  ***********************************************
+ // ********************** Sim  *******************
 
-  TCanvas *csim_YMass = new TCanvas("csim_YMass", "csim_YMass", 1600, 1000);
+  TCanvas *csim_YMass = new TCanvas("csim_YMass", "csim_YMass", 1500, 800);
   csim_YMass->Divide(5, 4);
   // csim_YMass->Divide(1,1);
-  TH1F *hsim_YMass[20];
+  TH1F *hsim_YMass;
 
-  TCanvas *cgrsim_YMass = new TCanvas("cgrsim_YMass","cgrsim_YMass",900,600);
+  TCanvas *cgrsim_YMass = new TCanvas("cgrsim_YMass","cgrsim_YMass",600,400);
   cgrsim_YMass->SetGrid();
   TGraphErrors *grsim_YMass = new TGraphErrors();
-  grsim_YMass->SetMinimum(0.);
   grsim_YMass->SetMarkerStyle(20);
   grsim_YMass->GetXaxis()->SetNdivisions(510, kFALSE);
 
@@ -143,101 +141,87 @@ void significance(TString cut, TString name)
   for (int j = 0; j < 20; j++)
   {
     csim_YMass->cd(j + 1);
-    hsim_YMass[j] = new TH1F(Form("hsim_YMass_%d",j), ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 100, 2.0, 2.5); //2.05, 2.35
-    tsim->Project(Form("hsim_YMass_%d",j), "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.0 && kpkm_mf<1.05"+cutlist+"abs(mm2)<%f)",cuts[j]));
+    hsim_YMass = new TH1F("hsim_YMass", ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 50, 2.05, 2.35);
+    tsim->Project("hsim_YMass", "kpkmpippim_mf", Form("w8*(kpkmpippim_uni"+cutlist+"-t_kin<%f)",cuts[j]));
     // hsim_YMass->Rebin(4);
-    hsim_YMass[j]->SetMarkerStyle(20);
-    hsim_YMass[j]->SetMarkerSize(0.7);
-    cout << "hsim_YMass = " << hsim_YMass[j] << endl;
-    if(cut == "mm2") hsim_YMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
-    else if (cut == "chi2") hsim_YMass[j]->SetTitle(Form("#chi^{2} < %0.f",cuts[j]));
-    else hsim_YMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
-    hsim_YMass[j]->Draw("e");
+    hsim_YMass->SetMarkerStyle(20);
+    hsim_YMass->SetMarkerSize(0.7);
+    cout << "hsim_YMass = " << hsim_YMass << endl;
+    hsim_YMass->SetTitle(Form("-t < %f",cuts[j]));
+    hsim_YMass->Draw("e");
 
-    nsig_y[j] = hsim_YMass[j]->Integral(1, 100);
+    nsig_y[j] = hsim_YMass->Integral(1, 50);
     nsigerr_y[j] = sqrt(nsig_y[j]);
     double z_y = nsig_y[j] / sqrt(nbkg_y[j]);
     double zerr_y = sqrt(((4 * nbkg_y[j] * nbkg_y[j] * nsigerr_y[j] * nsigerr_y[j]) + (nsig_y[j] * nsig_y[j] * nbkgerr_y[j] * nbkgerr_y[j])) / (4 * nbkg_y[j] * nbkg_y[j] * nbkg_y[j]));
 
-    ofs_YMass << " j = " << j << " | cuts = " << cuts[j] << " | nsig_y = " << nsig_y[j] << " | nsigerr_y = " << nsigerr_y[j] << " | nbkg_y = " << nbkg_y[j] << " | nbkgerr_y = " << nbkgerr_y[j] << " | z_y = " << z_y << " | zerr_y = " << zerr_y <<" | test = " << test[j] << endl;
+    ofs_YMass << " j = " << j << " | cuts = " << cuts[j] << " | nsig_y = " << nsig_y[j] << " | nsigerr_y = " << nsigerr_y[j] << " | nbkg_y = " << nbkg_y[j] << " | nbkgerr_y = " << nbkgerr_y[j] << " | z_y = " << z_y << " | zerr_y = " << zerr_y << endl;
+
 
     grsim_YMass->SetPoint(j, cuts[j], z_y);
     grsim_YMass->SetPointError(j, 0, zerr_y);
-    hsim_YMass[j]->Write();
+    hsim_YMass->Write();
   }
 
-  csim_YMass->Print(Form("output/fig_significance/csim_YMass_%s_%scut.root",name.Data(), cut.Data()), "root");
-  csim_YMass->Print(Form("output/fig_significance/csim_YMass_%s_%scut.eps",name.Data(), cut.Data()), "eps");
+  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.root", cut.Data()), "root");
+  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.eps", cut.Data()), "eps");
 
   cgrsim_YMass->cd();
   grsim_YMass->Draw("AP");
 
   // // result->Print();
   grsim_YMass->Write();
-  grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC/Data); cut; S/#sqrt{B}");
-  cgrsim_YMass->Print(Form("output/fig_significance/cgrsim_YMass_%s_%scut.root",name.Data(),cut.Data()),"root");
-  cgrsim_YMass->Print(Form("output/fig_significance/cgrsim_YMass_%s_%scut.eps",name.Data(),cut.Data()),"eps");
-
-  ofs_YMass.close();
-  outputfig->Print();
-*/
+  grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC); cut; S/#sqrt{B}");
+  cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
+  cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
+  
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Phi(1020) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
   // ************** Data ******************
 
-  TCanvas *cdata_PhiMass = new TCanvas("cdata_PhiMass", "cdata_PhiMass", 1600, 1000);
-  // cdata_PhiMass->Divide(5, 4);
-  cdata_PhiMass->Divide(3, 3);
+  TCanvas *cdata_PhiMass = new TCanvas("cdata_PhiMass", "cdata_PhiMass", 1500, 800);
+  cdata_PhiMass->Divide(5, 4);
   // cdata_PhiMass->Divide(1, 1);
-  TH1F *hdata_PhiMass[20];// = new TH1F("hdata_PhiMass", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 200, 1.005, 1.035);
+  TH1F *hdata_PhiMass;// = new TH1F("hdata_PhiMass", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 200, 1.005, 1.035);
 
-  TCanvas *cgrdata_PhiMass = new TCanvas("cgrdata_PhiMass","cgrdata_PhiMass",900,600);
+  TCanvas *cgrdata_PhiMass = new TCanvas("cgrdata_PhiMass","cgrdata_PhiMass",600,400);
   cgrdata_PhiMass->SetGrid();
   TGraphErrors *grdata_PhiMass = new TGraphErrors();
-  grdata_PhiMass->SetMinimum(0.);
   grdata_PhiMass->SetMarkerStyle(20);
   grdata_PhiMass->GetXaxis()->SetNdivisions(510, kFALSE);
 
   ofstream ofs_PhiMass("tableau_PhiMass.txt", ofstream::out);
-  int k = 1;
-  double optcat = 0;
-  double z_max = 0;
-  for (int j = 0; j < 20; j++)//j < 20
-  {
-    if(j % 2 == 0)
-    {
-     cdata_PhiMass->cd(k);
-     k++;
-    }
-    // cdata_PhiMass->cd(j + 1);
+
+//   int k = 0;
+// for (int i = 0; i < 5; i++)
+//   {
+   for (int j = 0; j < 20; j++)
+   {
+    
+    // cdata_PhiMass->cd(k + 1);
+    cdata_PhiMass->cd(j + 1);
     // hdata_PhiMass = (TH1F *)fdata->Get(Form("h_PhiMass_cuts_%d", j));
-    hdata_PhiMass[j] = new TH1F(Form("hdata_PhiMass_%d",j), ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 100, 1.0, 1.05);
-    tdata->Project(Form("hdata_PhiMass_%d",j), "kpkm_mf", Form("w8*(kpkm_uni"+cutlist+"abs(mm2)<%f)",cuts[j]));//kin_chisq, abs(mm2)
+    hdata_PhiMass = new TH1F("hdata_PhiMass", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 50, 1.005, 1.035);
+    tdata->Project("hdata_PhiMass", "kpkm_mf", Form("w8*(kpkm_uni"+cutlist+"-t_kin<%f)",cuts[j]));
     //(pip_dttof<-990 || abs(pip_dttof)<0.5) && (pip_dtbcal<-990 || abs(pip_dtbcal)<1.0) && (pip_dtfcal<-990 || abs(pip_dtfcal)<0.5) && (kp_dttof<-990 || abs(kp_dttof)<0.3) && (kp_dtbcal<-990 || abs(kp_dtbcal)<0.6) && (kp_dtfcal<-990 || abs(kp_dtfcal)<2.375) && (p_dttof<-990 || abs(p_dttof)<0.48) && (p_dtbcal<-990 || abs(p_dtbcal)<%f) && (p_dtfcal<-990 || abs(p_dtfcal)<1.9))",cuts[j]));
     // hdata_PhiMass->Rebin(4);
-    hdata_PhiMass[j]->SetMarkerStyle(20);
-    hdata_PhiMass[j]->SetMarkerSize(0.7);
-    cout << "hdata_PhiMass = " << hdata_PhiMass[j] << endl;
-    // if(cut == "mm2") hdata_PhiMass[j]->SetTitle(Form("|mm^{2}| < %.3f",cuts[j]));
-    // else if (cut == "chi2") hdata_PhiMass[j]->SetTitle(Form("#chi^{2} < %0.f",cuts[j]));
-    // else hdata_PhiMass[j]->SetTitle(Form("|#Delta T| < %.3f",cuts[j]));
-    hdata_PhiMass[j]->Draw("e");
+    hdata_PhiMass->SetMarkerStyle(20);
+    hdata_PhiMass->SetMarkerSize(0.7);
+    cout << "hdata_PhiMass = " << hdata_PhiMass << endl;
+    hdata_PhiMass->SetTitle(Form("-t < %f",cuts[j]));
+    hdata_PhiMass->Draw("e");
 
-    w.factory("Voigtian::sig_PhiMass_data(m_PhiMass_data[1.0, 1.05],mean_PhiMass_data[1.017,1.021],width_PhiMass_data[0.004],sigma_PhiMass_data[0.001,0.1])");//sigma_PhiMass_data[0.001,0.01], mean_PhiMass_data[1.015,1.022]
+    w.factory("Voigtian::sig_PhiMass_data(m_PhiMass_data[1.005,1.035],mean_PhiMass_data[1.015,1.022],width_PhiMass_data[0.004],sigma_PhiMass_data[0.001,0.01])");//sigma_PhiMass_data[0.001,0.01], mean_PhiMass_data[1.016,1.022]
     // w.factory("BreitWigner::sig(m[0.99,1.05],mean[1.017,1.021],width[0.0001,0.01])");
     // w.factory("ArgusBG::bkg_Phi_data(m_Phi_data, 1.04, c0_Phi_data[-50,-10])");
-    w.factory("Chebychev::bkg_PhiMass_data(m_PhiMass_data,{c0_PhiMass_data[-INF,INF], c1_PhiMass_data[-INF,INF], c2_PhiMass_data[-INF,INF]})");
+    w.factory("Chebychev::bkg_PhiMass_data(m_PhiMass_data,{c0_PhiMass_data[-10,10], c1_PhiMass_data[-10,10]})");
     w.factory("SUM:::model_PhiMass_data(nsig_PhiMass_data[0,100000000]*sig_PhiMass_data, nbkg_PhiMass_data[0,100000000]*bkg_PhiMass_data)"); //nsig[0,100000000]*sig2,
     w.var("m_PhiMass_data")->SetTitle("m_{K^{+}K^{-}} [GeV/c^{2}]");
-    RooDataHist dh_PhiMass_data("dh_PhiMass_data", "dh_PhiMass_data", *w.var("m_PhiMass_data"), Import(*hdata_PhiMass[j]));
-    RooPlot *fr_PhiMass_data;
-    if (cut == "chi2") fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("#chi^{2} < %0.f", cuts[j])));
-    else if (cut == "mm2") fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("|mm^{2}| < %.3f",cuts[j])));
-    else fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title(Form("|#Delta T| < %.3f",cuts[j])));
-    fr_PhiMass_data->SetTitleOffset(0.9, "XZ");
-    fr_PhiMass_data->SetTitleOffset(1.15, "Y");
-    fr_PhiMass_data->SetTitleSize(0.07, "XYZ");
-    fr_PhiMass_data->SetLabelSize(0.07, "xyz");
+    RooDataHist dh_PhiMass_data("dh_PhiMass_data", "dh_PhiMass_data", *w.var("m_PhiMass_data"), Import(*hdata_PhiMass));
+    RooPlot *fr_PhiMass_data = w.var("m_PhiMass_data")->frame(Title("K^{+}K^{-}"));
+    // fr_PhiMass_data->SetTitleOffset(0.90, "X");
+    // fr_PhiMass_data->SetTitleSize(0.06, "XYZ");
+    // fr_PhiMass_data->SetLabelSize(0.06, "xyz");
     w.pdf("model_PhiMass_data")->fitTo(dh_PhiMass_data);
     //cout<<"=============================  no problem up to here ! ========================"<<endl;
 
@@ -246,16 +230,15 @@ void significance(TString cut, TString name)
     w.pdf("model_PhiMass_data")->plotOn(fr_PhiMass_data, Components(*w.pdf("sig_PhiMass_data")), LineColor(kRed), RooFit::Name("lsig_PhiMass_data"));
     w.pdf("model_PhiMass_data")->plotOn(fr_PhiMass_data, Components(*w.pdf("bkg_PhiMass_data")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_PhiMass_data"));
     w.pdf("model_PhiMass_data")->plotOn(fr_PhiMass_data, RooFit::Name("lmodel_PhiMass_data"));
-    // w.pdf("model_PhiMass_data")->paramOn(fr_PhiMass_data, Layout(0.5, 0.90, 0.99) ,Parameters(RooArgSet(*w.var("nsig_PhiMass_data"),*w.var("nbkg_PhiMass_data"))));//,*w.var("mean_PhiMass_data"),*w.var("width_PhiMass_data"),*w.var("sigma_PhiMass_data"))));
+    w.pdf("model_PhiMass_data")->paramOn(fr_PhiMass_data, Layout(0.5, 0.90, 0.99) ,Parameters(RooArgSet(*w.var("nsig_PhiMass_data"),*w.var("nbkg_PhiMass_data"))));//,*w.var("mean_PhiMass_data"),*w.var("width_PhiMass_data"),*w.var("sigma_PhiMass_data"))));
     fr_PhiMass_data->Draw();
 
-    TLegend *l_PhiMass_data = new TLegend(0.17, 0.6, 0.35, 0.85);
-    l_PhiMass_data->SetTextSize(0.06);
+    TLegend *l_PhiMass_data = new TLegend(0.13, 0.6, 0.3, 0.85);
     l_PhiMass_data->SetFillColor(kWhite);
     l_PhiMass_data->SetLineColor(kWhite);
     l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("ldh_PhiMass_data"), "Data", "p");
-    l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("lmodel_PhiMass_data"), "Model", "l");
-    l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("lbkg_PhiMass_data"), "Bkg", "l");
+    l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("lmodel_PhiMass_data"), "total", "l");
+    l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("lbkg_PhiMass_data"), "Background", "l");
     l_PhiMass_data->AddEntry(fr_PhiMass_data->findObject("lsig_PhiMass_data"), "Signal", "l");
     l_PhiMass_data->Draw();
 
@@ -276,49 +259,25 @@ void significance(TString cut, TString name)
     // grdata_PhiMass->SetPoint(k,k,z_phi);
     // grdata_PhiMass->SetPointError(k,0,zerr_phi);
     // k++;
-    hdata_PhiMass[j]->Write();
-
-    TLatex lat_PhiMass_data;
-    lat_PhiMass_data.SetTextSize(0.06);
-    lat_PhiMass_data.SetTextAlign(13); //align at top
-    lat_PhiMass_data.SetNDC();
-    lat_PhiMass_data.SetTextColor(kBlue);
-    lat_PhiMass_data.DrawLatex(0.51, 0.85, Form("N_{Sig} = %0.f#pm%0.f", nsig_phi, nsigerr_phi));
-    lat_PhiMass_data.DrawLatex(0.51, 0.78, Form("N_{Bkg} = %0.f#pm%0.f", nbkg_phi, nbkgerr_phi));
-
-    if(z_phi > z_max)
-    {
-      z_max = z_phi;
-      optcat = cuts[j];
-    }
+    hdata_PhiMass->Write();
   }
 
   //result->Print();
-  cdata_PhiMass->Print(Form("output/fig_significance/cdata_PhiMass_%s_%scut.root",name.Data(), cut.Data()), "root");
-  cdata_PhiMass->Print(Form("output/fig_significance/cdata_PhiMass_%s_%scut.eps",name.Data(), cut.Data()), "eps");
-
-  cout<<"----------------------- z_max = "<<z_max<<"----------------------- optcat = "<<optcat<<endl;
-  TLine *l_signif = new TLine(optcat, 0, optcat, z_max);
-  l_signif->SetLineColor(kRed);
-  l_signif->SetLineWidth(2);
-  l_signif->SetLineStyle(9);
+  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.root", cut.Data()), "root");
+  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.eps", cut.Data()), "eps");
 
   cgrdata_PhiMass->cd();
   grdata_PhiMass->Draw("AP");
-  l_signif->Draw("same");
 
   grdata_PhiMass->Write();
-  if (cut == "chi2") grdata_PhiMass->SetTitle(";#chi^{2} cut;Significance");
-  else if (cut == "mm2") grdata_PhiMass->SetTitle(";|mm^{2}| cut (GeV/c^{2});Significance");
-  else grdata_PhiMass->SetTitle(";|#Delta T| cut;S/#sqrt{S+B}");
+  grdata_PhiMass->SetTitle("Significance #phi(1020) Vs selection (data); cut;  S/#sqrt{S+B}");
+  cgrdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_PhiMass_%scut.root",cut.Data()),"root");
+  cgrdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_PhiMass_%scut.eps",cut.Data()),"eps");
 
-  cgrdata_PhiMass->Print(Form("output/fig_significance/cgrdata_PhiMass_%s_%scut.root",name.Data(), cut.Data()),"root");
-  cgrdata_PhiMass->Print(Form("output/fig_significance/cgrdata_PhiMass_%s_%scut.eps",name.Data(), cut.Data()),"eps");
-
-  ofs_PhiMass.close(); 
+  ofs_PhiMass.close();
+  ofs_YMass.close();
   outputfig->Print();
-  // outputfig->Close();
-}
+  // outputfig->Close();  
 
 /*
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -350,13 +309,13 @@ void significance(TString cut, TString name)
     cdata_PhiMass->cd(j + 1);
     // hdata_PhiMass = (TH1F *)fdata->Get(Form("h_PhiMass_cuts_%d", j));
     hdata_PhiMass = new TH1F("hdata_PhiMass", ";m_{K^{+}K^{-}} [GeV/c^{2}];Counts", 50, 1.005, 1.035);
-    tdata->Project("hdata_PhiMass", "kpkm_mf", Form("w8*(kpkm_uni"+cutlist+"kin_chisq<%f)", cuts[j]));
+    tdata->Project("hdata_PhiMass", "kpkm_mf", Form("w8*(kpkm_uni && kin_chisq<60 && abs(mm2)<0.03 && sqrt((p_x4_kin.X()*p_x4_kin.X())+(p_x4_kin.Y()*p_x4_kin.Y()))<%f)", cuts[j]));
     //(pip_dttof<-990 || abs(pip_dttof)<0.5) && (pip_dtbcal<-990 || abs(pip_dtbcal)<1.0) && (pip_dtfcal<-990 || abs(pip_dtfcal)<0.5) && (kp_dttof<-990 || abs(kp_dttof)<0.3) && (kp_dtbcal<-990 || abs(kp_dtbcal)<0.6) && (kp_dtfcal<-990 || abs(kp_dtfcal)<2.375) && (p_dttof<-990 || abs(p_dttof)<0.48) && (p_dtbcal<-990 || abs(p_dtbcal)<%f) && (p_dtfcal<-990 || abs(p_dtfcal)<1.9))",cuts[j]));
     // hdata_PhiMass->Rebin(4);
     hdata_PhiMass->SetMarkerStyle(20);
     hdata_PhiMass->SetMarkerSize(0.7);
     cout << "hdata_PhiMass = " << hdata_PhiMass << endl;
-    hdata_PhiMass->SetTitle(Form("|#chi^2| < %.2f",cuts[j]));//|#Delta T|
+    hdata_PhiMass->SetTitle(Form("|#Delta T| < %.2f",cuts[j]));
     hdata_PhiMass->Draw("e");
 
     w.factory("Voigtian::sig_PhiMass_data(m_PhiMass_data[1.005,1.035],mean_PhiMass_data[1.015,1.022],width_PhiMass_data[0.004],sigma_PhiMass_data[0.001,0.01])");//sigma_PhiMass_data[0.001,0.01], mean_PhiMass_data[1.016,1.022]
@@ -414,8 +373,8 @@ void significance(TString cut, TString name)
   // h_PhiMass->SetMarkerStyle(20);
   // h_PhiMass->SetMarkerSize(0.7);
   // h_PhiMass->Draw("e");
-  cdata_PhiMass->Print(Form("output/fig_significance/cdata_PhiMass_%scut.root", cut.Data()), "root");
-  cdata_PhiMass->Print(Form("output/fig_significance/cdata_PhiMass_%scut.eps", cut.Data()), "eps");
+  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.root", cut.Data()), "root");
+  cdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_PhiMass_%scut.eps", cut.Data()), "eps");
 
   cgrdata_PhiMass->cd();
   grdata_PhiMass->Draw("AP");
@@ -428,119 +387,119 @@ void significance(TString cut, TString name)
 
   grdata_PhiMass->Write();
   grdata_PhiMass->SetTitle("Significance #phi(1020) Vs selection (data); cut;  S/#sqrt{S+B}");
-  cgrdata_PhiMass->Print(Form("output/fig_significance/cgrdata_PhiMass_%scut.root",cut.Data()),"root");
-  cgrdata_PhiMass->Print(Form("output/fig_significance/cgrdata_PhiMass_%scut.eps",cut.Data()),"eps");
+  cgrdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_PhiMass_%scut.root",cut.Data()),"root");
+  cgrdata_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrdata_PhiMass_%scut.eps",cut.Data()),"eps");
 
-  // // ********************************* Y(2175) *********************************
+  // ********************************* Y(2175) *********************************
 
-  // TCanvas *cdata_YMass = new TCanvas("cdata_YMass", "cdata_YMass", 1500, 800);
-  // cdata_YMass->Divide(5, 4);
-  // // cdata_YMass->Divide(1, 1);
-  // TH1F *hdata_YMass;
+  TCanvas *cdata_YMass = new TCanvas("cdata_YMass", "cdata_YMass", 1500, 800);
+  cdata_YMass->Divide(5, 4);
+  // cdata_YMass->Divide(1, 1);
+  TH1F *hdata_YMass;
 
-  // double nbkg_y[20], nbkgerr_y[20];
+  double nbkg_y[20], nbkgerr_y[20];
 
-  // for (int j = 0; j < 20; j++)
-  // {
-  //   cdata_YMass->cd(j + 1);
-  //   // hdata_YMass = (TH1F *)fdata->Get(Form("h_YMass_cuts_%d", j));
-  //   hdata_YMass = new TH1F("hdata_YMass", ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 2.5, 3.2);
-  //   tdata->Project("hdata_YMass", "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && kin_chisq<60 && abs(mm2)<0.03 && sqrt((p_x4_kin.X()*p_x4_kin.X())+(p_x4_kin.Y()*p_x4_kin.Y()))<%f)",cuts[j]));
-  //   cout << "hdata_YMass = " << hdata_YMass << endl;
-  //   hdata_YMass->Rebin(4);
-  //   // double xmin = hdata_YMass->GetXaxis()->GetXmin();
-  //   // double xmax = hdata_YMass->GetXaxis()->GetXmax();
-  //   hdata_YMass->SetMarkerStyle(20);
-  //   hdata_YMass->SetMarkerSize(0.7);
-  //   hdata_YMass->SetTitle(Form("#sqrt{x^{2}_{vertex}+y^{2}_{vertex}} < %.2f",cuts[j]));
-  //   hdata_YMass->Draw("e");
+  for (int j = 0; j < 20; j++)
+  {
+    cdata_YMass->cd(j + 1);
+    // hdata_YMass = (TH1F *)fdata->Get(Form("h_YMass_cuts_%d", j));
+    hdata_YMass = new TH1F("hdata_YMass", ";m_{#phi#pi^{+}#pi^{-}} [GeV/c^{2}];Counts", 200, 2.5, 3.2);
+    tdata->Project("hdata_YMass", "kpkmpippim_mf", Form("w8*(kpkmpippim_uni && kpkm_mf>1.005 && kpkm_mf<1.035 && kin_chisq<60 && abs(mm2)<0.03 && sqrt((p_x4_kin.X()*p_x4_kin.X())+(p_x4_kin.Y()*p_x4_kin.Y()))<%f)",cuts[j]));
+    cout << "hdata_YMass = " << hdata_YMass << endl;
+    hdata_YMass->Rebin(4);
+    // double xmin = hdata_YMass->GetXaxis()->GetXmin();
+    // double xmax = hdata_YMass->GetXaxis()->GetXmax();
+    hdata_YMass->SetMarkerStyle(20);
+    hdata_YMass->SetMarkerSize(0.7);
+    hdata_YMass->SetTitle(Form("#sqrt{x^{2}_{vertex}+y^{2}_{vertex}} < %.2f",cuts[j]));
+    hdata_YMass->Draw("e");
 
-  //   nbkg_y[j] = hdata_YMass->Integral(hdata_YMass->GetXaxis()->GetBinLowEdge(1), hdata_YMass->GetXaxis()->GetBinUpEdge(200));
-  //   nbkgerr_y[j] = sqrt(nbkg_y[j]);
+    nbkg_y[j] = hdata_YMass->Integral(hdata_YMass->GetXaxis()->GetBinLowEdge(1), hdata_YMass->GetXaxis()->GetBinUpEdge(200));
+    nbkgerr_y[j] = sqrt(nbkg_y[j]);
 
-  //   // // w.factory("Voigtian::sig_YMass_data(m_YMass_data[1.6,3.2],mean_YMass_data[1.7,2.0],width_YMass_data[0.0001,0.1],sigma_YMass_data[0.0001,0.1])");
-  //   // w.factory("Voigtian::sig_YMass_data(m_YMass_data[1.6,3.2],mean_YMass_data[1.7,1.95],width_YMass_data[0.001,0.08],sigma_YMass_data[0.001,0.05])");
-  //   // // w.factory("BreitWigner::sig_Y_data(m_Y_data[1.6,3.2],mean_Y_data[1.75,1.85],width_Y_data[0.01,1])");
-  //   // // w.factory("ArgusBG::bkg_Y_data(m_Y_data, 3.4, c0_Y_data[-100,-1])");
-  //   // w.factory("Chebychev::bkg_YMass_data(m_YMass_data,{c0_YMass_data[-10,10], c1_YMass_data[-10,10] ,c2_YMass_data[-10,10], c3_YMass_data[-10,10]})");
-  //   // w.factory("SUM:::model_YMass_data(nsig_YMass_data[0,100000000]*sig_YMass_data, nbkg_YMass_data[0,100000000]*bkg_YMass_data)"); //nsig[0,100000000]*sig2,
-  //   // w.var("m_YMass_data")->SetTitle("m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]");
-  //   // RooDataHist dh_YMass_data("dh_YMass_data", "dh_YMass_data", *w.var("m_YMass_data"), Import(*hdata_YMass));
-  //   // RooPlot *fr_YMass_data = w.var("m_YMass_data")->frame(Title("invariant mass K^{+}K^{-}"));
-  //   // fr_YMass_data->SetTitleOffset(0.90, "X");
-  //   // fr_YMass_data->SetTitleSize(0.06, "XYZ");
-  //   // fr_YMass_data->SetLabelSize(0.06, "xyz");
-  //   // w.pdf("model_YMass_data")->fitTo(dh_YMass_data);
-  //   // //cout<<"=============================  no problem up to here ! ========================"<<endl;
+    // // w.factory("Voigtian::sig_YMass_data(m_YMass_data[1.6,3.2],mean_YMass_data[1.7,2.0],width_YMass_data[0.0001,0.1],sigma_YMass_data[0.0001,0.1])");
+    // w.factory("Voigtian::sig_YMass_data(m_YMass_data[1.6,3.2],mean_YMass_data[1.7,1.95],width_YMass_data[0.001,0.08],sigma_YMass_data[0.001,0.05])");
+    // // w.factory("BreitWigner::sig_Y_data(m_Y_data[1.6,3.2],mean_Y_data[1.75,1.85],width_Y_data[0.01,1])");
+    // // w.factory("ArgusBG::bkg_Y_data(m_Y_data, 3.4, c0_Y_data[-100,-1])");
+    // w.factory("Chebychev::bkg_YMass_data(m_YMass_data,{c0_YMass_data[-10,10], c1_YMass_data[-10,10] ,c2_YMass_data[-10,10], c3_YMass_data[-10,10]})");
+    // w.factory("SUM:::model_YMass_data(nsig_YMass_data[0,100000000]*sig_YMass_data, nbkg_YMass_data[0,100000000]*bkg_YMass_data)"); //nsig[0,100000000]*sig2,
+    // w.var("m_YMass_data")->SetTitle("m_{K^{+}K^{-}#pi^{+}#pi^{-}} [GeV/c^{2}]");
+    // RooDataHist dh_YMass_data("dh_YMass_data", "dh_YMass_data", *w.var("m_YMass_data"), Import(*hdata_YMass));
+    // RooPlot *fr_YMass_data = w.var("m_YMass_data")->frame(Title("invariant mass K^{+}K^{-}"));
+    // fr_YMass_data->SetTitleOffset(0.90, "X");
+    // fr_YMass_data->SetTitleSize(0.06, "XYZ");
+    // fr_YMass_data->SetLabelSize(0.06, "xyz");
+    // w.pdf("model_YMass_data")->fitTo(dh_YMass_data);
+    // //cout<<"=============================  no problem up to here ! ========================"<<endl;
 
-  //   // // //result = w.pdf("model")->fitTo(dh_YMass,Extended(kTRUE),Save());
-  //   // dh_YMass_data.plotOn(fr_YMass_data, RooFit::Name("ldh_YMass_data"));
-  //   // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, Components(*w.pdf("sig_YMass_data")), LineColor(kRed), RooFit::Name("lsig_YMass_data"));
-  //   // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, Components(*w.pdf("bkg_YMass_data")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_YMass_data"));
-  //   // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, RooFit::Name("lmodel_YMass_data"));
-  //   // w.pdf("model_YMass_data")->paramOn(fr_YMass_data, Layout(0.5, 0.90, 0.99),Parameters(RooArgSet(*w.var("nsig_YMass_data"),*w.var("nbkg_YMass_data"),*w.var("mean_YMass_data"),*w.var("width_YMass_data"))));//,*w.var("mean_YMass_data"),*w.var("width_YMass_data"),*w.var("sigma_YMass_data"))));
-  //   // fr_YMass_data->Draw();
+    // // //result = w.pdf("model")->fitTo(dh_YMass,Extended(kTRUE),Save());
+    // dh_YMass_data.plotOn(fr_YMass_data, RooFit::Name("ldh_YMass_data"));
+    // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, Components(*w.pdf("sig_YMass_data")), LineColor(kRed), RooFit::Name("lsig_YMass_data"));
+    // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, Components(*w.pdf("bkg_YMass_data")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_YMass_data"));
+    // w.pdf("model_YMass_data")->plotOn(fr_YMass_data, RooFit::Name("lmodel_YMass_data"));
+    // w.pdf("model_YMass_data")->paramOn(fr_YMass_data, Layout(0.5, 0.90, 0.99),Parameters(RooArgSet(*w.var("nsig_YMass_data"),*w.var("nbkg_YMass_data"),*w.var("mean_YMass_data"),*w.var("width_YMass_data"))));//,*w.var("mean_YMass_data"),*w.var("width_YMass_data"),*w.var("sigma_YMass_data"))));
+    // fr_YMass_data->Draw();
 
-  //   // TLegend *l_YMass_data = new TLegend(0.35, 0.85, 0.49, 0.99);
-  //   // l_YMass_data->SetFillColor(kWhite);
-  //   // l_YMass_data->SetLineColor(kWhite);
-  //   // l_YMass_data->AddEntry(fr_YMass_data->findObject("ldh_YMass_data"), "Data", "p");
-  //   // l_YMass_data->AddEntry(fr_YMass_data->findObject("lmodel_YMass_data"), "total", "l");
-  //   // l_YMass_data->AddEntry(fr_YMass_data->findObject("lbkg_YMass_data"), "Background", "l");
-  //   // l_YMass_data->AddEntry(fr_YMass_data->findObject("lsig_YMass_data"), "Signal", "l");
-  //   // l_YMass_data->Draw();
+    // TLegend *l_YMass_data = new TLegend(0.35, 0.85, 0.49, 0.99);
+    // l_YMass_data->SetFillColor(kWhite);
+    // l_YMass_data->SetLineColor(kWhite);
+    // l_YMass_data->AddEntry(fr_YMass_data->findObject("ldh_YMass_data"), "Data", "p");
+    // l_YMass_data->AddEntry(fr_YMass_data->findObject("lmodel_YMass_data"), "total", "l");
+    // l_YMass_data->AddEntry(fr_YMass_data->findObject("lbkg_YMass_data"), "Background", "l");
+    // l_YMass_data->AddEntry(fr_YMass_data->findObject("lsig_YMass_data"), "Signal", "l");
+    // l_YMass_data->Draw();
 
-  //   // nbkg_y[j] = w.var("nbkg_YMass_data")->getVal();
-  //   // nbkgerr_y[j] = w.var("nbkg_YMass_data")->getError();
+    // nbkg_y[j] = w.var("nbkg_YMass_data")->getVal();
+    // nbkgerr_y[j] = w.var("nbkg_YMass_data")->getError();
 
-  //   // double pardata_y[3];
-  //   // TF1 *fsigdata_y = new TF1("fsigdata_y","gaus"); //[0]*TMath::BreitWigner(x,[1],[2])
-  //   // fsigdata_y->SetLineStyle(9);
-  //   // fsigdata_y->SetLineColor(kRed);
-  //   // fsigdata_y->SetParameters(16000,2.175,0.04);
-  //   // hdata_YMass->Fit(fsigdata_y,"","mR",1.8,2.6);
-  //   // fsig_y->GetParameters(&par_y[0]);
-  //   // TF1 *fbkg_y = (TF1*) gROOT->GetFunction("chebyshev4");
+    // double pardata_y[3];
+    // TF1 *fsigdata_y = new TF1("fsigdata_y","gaus"); //[0]*TMath::BreitWigner(x,[1],[2])
+    // fsigdata_y->SetLineStyle(9);
+    // fsigdata_y->SetLineColor(kRed);
+    // fsigdata_y->SetParameters(16000,2.175,0.04);
+    // hdata_YMass->Fit(fsigdata_y,"","mR",1.8,2.6);
+    // fsig_y->GetParameters(&par_y[0]);
+    // TF1 *fbkg_y = (TF1*) gROOT->GetFunction("chebyshev4");
 
-  //   // TF1 *fbkg_phiy = new TF1("fbkg_phiy","pol4");
-  //   // fbkg_phiy->SetLineStyle(9);
-  //   // fbkg_phiy->SetLineColor(4);
-  //   // fbkg_phiy->SetParameters(1.,1.,1.,1.,1.);
-  //   // grphiy->Fit(fbkg_phiy,"","mR",1.46,3.20);
-  //   // fbkg_phiy->GetParameters(&paramphiy[3]);
-  //   // TF1 *fmodel_phiy = new TF1("fmodel_phiy","[0]*TMath::BreitWigner(x,[1],[2])+pol4(3)");
-  //   // fmodel_phiy->SetParameters(&paramphiy[0]);
-  //   // fmodel_phiy->SetParLimits(1,1.60,1.80);
-  //   // // fmodel_phifo->SetParLimits(4,);
-  //   // grphiy->Fit(fmodel_phiy,"","mR",1.46,3.20);
-  //   hdata_YMass->Write();
+    // TF1 *fbkg_phiy = new TF1("fbkg_phiy","pol4");
+    // fbkg_phiy->SetLineStyle(9);
+    // fbkg_phiy->SetLineColor(4);
+    // fbkg_phiy->SetParameters(1.,1.,1.,1.,1.);
+    // grphiy->Fit(fbkg_phiy,"","mR",1.46,3.20);
+    // fbkg_phiy->GetParameters(&paramphiy[3]);
+    // TF1 *fmodel_phiy = new TF1("fmodel_phiy","[0]*TMath::BreitWigner(x,[1],[2])+pol4(3)");
+    // fmodel_phiy->SetParameters(&paramphiy[0]);
+    // fmodel_phiy->SetParLimits(1,1.60,1.80);
+    // // fmodel_phifo->SetParLimits(4,);
+    // grphiy->Fit(fmodel_phiy,"","mR",1.46,3.20);
+    hdata_YMass->Write();
   }
 
-  // cdata_YMass->Print(Form("output/fig_significance/cdata_YMass_%scut.root", cut.Data()), "root");
-  // cdata_YMass->Print(Form("output/fig_significance/cdata_YMass_%scut.eps", cut.Data()), "eps");
+  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.root", cut.Data()), "root");
+  cdata_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_YMass_%scut.eps", cut.Data()), "eps");
 
-  // // ********************************* fo(980) *********************************
+  // ********************************* fo(980) *********************************
 
-  // TCanvas *cdata_foMass = new TCanvas("cdata_foMass", "cdata_foMass", 1500, 800);
-  // cdata_foMass->Divide(5, 4);
-  // // cdata_foMass->Divide(1,3);
-  // TH1F *hdata_foMass;
+  TCanvas *cdata_foMass = new TCanvas("cdata_foMass", "cdata_foMass", 1500, 800);
+  cdata_foMass->Divide(5, 4);
+  // cdata_foMass->Divide(1,3);
+  TH1F *hdata_foMass;
 
-  // for (int j = 0; j < 20; j++)
-  // {
-  //   cdata_foMass->cd(j + 1);
-  //   hdata_foMass = (TH1F *)fdata->Get(Form("h_foMass_cuts_%d", j));
-  //   hdata_foMass->Rebin(4);
-  //   double xmin = hdata_foMass->GetXaxis()->GetXmin();
-  //   double xmax = hdata_foMass->GetXaxis()->GetXmax();
-  //   hdata_foMass->SetMarkerStyle(20);
-  //   hdata_foMass->SetMarkerSize(0.7);
-  //   cout << "hdata_foMass = " << hdata_foMass << endl;
-  //   hdata_foMass->Draw("e");
-  // }
+  for (int j = 0; j < 20; j++)
+  {
+    cdata_foMass->cd(j + 1);
+    hdata_foMass = (TH1F *)fdata->Get(Form("h_foMass_cuts_%d", j));
+    hdata_foMass->Rebin(4);
+    double xmin = hdata_foMass->GetXaxis()->GetXmin();
+    double xmax = hdata_foMass->GetXaxis()->GetXmax();
+    hdata_foMass->SetMarkerStyle(20);
+    hdata_foMass->SetMarkerSize(0.7);
+    cout << "hdata_foMass = " << hdata_foMass << endl;
+    hdata_foMass->Draw("e");
+  }
 
-  // cdata_foMass->Print(Form("output/fig_significance/cdata_foMass_%scut.root", cut.Data()), "root");
-  // cdata_foMass->Print(Form("output/fig_significance/cdata_foMass_%scut.eps", cut.Data()), "eps");
+  cdata_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.root", cut.Data()), "root");
+  cdata_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cdata_foMass_%scut.eps", cut.Data()), "eps");
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    MC   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -621,8 +580,8 @@ void significance(TString cut, TString name)
     hsim_PhiMass->Write();
   }
 
-  csim_PhiMass->Print(Form("output/fig_significance/csim_PhiMass_%scut.root", cut.Data()), "root");
-  csim_PhiMass->Print(Form("output/fig_significance/csim_PhiMass_%scut.eps", cut.Data()), "eps");
+  csim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.root", cut.Data()), "root");
+  csim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_PhiMass_%scut.eps", cut.Data()), "eps");
 
   // cgrsim_PhiMass->cd();
   // grsim_PhiMass->Draw("AP");
@@ -635,97 +594,97 @@ void significance(TString cut, TString name)
   // //result->Print();
   // grsim_PhiMass->Write();
   // grsim_PhiMass->SetTitle("Significance #phi(1020) Vs selection (MC); cut; Significance");
-  // cgrsim_PhiMass->Print(Form("output/fig_significance/cgrsim_PhiMass_%scut.root",cut.Data()),"root");
-  // cgrsim_PhiMass->Print(Form("output/fig_significance/cgrsim_PhiMass_%scut.eps",cut.Data()),"eps");
+  // cgrsim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.root",cut.Data()),"root");
+  // cgrsim_PhiMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_PhiMass_%scut.eps",cut.Data()),"eps");
 
   // for (int i = 0; i < nbins; i++) source[i]=hsim_PhiMass->GetBinContent(i+1);
   // s->Background(source,nbins,70,TSpectrum::kBackDecreasingWindow,TSpectrum::kBackOrder2,kFALSE,TSpectrum::kBackSmoothing3,kFALSE);
   // hsim_PhiMass_bkg = new TH1F("hsim_PhiMass_bkg","",nbins,xmin,xmax);
   // for (int i = 0; i < nbins; i++) hsim_PhiMass_bkg->SetBinContent(i+1,source[i]);
 
-  // // ********************************* fo(980) *********************************
+  // ********************************* fo(980) *********************************
 
-  // TCanvas *csim_foMass = new TCanvas("csim_foMass", "csim_foMass", 1500, 800);
-  // csim_foMass->Divide(5, 4);
-  // //csim_foMass->Divide(1,3);
-  // TH1F *hsim_foMass;
+  TCanvas *csim_foMass = new TCanvas("csim_foMass", "csim_foMass", 1500, 800);
+  csim_foMass->Divide(5, 4);
+  //csim_foMass->Divide(1,3);
+  TH1F *hsim_foMass;
 
-  // // TCanvas *cgrsim_foMass = new TCanvas("cgrsim_foMass","cgrsim_foMass",600,400);
-  // // cgrsim_foMass->SetGrid();
-  // // TGraphErrors *grsim_foMass = new TGraphErrors();
-  // // grsim_foMass->SetMarkerStyle(20);
-  // // grsim_foMass->GetXaxis()->SetNdivisions(510, kFALSE);
+  // TCanvas *cgrsim_foMass = new TCanvas("cgrsim_foMass","cgrsim_foMass",600,400);
+  // cgrsim_foMass->SetGrid();
+  // TGraphErrors *grsim_foMass = new TGraphErrors();
+  // grsim_foMass->SetMarkerStyle(20);
+  // grsim_foMass->GetXaxis()->SetNdivisions(510, kFALSE);
 
-  // for (int j = 0; j < 20; j++)
-  // {
-  //   csim_foMass->cd(j + 1);
-  //   hsim_foMass = (TH1F *)fsim->Get(Form("h_foMass_cuts_%d", j));
-  //   hsim_foMass->Rebin(4);
-  //   double xmin = hsim_foMass->GetXaxis()->GetXmin();
-  //   double xmax = hsim_foMass->GetXaxis()->GetXmax();
-  //   hsim_foMass->SetMarkerStyle(20);
-  //   hsim_foMass->SetMarkerSize(0.7);
-  //   cout << "hsim_foMass = " << hsim_foMass << endl;
-  //   hsim_foMass->Draw("e");
+  for (int j = 0; j < 20; j++)
+  {
+    csim_foMass->cd(j + 1);
+    hsim_foMass = (TH1F *)fsim->Get(Form("h_foMass_cuts_%d", j));
+    hsim_foMass->Rebin(4);
+    double xmin = hsim_foMass->GetXaxis()->GetXmin();
+    double xmax = hsim_foMass->GetXaxis()->GetXmax();
+    hsim_foMass->SetMarkerStyle(20);
+    hsim_foMass->SetMarkerSize(0.7);
+    cout << "hsim_foMass = " << hsim_foMass << endl;
+    hsim_foMass->Draw("e");
 
-  //   // double par_fo[3];
-  //   // TF1 *fsig_fo = new TF1("fsig_fo","gaus"); //[0]*TMath::BreitWigner(x,[1],[2])
-  //   // fsig_fo->SetLineStyle(9);
-  //   // // fsig_fo->SetLineColor(kRed);
-  //   // fsig_fo->SetParameters(15000,0.980,0.03);
-  //   // hsim_foMass->Fit(fsig_fo,"","mR",0.6,1.4);
+    // double par_fo[3];
+    // TF1 *fsig_fo = new TF1("fsig_fo","gaus"); //[0]*TMath::BreitWigner(x,[1],[2])
+    // fsig_fo->SetLineStyle(9);
+    // // fsig_fo->SetLineColor(kRed);
+    // fsig_fo->SetParameters(15000,0.980,0.03);
+    // hsim_foMass->Fit(fsig_fo,"","mR",0.6,1.4);
 
-  //   // //w.factory("BreitWigner::sig1_foMass_mc(m_foMass_mc[0.7,1.2],mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.005,0.08])");//mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.005,0.08]
-  //   // w.factory("Voigtian::sig1_foMass_mc(m_foMass_mc[0.7,1.2],mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.00005,0.08],sigma1_foMass_mc[0.005,0.08])");
-  //   // w.factory("Chebychev::bkg_foMass_mc(m_foMass_mc,{c0_foMass_mc[-10,10],c1_foMass_mc[-10,10],c2_foMass_mc[-10,10]})");
-  //   // //w.factory("SUM:::model(nsig[0,100000000]*sig, nbkg[0,100000000]*bkg)"); //nsig[0,100000000]*sig2,
-  //   // w.factory("SUM:::model_foMass_mc(nsig_foMass_mc[0,100000000]*sig1_foMass_mc, nbkg_foMass_mc[0,100000000]*bkg_foMass_mc)"); //, nsig_mc[0,100000000]*sig2_mc
-  //   // w.var("m_foMass_mc")->SetTitle("m_foMass_{K^{+}K^{-}} [GeV/c^{2}]");
-  //   // RooDataHist dh_foMass_mc("dh_foMass_mc","dh_foMass_mc",*w.var("m_foMass_mc"),Import(*hsim_foMass));
-  //   // RooPlot* fr_foMass_mc = w.var("m_foMass_mc")->frame(Title("invariant mass K^{+}K^{-}"));
-  //   // fr_foMass_mc->SetTitleOffset(0.90,"X");
-  //   // fr_foMass_mc->SetTitleSize(0.06,"XYZ");
-  //   // fr_foMass_mc->SetLabelSize(0.06,"xyz");
-  //   // w.pdf("model_foMass_mc")->fitTo(dh_foMass_mc);
-  //   // // result = w.pdf("model_foMass_mc")->fitTo(dh_foMass_mc,Extended(kTRUE),Save());
-  //   // dh_foMass_mc.plotOn(fr_foMass_mc,RooFit::Name("ldh_foMass_mc"));
-  //   // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("sig1_foMass_mc")),LineColor(kRed),RooFit::Name("lsig1_foMass_mc"));
-  //   // //w.pdf("model_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("sig2_mc")),LineColor(kMagenta),RooFit::Name("lsig2_mc"));
-  //   // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("bkg_foMass_mc")),LineStyle(kDashed),LineColor(28),RooFit::Name("lbkg_foMass_mc"));
-  //   // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc,RooFit::Name("lmodel_foMass_mc"));
-  //   // w.pdf("model_foMass_mc")->paramOn(fr_foMass_mc,Layout(0.55,0.98,0.92));//,Parameters(RooArgSet(*w.var("nsig_mc"),*w.var("nbkg_mc"),*w.var("mean1_mc"),*w.var("mean2_mc"),*w.var("sigma1_mc"),*w.var("sigma2_mc"))));
-  //   // fr_foMass_mc->Draw();
+    // //w.factory("BreitWigner::sig1_foMass_mc(m_foMass_mc[0.7,1.2],mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.005,0.08])");//mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.005,0.08]
+    // w.factory("Voigtian::sig1_foMass_mc(m_foMass_mc[0.7,1.2],mean1_foMass_mc[0.95,1.0],width1_foMass_mc[0.00005,0.08],sigma1_foMass_mc[0.005,0.08])");
+    // w.factory("Chebychev::bkg_foMass_mc(m_foMass_mc,{c0_foMass_mc[-10,10],c1_foMass_mc[-10,10],c2_foMass_mc[-10,10]})");
+    // //w.factory("SUM:::model(nsig[0,100000000]*sig, nbkg[0,100000000]*bkg)"); //nsig[0,100000000]*sig2,
+    // w.factory("SUM:::model_foMass_mc(nsig_foMass_mc[0,100000000]*sig1_foMass_mc, nbkg_foMass_mc[0,100000000]*bkg_foMass_mc)"); //, nsig_mc[0,100000000]*sig2_mc
+    // w.var("m_foMass_mc")->SetTitle("m_foMass_{K^{+}K^{-}} [GeV/c^{2}]");
+    // RooDataHist dh_foMass_mc("dh_foMass_mc","dh_foMass_mc",*w.var("m_foMass_mc"),Import(*hsim_foMass));
+    // RooPlot* fr_foMass_mc = w.var("m_foMass_mc")->frame(Title("invariant mass K^{+}K^{-}"));
+    // fr_foMass_mc->SetTitleOffset(0.90,"X");
+    // fr_foMass_mc->SetTitleSize(0.06,"XYZ");
+    // fr_foMass_mc->SetLabelSize(0.06,"xyz");
+    // w.pdf("model_foMass_mc")->fitTo(dh_foMass_mc);
+    // // result = w.pdf("model_foMass_mc")->fitTo(dh_foMass_mc,Extended(kTRUE),Save());
+    // dh_foMass_mc.plotOn(fr_foMass_mc,RooFit::Name("ldh_foMass_mc"));
+    // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("sig1_foMass_mc")),LineColor(kRed),RooFit::Name("lsig1_foMass_mc"));
+    // //w.pdf("model_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("sig2_mc")),LineColor(kMagenta),RooFit::Name("lsig2_mc"));
+    // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc, Components(*w.pdf("bkg_foMass_mc")),LineStyle(kDashed),LineColor(28),RooFit::Name("lbkg_foMass_mc"));
+    // w.pdf("model_foMass_mc")->plotOn(fr_foMass_mc,RooFit::Name("lmodel_foMass_mc"));
+    // w.pdf("model_foMass_mc")->paramOn(fr_foMass_mc,Layout(0.55,0.98,0.92));//,Parameters(RooArgSet(*w.var("nsig_mc"),*w.var("nbkg_mc"),*w.var("mean1_mc"),*w.var("mean2_mc"),*w.var("sigma1_mc"),*w.var("sigma2_mc"))));
+    // fr_foMass_mc->Draw();
 
-  //   // TLegend *l_foMass_mc = new TLegend(0.13,0.6,0.3,0.85);
-  //   // l_foMass_mc->SetFillColor(kWhite);
-  //   // l_foMass_mc->SetLineColor(kWhite);
-  //   // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("ldh_foMass_mc"),"Data", "p");
-  //   // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lmodel_foMass_mc"),"total","l");
-  //   // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lbkg_foMass_mc"),"Background", "l");
-  //   // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lsig1_foMass_mc"),"Signal1", "l");
-  //   // // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lsig2_foMass_mc"),"Signal2", "l");
-  //   // l_foMass_mc->Draw();
+    // TLegend *l_foMass_mc = new TLegend(0.13,0.6,0.3,0.85);
+    // l_foMass_mc->SetFillColor(kWhite);
+    // l_foMass_mc->SetLineColor(kWhite);
+    // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("ldh_foMass_mc"),"Data", "p");
+    // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lmodel_foMass_mc"),"total","l");
+    // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lbkg_foMass_mc"),"Background", "l");
+    // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lsig1_foMass_mc"),"Signal1", "l");
+    // // l_foMass_mc->AddEntry(fr_foMass_mc->findObject("lsig2_foMass_mc"),"Signal2", "l");
+    // l_foMass_mc->Draw();
 
-  //   // double fscale = 15.31; // fscale = (ndsig/ndbkg)/(nmcsig/nmcbkg)
-  //   // double nmcsig = w.var("nsig_foMass_mc")->getVal();
-  //   // double nmcsigerr = w.var("nsig_foMass_mc")->getError();
-  //   // double nmcbkg = w.var("nbkg_foMass_mc")->getVal();
-  //   // double nmcbkgerr = w.var("nbkg_foMass_mc")->getError();
-  //   // double zmc = nmcsig/sqrt(nmcsig+(fscale*nmcbkg));
-  //   // double zmcerr = sqrt(((nmcsig+(2*fscale*nmcbkg))*(nmcsig+(2*fscale*nmcbkg))*(nmcsigerr*nmcsigerr) + (fscale*fscale)*(nmcsig*nmcsig)+(nmcbkgerr*nmcbkgerr))/(4*(nmcsig+(fscale*nmcbkg))*(nmcsig+(fscale*nmcbkg))*(nmcsig+(fscale*nmcbkg))));
-  //   // cout<<"nmcsig = "<<nmcsig<<"| nmcbkg = "<<nmcbkg<<"| zmc = "<<zmc<<endl;
-  //   // // hsim_foMass->Draw("e");
+    // double fscale = 15.31; // fscale = (ndsig/ndbkg)/(nmcsig/nmcbkg)
+    // double nmcsig = w.var("nsig_foMass_mc")->getVal();
+    // double nmcsigerr = w.var("nsig_foMass_mc")->getError();
+    // double nmcbkg = w.var("nbkg_foMass_mc")->getVal();
+    // double nmcbkgerr = w.var("nbkg_foMass_mc")->getError();
+    // double zmc = nmcsig/sqrt(nmcsig+(fscale*nmcbkg));
+    // double zmcerr = sqrt(((nmcsig+(2*fscale*nmcbkg))*(nmcsig+(2*fscale*nmcbkg))*(nmcsigerr*nmcsigerr) + (fscale*fscale)*(nmcsig*nmcsig)+(nmcbkgerr*nmcbkgerr))/(4*(nmcsig+(fscale*nmcbkg))*(nmcsig+(fscale*nmcbkg))*(nmcsig+(fscale*nmcbkg))));
+    // cout<<"nmcsig = "<<nmcsig<<"| nmcbkg = "<<nmcbkg<<"| zmc = "<<zmc<<endl;
+    // // hsim_foMass->Draw("e");
 
-  //   // // double zObs = NumberCountingUtils::BinomialObsZ(nmcsig+nmcbkg, nmcbkg, nmcbkgerr);
-  //   // // cout << " Z value (Gaussian sigma) = "<< zObs << endl;
+    // // double zObs = NumberCountingUtils::BinomialObsZ(nmcsig+nmcbkg, nmcbkg, nmcbkgerr);
+    // // cout << " Z value (Gaussian sigma) = "<< zObs << endl;
 
-  //   // grsim_foMass->SetPoint(j,cuts[j],zmc);
-  //   // grsim_foMass->SetPointError(j,0,zmcerr);
-  //   // hsim_foMass->Write();
-  // }
+    // grsim_foMass->SetPoint(j,cuts[j],zmc);
+    // grsim_foMass->SetPointError(j,0,zmcerr);
+    // hsim_foMass->Write();
+  }
 
-  // csim_foMass->Print(Form("output/fig_significance/csim_foMass_%scut.root", cut.Data()), "root");
-  // csim_foMass->Print(Form("output/fig_significance/csim_foMass_%scut.eps", cut.Data()), "eps");
+  csim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.root", cut.Data()), "root");
+  csim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_foMass_%scut.eps", cut.Data()), "eps");
 
   // cgrsim_foMass->cd();
   // grsim_foMass->Draw("AP");
@@ -738,8 +697,8 @@ void significance(TString cut, TString name)
   // // result->Print();
   // grsim_foMass->Write();
   // grsim_foMass->SetTitle("Significance #f_{0}(980) Vs selection (MC); cut; Significance");
-  // cgrsim_foMass->Print(Form("output/fig_significance/cgrsim_foMass_%scut.root",cut.Data()),"root");
-  // cgrsim_foMass->Print(Form("output/fig_significance/cgrsim_foMass_%scut.eps",cut.Data()),"eps");
+  // cgrsim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.root",cut.Data()),"root");
+  // cgrsim_foMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_foMass_%scut.eps",cut.Data()),"eps");
 
   // ********************************* Y(2175) *********************************
 
@@ -839,8 +798,8 @@ void significance(TString cut, TString name)
     hsim_YMass->Write();
   }
 
-  csim_YMass->Print(Form("output/fig_significance/csim_YMass_%scut.root", cut.Data()), "root");
-  csim_YMass->Print(Form("output/fig_significance/csim_YMass_%scut.eps", cut.Data()), "eps");
+  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.root", cut.Data()), "root");
+  csim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/csim_YMass_%scut.eps", cut.Data()), "eps");
 
   cgrsim_YMass->cd();
   grsim_YMass->Draw("AP");
@@ -853,12 +812,13 @@ void significance(TString cut, TString name)
   // // result->Print();
   grsim_YMass->Write();
   grsim_YMass->SetTitle("Significance Y(2175) Vs selection (MC); cut; S/#sqrt{B}");
-  cgrsim_YMass->Print(Form("output/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
-  cgrsim_YMass->Print(Form("output/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
+  cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.root",cut.Data()),"root");
+  cgrsim_YMass->Print(Form("/data.local/nacer/halld_my/pippimkpkm/fig_significance/cgrsim_YMass_%scut.eps",cut.Data()),"eps");
+*/
   ofs_PhiMass.close();
   ofs_YMass.close();
   outputfig->Print();
   // outputfig->Close();
+
 }
 
-*/

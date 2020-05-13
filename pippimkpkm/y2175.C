@@ -46,6 +46,8 @@ void y2175(TString name, TString name1)//, TString cut)
 
   // TFile *fps = new TFile("output/input/flux_30274_31057.root");
   TFile *outputfig = new TFile("output/fig_y2175/y2175.root","UPDATE");
+  TFile *inputfig = new TFile("input/hd_root_ana_031xxx.root","UPDATE");
+
   TTree *t=(TTree*)f->Get("ntp");
 
   // gStyle->SetMarkerStyle(20);
@@ -111,9 +113,9 @@ if(name == "data")
   // ******* Tagger accidentals
   TCanvas *c_TaggerAccidentals = new TCanvas("c_TaggerAccidentals","c_TaggerAccidentals",900,600);
   c_TaggerAccidentals->cd();
-  TH1F *h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", ";#Deltat_{Beam-RF}(ns)", 600, -18, 18);
-  t->Project("h_TaggerAccidentals","rf_dt","");
-  TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  ";#Deltat_{Beam-RF}(ns)", 600, -18, 18);
+  TH1F *h_TaggerAccidentals = new TH1F("h_TaggerAccidentals", ";#Deltat_{Beam-RF}(ns);Counts", 600, -18, 18);
+  t->Project("h_TaggerAccidentals","rf_dt","abs(rf_dt) < 2.5 * 4.008");//rf_dt
+  TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  ";#Deltat_{Beam-RF}(ns);Counts", 600, -18, 18);
   t->Project("h_TaggerAccidentals_postcut","rf_dt","w8");
   h_TaggerAccidentals_postcut->SetLineColor(kRed);
   TLine *l_TaggerAccidentals1 = new TLine(2.004, 0, 2.004, h_TaggerAccidentals->GetMaximum());
@@ -128,6 +130,7 @@ if(name == "data")
   l_TaggerAccidentals2->SetLineStyle(10);
   l_TaggerAccidentals3->SetLineStyle(10);
   l_TaggerAccidentals4->SetLineStyle(10);
+  h_TaggerAccidentals->SetMinimum(-100);
   h_TaggerAccidentals->Draw();
   h_TaggerAccidentals_postcut->Draw("hist same");
   // l_TaggerAccidentals1->Draw("same");
@@ -139,7 +142,7 @@ if(name == "data")
   c_TaggerAccidentals->Print(Form("output/fig_y2175/c%s_TaggerAccidentals.root",name.Data()), "root");
   c_TaggerAccidentals->Print(Form("output/fig_y2175/c%s_TaggerAccidentals.eps",name.Data()), "eps");
   c_TaggerAccidentals->Print(Form("output/fig_y2175/c%s_TaggerAccidentals.png",name.Data()), "png");
-
+*/
   // TCanvas *c_TaggerAccidentals_postcut = new TCanvas("c_TaggerAccidentals_postcut","c_TaggerAccidentals_postcut",900,600);
   // c_TaggerAccidentals_postcut->cd();
   // TH1F *h_TaggerAccidentals_postcut = new TH1F("h_TaggerAccidentals_postcut",  ";#Deltat_{Beam-RF}(ns)",300, -18, 18);
@@ -154,12 +157,12 @@ if(name == "data")
   // **************** proton
   // TCanvas *c2_p_all = new TCanvas("c2_p_all", "c2_p_all", 1600,400);
   // c2_p_all->Divide(3,1);
-  
+ /*
   // ---------- TOF
   // c2_p_all->cd(1);
   TCanvas *c2_p_dttof = new TCanvas("c2_p_dttof", "c2_p_dttof", 900,600);
   c2_p_dttof->cd();
-  TH2D *h2_p_dttof = new TH2D("h2_p_dttof", "proton; p (GeV/c); TOF #Delta T (ns)", 100, 0.0, 10.0, 100,-0.6, 0.6);
+  TH2D *h2_p_dttof = new TH2D("h2_p_dttof", "proton; p (GeV/c); TOF #Delta T (ns);Counts", 100, 0.0, 10.0, 100,-0.6, 0.6);
   t->Project("h2_p_dttof", "p_dttof:p_p4_kin.P()","kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05");// && ((kp_dttof>-0.3 && kp_dttof<0.2) || kp_dttof == -999) && ((kp_dtbcal>-0.75 && kp_dtbcal<0.25) || kp_dtbcal == -999) && ((kp_dtfcal>-2.5 && kp_dtfcal<0.8) || kp_dtfcal == -999) && (abs(pip_dttof)<0.25 || pip_dttof == -999) && (abs(pip_dtbcal)<0.6 || pip_dtbcal == -999)");
   cout << "h2_p_dttof = " << h2_p_dttof << endl;
   TLine *l2_p_dttof1 = new TLine(0, 0.3, 8, 0.3);
@@ -176,65 +179,66 @@ if(name == "data")
   c2_p_dttof->Print(Form("output/fig_y2175/c2_%s_p_dttof.eps",name.Data()), "eps");
   c2_p_dttof->Print(Form("output/fig_y2175/c2_%s_p_dttof.png",name.Data()), "png");
 
-  // ----- 1D -----
+  // // ----- 1D -----
 
-  TString name2 = "phi2pi";//pippimkpkm , phi2pi
+  // TString name2 = "pippimkpkm";//pippimkpkm , phi2pi
 
-  TCanvas *c_p_dttof = new TCanvas("c_p_dttof", "c_p_dttof", 900,600);
-  c_p_dttof->cd();
-  TH1F *h_p_dttof = new TH1F("h_p_dttof", "proton; TOF #Delta T (ns);Counts", 200,-0.6, 0.6);
-  t->Project("h_p_dttof", "p_dttof","kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05");
-  cout << "h_p_dttof = " << h_p_dttof << endl;
-  TLine *l_p_dttof1 = new TLine(0.3, 0, 0.3, 1);
-  TLine *l_p_dttof2 = new TLine(-0.3, 0, -0.3, 1); 
-  l_p_dttof1->SetLineColor(kRed);
-  l_p_dttof2->SetLineColor(kRed);
-  l_p_dttof1->SetLineWidth(2);
-  l_p_dttof2->SetLineWidth(2);  
-  h_p_dttof->Draw("hist");//colz
-  l_p_dttof1->Draw("same");
-  l_p_dttof2->Draw("same");
-  h_p_dttof->Write(Form("h%s_p_dttof",name.Data()),TObject::kWriteDelete);
-  c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.root",name.Data()), "root");
-  c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.eps",name.Data()), "eps");
-  c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.png",name.Data()), "png");
+  // TCanvas *c_p_dttof = new TCanvas("c_p_dttof", "c_p_dttof", 900,600);
+  // c_p_dttof->cd();
+  // TH1F *h_p_dttof = new TH1F("h_p_dttof", "proton; TOF #Delta T (ns);Counts", 200,-0.6, 0.6);
+  // t->Project("h_p_dttof", "p_dttof","kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05");
+  // cout << "h_p_dttof = " << h_p_dttof << endl;
+  // TLine *l_p_dttof1 = new TLine(0.3, 0, 0.3, 1);
+  // TLine *l_p_dttof2 = new TLine(-0.3, 0, -0.3, 1); 
+  // l_p_dttof1->SetLineColor(kRed);
+  // l_p_dttof2->SetLineColor(kRed);
+  // l_p_dttof1->SetLineWidth(2);
+  // l_p_dttof2->SetLineWidth(2);  
+  // h_p_dttof->Draw("hist");//colz
+  // l_p_dttof1->Draw("same");
+  // l_p_dttof2->Draw("same");
+  // h_p_dttof->Write(Form("h%s_p_dttof",name.Data()),TObject::kWriteDelete);
+  // c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.root",name.Data()), "root");
+  // c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.eps",name.Data()), "eps");
+  // c_p_dttof->Print(Form("output/fig_y2175/c%s_p_dttof.png",name.Data()), "png");
 
-  TCanvas *c_p_dttof_all = new TCanvas("c_p_dttof_all", "c_p_dttof_all", 900,600);
-  c_p_dttof_all->cd();
-  TH1F *h16_p_dttof = (TH1F *)outputfig->Get(Form("h%s_16_chi100_p_dttof",name2.Data()));
-  cout << " ***** h16_p_dttof = " << h16_p_dttof << endl;
-  h16_p_dttof->SetLineColor(kRed);
-  TH1F *h17_p_dttof = (TH1F *)outputfig->Get(Form("h%s_17_chi100_p_dttof",name2.Data()));
-  cout << " ***** h17_p_dttof = " << h17_p_dttof << endl;
-  TH1F *h18_p_dttof = (TH1F *)outputfig->Get(Form("h%s_18_chi100_p_dttof",name2.Data()));
-  cout << " ***** h18_p_dttof = " << h18_p_dttof << endl;
-  h18_p_dttof->SetLineColor(kBlue);
-  TH1F *h18l_p_dttof = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_p_dttof",name2.Data()));
-  cout << " ***** h18l_p_dttof = " << h18l_p_dttof << endl;
-  h18l_p_dttof->SetLineColor(kMagenta);
-  h18l_p_dttof->Scale(1.0/h18l_p_dttof->GetMaximum());
-  h18l_p_dttof->Draw("hist");
-  h18_p_dttof->Scale(1.0/h18_p_dttof->GetMaximum());
-  h18_p_dttof->Draw("hist same");
-  h17_p_dttof->Scale(1.0/h17_p_dttof->GetMaximum());
-  h17_p_dttof->Draw("hist same");
-  h16_p_dttof->Scale(1.0/h16_p_dttof->GetMaximum());
-  h16_p_dttof->Draw("hist same");
-  l_p_dttof1->Draw("same");
-  l_p_dttof2->Draw("same");
+  // TCanvas *c_p_dttof_all = new TCanvas("c_p_dttof_all", "c_p_dttof_all", 900,600);
+  // c_p_dttof_all->cd();
+  // TH1F *h16_p_dttof = (TH1F *)outputfig->Get(Form("h%s_16_chi100_p_dttof",name2.Data()));
+  // cout << " ***** h16_p_dttof = " << h16_p_dttof << endl;
+  // h16_p_dttof->SetLineColor(kRed);
+  // TH1F *h17_p_dttof = (TH1F *)outputfig->Get(Form("h%s_17_chi100_p_dttof",name2.Data()));
+  // cout << " ***** h17_p_dttof = " << h17_p_dttof << endl;
+  // TH1F *h18_p_dttof = (TH1F *)outputfig->Get(Form("h%s_18_chi100_p_dttof",name2.Data()));
+  // cout << " ***** h18_p_dttof = " << h18_p_dttof << endl;
+  // h18_p_dttof->SetLineColor(kBlue);
+  // TH1F *h18l_p_dttof = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_p_dttof",name2.Data()));
+  // cout << " ***** h18l_p_dttof = " << h18l_p_dttof << endl;
+  // h18l_p_dttof->SetLineColor(kMagenta);
+  // h18l_p_dttof->Scale(1.0/h18l_p_dttof->GetMaximum());
+  // h18l_p_dttof->Draw("hist");
+  // h18_p_dttof->Scale(1.0/h18_p_dttof->GetMaximum());
+  // h18_p_dttof->Draw("hist same");
+  // h17_p_dttof->Scale(1.0/h17_p_dttof->GetMaximum());
+  // h17_p_dttof->Draw("hist same");
+  // h16_p_dttof->Scale(1.0/h16_p_dttof->GetMaximum());
+  // h16_p_dttof->Draw("hist same");
+  // l_p_dttof1->Draw("same");
+  // l_p_dttof2->Draw("same");
 
-  TLegend *lg_p_dttof = new TLegend(0.87, 0.80, 0.98, 0.98);
-  lg_p_dttof->SetTextSize(0.05);
-  lg_p_dttof->SetBorderSize(0);
-  lg_p_dttof->AddEntry(h16_p_dttof, "2016", "l");
-  lg_p_dttof->AddEntry(h17_p_dttof, "2017", "l");
-  lg_p_dttof->AddEntry(h18_p_dttof, "2018 S", "l");
-  lg_p_dttof->AddEntry(h18l_p_dttof, "2018 F", "l");
-  lg_p_dttof->Draw();
-  c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.root",name2.Data()), "root");
-  c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.eps",name2.Data()), "eps");
-  c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.png",name2.Data()), "png"); 
-*/
+  // TLegend *lg_p_dttof = new TLegend(0.87, 0.80, 0.98, 0.98);
+  // lg_p_dttof->SetTextSize(0.05);
+  // lg_p_dttof->SetBorderSize(0);
+  // lg_p_dttof->AddEntry(h16_p_dttof, "2016", "l");
+  // lg_p_dttof->AddEntry(h17_p_dttof, "2017", "l");
+  // lg_p_dttof->AddEntry(h18_p_dttof, "2018 S", "l");
+  // lg_p_dttof->AddEntry(h18l_p_dttof, "2018 F", "l");
+  // lg_p_dttof->Draw();
+  // c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.root",name2.Data()), "root");
+  // c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.eps",name2.Data()), "eps");
+  // c_p_dttof_all->Print(Form("output/fig_y2175/c%s_p_dttof_all.png",name2.Data()), "png"); 
+
+
   // ********  Chi2 of KinFit
   TCanvas *c_kin_chisq = new TCanvas("c_kin_chisq","c_kin_chisq",900,600);
   c_kin_chisq->cd();
@@ -250,7 +254,7 @@ if(name == "data")
   c_kin_chisq->Print(Form("output/fig_y2175/c%s_kin_chisq.eps",name.Data()), "eps");  
   c_kin_chisq->Print(Form("output/fig_y2175/c%s_kin_chisq.png",name.Data()), "png");  
 
-  TString name2 = "phi2pi";//pippimkpkm , phi2pi
+  // TString name2 = "pippimkpkm";//pippimkpkm , phi2pi
 
   TCanvas *c_kin_chisq_all = new TCanvas("c_kin_chisq_all","c_kin_chisq_all",900,600);
   c_kin_chisq_all->cd();
@@ -373,6 +377,30 @@ if(name == "data")
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.root",name.Data()), "root");
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.eps",name.Data()), "eps");
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.png",name.Data()), "png");
+*/
+
+  // ++++++ dE/dx CDC
+  TCanvas *c_dedx_cdc = new TCanvas("c_dedx_cdc","c_dedx_cdc",700,500);
+  c_dedx_cdc->cd();
+  TH2I *h2_dedx_cdc;
+  h2_dedx_cdc = (TH2I *)inputfig->Get("Independent/Hist_DetectorPID/CDC/dEdXVsP_Amp_q+");
+  h2_dedx_cdc->GetXaxis()->SetRangeUser(0., 3.);
+  h2_dedx_cdc->GetYaxis()->SetRangeUser(0., 10.);
+  h2_dedx_cdc->SetTitle(";p [GeV/c^{2}];CDC dE/dx [keV/cm];Counts");
+  TF1 *fdedx_proton = new TF1("fdedx_proton","TMath::Exp([0]*x + [1]) + [2]",0,10);
+  fdedx_proton->SetParameters(-4.0,2.25,1.0); // dSelectHeavy_c0(2.0), dSelectHeavy_c1(2.0), dSelectHeavy_c2(1.0)
+  fdedx_proton->SetLineWidth(2);
+  TF1 *fdedx_pion = new TF1("fdedx_pion","TMath::Exp([0]*x + [1]) + [2]",0,10);
+  fdedx_pion->SetParameters(-7.0,3.0,6.2); // dSelectLight_c0(2.0), dSelectLight_c1(0.8), dSelectLight_c2(3.0)
+  fdedx_pion->SetLineWidth(2);
+  fdedx_pion->SetLineColor(kMagenta);
+  h2_dedx_cdc->Draw("colz");
+  fdedx_proton->Draw("same");
+  // fdedx_pion->Draw("same");
+  c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.root", "root");
+  c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.eps", "eps");
+  c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.png", "png");
+
 
 /*
   // pip
@@ -552,24 +580,18 @@ if(name == "data")
 /*
   // **************** P vs. theta
 
-  TCanvas *c_tot_ptheta = new TCanvas("c_tot_ptheta", "c_tot_ptheta", 2500, 500);
-  c_tot_ptheta->Divide(5,1);
-  // proton
-  // TCanvas *c_p_ptheta = new TCanvas("c_p_ptheta", "c_p_ptheta", 600, 400);
-  c_tot_ptheta->cd(1);
-  TH2D *h_p_ptheta = new TH2D("h_p_ptheta", Form("proton (%s); #theta#circ ;p (GeV/c)",name.Data()), 140, 0.0, 140.0, 250, 0.0, 10.0);
-  t->Project("h_p_ptheta", "p_p4_kin.P():p_p4_kin.Theta()*TMath::RadToDeg()", "kpkm_mf>1.005 && kpkm_mf<1.035");
-  cout << "h_p_ptheta = " << h_p_ptheta << endl;
-  h_p_ptheta->Draw("colz");
-  h_p_ptheta->Write(Form("h%s_p_ptheta",name.Data()),TObject::kWriteDelete);
-  // c_p_ptheta->Print(Form("output/fig_y2175/c%s_p_ptheta.root",name.Data()), "root");
-  // c_p_ptheta->Print(Form("output/fig_y2175/c%s_p_ptheta.eps",name.Data()), "eps");
-
+  TCanvas *c_tot_ptheta = new TCanvas("c_tot_ptheta", "c_tot_ptheta", 900, 800);
+  c_tot_ptheta->Divide(2,3,0.03);//5,1
+  c_tot_ptheta->SetRightMargin(0.2);
+  // c_tot_ptheta->SetRightMargin(0.09);
+  // c_tot_ptheta->SetLeftMargin(0.15);
+  // c_tot_ptheta->SetBottomMargin(0.15);
+  
   // pip
   // TCanvas *c_pip_ptheta = new TCanvas("c_pip_ptheta", "c_pip_ptheta", 600, 400);
-  c_tot_ptheta->cd(2);
-  TH2D *h_pip_ptheta = new TH2D("h_pip_ptheta", Form("#pi^{+} (%s); #theta#circ ;p (GeV/c)",name.Data()), 140, 0.0, 140.0, 250, 0.0, 10.0);
-  t->Project("h_pip_ptheta", "pip_p4_kin.P():pip_p4_kin.Theta()*TMath::RadToDeg()", "kpkm_mf>1.005 && kpkm_mf<1.035");
+  c_tot_ptheta->cd(1);
+  TH2D *h_pip_ptheta = new TH2D("h_pip_ptheta", "#pi^{+}; #theta#circ ;p (GeV/c);Counts", 140, 0.0, 140.0, 250, 0.0, 10.0);
+  t->Project("h_pip_ptheta", "pip_p4_kin.P():pip_p4_kin.Theta()*TMath::RadToDeg()");//, "kpkm_mf>1.005 && kpkm_mf<1.035"
   cout << "h_pip_ptheta = " << h_pip_ptheta << endl;
   h_pip_ptheta->Draw("colz");
   h_pip_ptheta->Write(Form("h%s_pip_ptheta",name.Data()),TObject::kWriteDelete);
@@ -578,9 +600,9 @@ if(name == "data")
 
   // pim
   // TCanvas *c_pim_ptheta = new TCanvas("c_pim_ptheta", "c_pim_ptheta", 600, 400);
-  c_tot_ptheta->cd(3);
-  TH2D *h_pim_ptheta = new TH2D("h_pim_ptheta", Form("#pi^{-} (%s); #theta#circ ;p (GeV/c)",name.Data()), 140, 0.0, 140.0, 250, 0.0, 10.0);
-  t->Project("h_pim_ptheta", "pim_p4_kin.P():pim_p4_kin.Theta()*TMath::RadToDeg()", "kpkm_mf>1.005 && kpkm_mf<1.035");
+  c_tot_ptheta->cd(2);
+  TH2D *h_pim_ptheta = new TH2D("h_pim_ptheta", "#pi^{-}; #theta#circ ;p (GeV/c);Counts", 140, 0.0, 140.0, 250, 0.0, 10.0);
+  t->Project("h_pim_ptheta", "pim_p4_kin.P():pim_p4_kin.Theta()*TMath::RadToDeg()");
   cout << "h_pim_ptheta = " << h_pim_ptheta << endl;
   h_pim_ptheta->Draw("colz");
   h_pim_ptheta->Write(Form("h%s_pim_ptheta",name.Data()),TObject::kWriteDelete);
@@ -589,9 +611,9 @@ if(name == "data")
 
   // kp
   // TCanvas *c_kp_ptheta = new TCanvas("c_kp_ptheta", "c_kp_ptheta", 600, 400);
-  c_tot_ptheta->cd(4);
-  TH2D *h_kp_ptheta = new TH2D("h_kp_ptheta", Form("K^{+} (%s); #theta#circ ;p (GeV/c)",name.Data()), 140, 0.0, 140.0, 250, 0.0, 10.0);
-  t->Project("h_kp_ptheta", "kp_p4_kin.P():kp_p4_kin.Theta()*TMath::RadToDeg()", "kpkm_mf>1.005 && kpkm_mf<1.035");
+  c_tot_ptheta->cd(3);
+  TH2D *h_kp_ptheta = new TH2D("h_kp_ptheta", "K^{+}; #theta#circ ;p (GeV/c);Counts", 140, 0.0, 140.0, 250, 0.0, 10.0);
+  t->Project("h_kp_ptheta", "kp_p4_kin.P():kp_p4_kin.Theta()*TMath::RadToDeg()");
   cout << "h_kp_ptheta = " << h_kp_ptheta << endl;
   h_kp_ptheta->Draw("colz");
   h_kp_ptheta->Write(Form("h%s_kp_ptheta",name.Data()),TObject::kWriteDelete);
@@ -600,14 +622,26 @@ if(name == "data")
   
   // km
   // TCanvas *c_km_ptheta = new TCanvas("c_km_ptheta", "c_km_ptheta", 600, 400);
-  c_tot_ptheta->cd(5);
-  TH2D *h_km_ptheta = new TH2D("h_km_ptheta", Form("K^{-} (%s); #theta#circ ;p (GeV/c)",name.Data()), 140, 0.0, 140.0, 250, 0.0, 10.0);
-  t->Project("h_km_ptheta", "km_p4_kin.P():km_p4_kin.Theta()*TMath::RadToDeg()", "kpkm_mf>1.005 && kpkm_mf<1.035");
+  c_tot_ptheta->cd(4);
+  TH2D *h_km_ptheta = new TH2D("h_km_ptheta", "K^{-}; #theta#circ ;p (GeV/c);Counts", 140, 0.0, 140.0, 250, 0.0, 10.0);
+  t->Project("h_km_ptheta", "km_p4_kin.P():km_p4_kin.Theta()*TMath::RadToDeg()");
   cout << "h_km_ptheta = " << h_km_ptheta << endl;
   h_km_ptheta->Draw("colz");
   h_km_ptheta->Write(Form("h%s_km_ptheta",name.Data()),TObject::kWriteDelete);
   // c_km_ptheta->Print(Form("output/fig_y2175/c%s_km_ptheta.root",name.Data()), "root");
   // c_km_ptheta->Print(Form("output/fig_y2175/c%s_km_ptheta.eps",name.Data()), "eps");
+
+  // proton
+  // TCanvas *c_p_ptheta = new TCanvas("c_p_ptheta", "c_p_ptheta", 600, 400);
+  c_tot_ptheta->cd(5);
+  TH2D *h_p_ptheta = new TH2D("h_p_ptheta", "proton; #theta#circ ;p (GeV/c);Counts", 140, 0.0, 140.0, 250, 0.0, 10.0);
+  t->Project("h_p_ptheta", "p_p4_kin.P():p_p4_kin.Theta()*TMath::RadToDeg()");
+  cout << "h_p_ptheta = " << h_p_ptheta << endl;
+  h_p_ptheta->Draw("colz");
+  h_p_ptheta->Write(Form("h%s_p_ptheta",name.Data()),TObject::kWriteDelete);
+  // c_p_ptheta->Print(Form("output/fig_y2175/c%s_p_ptheta.root",name.Data()), "root");
+  // c_p_ptheta->Print(Form("output/fig_y2175/c%s_p_ptheta.eps",name.Data()), "eps");
+
   c_tot_ptheta->Print(Form("output/fig_y2175/c%s_tot_ptheta.root",name.Data()), "root");
   c_tot_ptheta->Print(Form("output/fig_y2175/c%s_tot_ptheta.eps",name.Data()), "eps");
   c_tot_ptheta->Print(Form("output/fig_y2175/c%s_tot_ptheta.png",name.Data()), "png");

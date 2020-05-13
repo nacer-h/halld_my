@@ -61,7 +61,7 @@ void ul_yphi2pi(TString name, int n2k=100, int n2pi2k=50, int ne=1, int nt=1) //
   if(name == "16") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_11366_11555.root");
   if(name == "17") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_30274_31057.root");
   if(name == "18") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_40856_42577.root");
- if(name == "18l") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_50677_51768.root");
+  if(name == "18l") fps = new TFile("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/flux_50677_51768.root");
 
   TFile *outputfig = new TFile("output/fig_ul_yphi2pi/ul_yphi2pi.root","UPDATE");//UPDATE
 
