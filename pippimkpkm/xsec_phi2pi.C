@@ -52,8 +52,8 @@ using namespace RooStats;
 void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut="kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
   // TFile *fdata = NULL;
-  TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_chi100_flat.root", name.Data())); // _chi100 ,20200506/
-  TFile *fmc = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_phi2pi_%s_chi100_flat.root", name.Data())); // _chi100  ver03_11/
+  TFile *fdata = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/data/tree_pippimkpkm_%s_flat.root", name.Data())); // _chi100 ,20200506/
+  TFile *fmc = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_phi2pi_%s_flat.root", name.Data())); // _chi100  ver03_11/
   TFile *ftru = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/thrown_phi2pi_%s.root", name.Data()));
   // TFile *fthr = new TFile(Form("output/input/tree_thrown_phi2pi_genr8_%s.root", name.Data()));
   TTree *tdata = (TTree*)fdata->Get("ntp");
@@ -98,7 +98,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   gStyle->SetTitleSize(0.07, "XYZ");
   gStyle->SetLabelSize(0.07, "XYZ");
   // gStyle->SetTitleAlign(13);
-
+/*
   // ======================================== Phi vs. Eg ===============================================
 
   //root -l 'xsec_phi2pi.C+("data_17",100,10,1)'
@@ -136,7 +136,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   TCanvas *cphie = new TCanvas("cphie", "cphie", 900, 600);
   cphie->cd();
   TH2D *h2phie = new TH2D("h2phie", ";E_{#gamma} (GeV);m_{K^{+}K^{-}} (GeV/c^{2});Counts", ne, Eg_min, Eg_max, n2k, mkk_min, mkk_max);
-  tdata->Project("h2phie", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035)");// && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035, w2*(kpkm_uni && abs(rf_dt)<1.5*4.008), w4*(kpkm_uni && abs(rf_dt)<2.5*4.008)
+  tdata->Project("h2phie", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");// && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035, w2*(kpkm_uni && abs(rf_dt)<1.5*4.008), w4*(kpkm_uni && abs(rf_dt)<2.5*4.008)
   // TH2D *h2phie = (TH2D *)fdata->Get("h2_PhiMassVsBeamE_KinFit");
   // h2phie->RebinX(10);
   cout << " ***** h2phie = " << h2phie << endl;
@@ -155,7 +155,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
   TCanvas *cphie_mc = new TCanvas("cphie_mc", "cphie_mc", 900, 600);
   cphie_mc->cd();
   TH2D *h2phie_mc = new TH2D("h2phie_mc", ";E_{#gamma} (GeV);m_{K^{+}K^{-}} (GeV/c^{2});Counts", ne, Eg_min, Eg_max, n2k, mkk_min, mkk_max);//0.98, 1.2
-  tmc->Project("h2phie_mc", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035)");
+  tmc->Project("h2phie_mc", "kpkm_mf:beam_p4_kin.E()", "w8*(kpkm_uni)");
   // TH2D *h2phie_mc = (TH2D *)fmc->Get("h2_PhiMassVsBeamE_KinFit");
   // h2phie_mc->RebinX(10);
   cout << " ***** h2phie_mc = " << h2phie_mc << endl;
@@ -562,7 +562,6 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gphiexsec->Write(Form("h%s_gphiexsec", name.Data()), TObject::kWriteDelete);
     // int j =1;
     // gphie->Write(Form("grphie_%d", j), TObject::kWriteDelete);
-
 
     // *********** total Beam flux
     TCanvas *ctot_tagged_flux = new TCanvas("ctot_tagged_flux", "ctot_tagged_flux", 900, 600);
@@ -1140,7 +1139,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi << "\\end{document}" << endl;
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
-/*
+*/
   // ======================================== Phi vs. -t ===============================================
 
   //root -l 'xsec_phi2pi.C+("data_17",100,1,10)'
@@ -1981,7 +1980,7 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     gr_txsecrate_17->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
     gr_txsecrate_17->GetXaxis()->SetLabelSize(38);//35
     
-    gr_txsecrate_17->GetHistogram()->SetMaximum(1.0);   // along          
+    gr_txsecrate_17->GetHistogram()->SetMaximum(2.5);   // along          
     gr_txsecrate_17->GetHistogram()->SetMinimum(-1.0);  //   Y  
     gPad->Update();
     gPad->Modified();
@@ -2112,5 +2111,5 @@ void xsec_phi2pi(TString name, int n2k=100, int ne=10, int nt=10)//, TString cut
     // table_phi << "\\end{document}" << endl;
     // table_phi.close();
     // gSystem->Exec("pdflatex table_phi.tex");
-*/
+
 }
