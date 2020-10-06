@@ -1,4 +1,4 @@
-// File: y2175.C # Author: Nacer # Date: 2.9.2018 # Email: a.hamdi@gsi.de # Description: Macro to study Y(2175)                             
+// File: y2175.C # Author: Nacer # Date: 2.9.2018 # Email: a.hamdi@gsi.de # Description: Macro to study Y(2175)
 #include "TCanvas.h"
 #include "TFile.h"        
 #include "TGraph.h"        
@@ -25,7 +25,7 @@
 #include "TApplication.h"
 #include "TPaveStats.h"
 #include "TBox.h"
-#include "TList.h"                                                                                                                            
+#include "TList.h"
 using namespace std;
 
 void y2175(TString name, TString name1)//, TString cut)
@@ -178,7 +178,7 @@ if(name == "data")
   c2_p_dttof->Print(Form("output/fig_y2175/c2_%s_p_dttof.root",name.Data()), "root");
   c2_p_dttof->Print(Form("output/fig_y2175/c2_%s_p_dttof.eps",name.Data()), "eps");
   c2_p_dttof->Print(Form("output/fig_y2175/c2_%s_p_dttof.png",name.Data()), "png");
-
+*/
   // // ----- 1D -----
 
   // TString name2 = "pippimkpkm";//pippimkpkm , phi2pi
@@ -243,8 +243,8 @@ if(name == "data")
   TCanvas *c_kin_chisq = new TCanvas("c_kin_chisq","c_kin_chisq",900,600);
   c_kin_chisq->cd();
   TH1F *h_kin_chisq = new TH1F("h_kin_chisq", ";#chi^{2} of Kinematic Fit;Counts", 200, 0, 100);
-  t->Project("h_kin_chisq","kin_chisq","w8*(is_truecombo && kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05 && (abs(p_dttof)<0.3 || p_dttof == -999))");// && "+cutlist+" && abs(mm2)<0.02
-  TLine *l_kin_chisq = new TLine(55, 0, 55, 1);//h_kin_chisq->GetMaximum()
+  t->Project("h_kin_chisq","kin_chisq","w8*(kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05 && (abs(p_dttof)<0.3 || p_dttof == -999))");// && "+cutlist+" && abs(mm2)<0.02
+  TLine *l_kin_chisq = new TLine(55, 0, 55, h_kin_chisq->GetMaximum());//h_kin_chisq->GetMaximum()
   l_kin_chisq->SetLineColor(kRed);
   l_kin_chisq->SetLineWidth(2);
   h_kin_chisq->Draw("hist");
@@ -254,42 +254,42 @@ if(name == "data")
   c_kin_chisq->Print(Form("output/fig_y2175/c%s_kin_chisq.eps",name.Data()), "eps");  
   c_kin_chisq->Print(Form("output/fig_y2175/c%s_kin_chisq.png",name.Data()), "png");  
 
-  // TString name2 = "pippimkpkm";//pippimkpkm , phi2pi
+  // // TString name2 = "pippimkpkm";//pippimkpkm , phi2pi
 
-  TCanvas *c_kin_chisq_all = new TCanvas("c_kin_chisq_all","c_kin_chisq_all",900,600);
-  c_kin_chisq_all->cd();
-  TH1F *h16_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_16_chi100_kin_chisq",name2.Data()));
-  cout << " ***** h16_kin_chisq = " << h16_kin_chisq << endl;
-  h16_kin_chisq->SetLineColor(kRed);
-  TH1F *h17_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_17_chi100_kin_chisq",name2.Data()));
-  cout << " ***** h17_kin_chisq = " << h17_kin_chisq << endl;
-  TH1F *h18_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_18_chi100_kin_chisq",name2.Data()));
-  cout << " ***** h18_kin_chisq = " << h18_kin_chisq << endl;
-  h18_kin_chisq->SetLineColor(kBlue);
-  TH1F *h18l_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_kin_chisq",name2.Data()));
-  cout << " ***** h18l_kin_chisq = " << h18l_kin_chisq << endl;
-  h18l_kin_chisq->SetLineColor(kMagenta);
-  h18l_kin_chisq->Scale(1.0/h18l_kin_chisq->GetMaximum());
-  h18l_kin_chisq->Draw("hist");
-  h18_kin_chisq->Scale(1.0/h18_kin_chisq->GetMaximum());
-  h18_kin_chisq->Draw("hist same");
-  h17_kin_chisq->Scale(1.0/h17_kin_chisq->GetMaximum());
-  h17_kin_chisq->Draw("hist same");
-  h16_kin_chisq->Scale(1.0/h16_kin_chisq->GetMaximum());
-  h16_kin_chisq->Draw("hist same");
-  l_kin_chisq->Draw("same");
+  // TCanvas *c_kin_chisq_all = new TCanvas("c_kin_chisq_all","c_kin_chisq_all",900,600);
+  // c_kin_chisq_all->cd();
+  // TH1F *h16_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_16_chi100_kin_chisq",name2.Data()));
+  // cout << " ***** h16_kin_chisq = " << h16_kin_chisq << endl;
+  // h16_kin_chisq->SetLineColor(kRed);
+  // TH1F *h17_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_17_chi100_kin_chisq",name2.Data()));
+  // cout << " ***** h17_kin_chisq = " << h17_kin_chisq << endl;
+  // TH1F *h18_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_18_chi100_kin_chisq",name2.Data()));
+  // cout << " ***** h18_kin_chisq = " << h18_kin_chisq << endl;
+  // h18_kin_chisq->SetLineColor(kBlue);
+  // TH1F *h18l_kin_chisq = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_kin_chisq",name2.Data()));
+  // cout << " ***** h18l_kin_chisq = " << h18l_kin_chisq << endl;
+  // h18l_kin_chisq->SetLineColor(kMagenta);
+  // h18l_kin_chisq->Scale(1.0/h18l_kin_chisq->GetMaximum());
+  // h18l_kin_chisq->Draw("hist");
+  // h18_kin_chisq->Scale(1.0/h18_kin_chisq->GetMaximum());
+  // h18_kin_chisq->Draw("hist same");
+  // h17_kin_chisq->Scale(1.0/h17_kin_chisq->GetMaximum());
+  // h17_kin_chisq->Draw("hist same");
+  // h16_kin_chisq->Scale(1.0/h16_kin_chisq->GetMaximum());
+  // h16_kin_chisq->Draw("hist same");
+  // l_kin_chisq->Draw("same");
 
-  TLegend *lg_kin_chisq = new TLegend(0.87, 0.80, 0.98, 0.98);
-  lg_kin_chisq->SetTextSize(0.05);
-  lg_kin_chisq->SetBorderSize(0);
-  lg_kin_chisq->AddEntry(h16_kin_chisq, "2016", "l");
-  lg_kin_chisq->AddEntry(h17_kin_chisq, "2017", "l");
-  lg_kin_chisq->AddEntry(h18_kin_chisq, "2018 S", "l");
-  lg_kin_chisq->AddEntry(h18l_kin_chisq, "2018 F", "l");
-  lg_kin_chisq->Draw();
-  c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.root",name2.Data()), "root");
-  c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.eps",name2.Data()), "eps");  
-  c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.png",name2.Data()), "png");  
+  // TLegend *lg_kin_chisq = new TLegend(0.87, 0.80, 0.98, 0.98);
+  // lg_kin_chisq->SetTextSize(0.05);
+  // lg_kin_chisq->SetBorderSize(0);
+  // lg_kin_chisq->AddEntry(h16_kin_chisq, "2016", "l");
+  // lg_kin_chisq->AddEntry(h17_kin_chisq, "2017", "l");
+  // lg_kin_chisq->AddEntry(h18_kin_chisq, "2018 S", "l");
+  // lg_kin_chisq->AddEntry(h18l_kin_chisq, "2018 F", "l");
+  // lg_kin_chisq->Draw();
+  // c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.root",name2.Data()), "root");
+  // c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.eps",name2.Data()), "eps");  
+  // c_kin_chisq_all->Print(Form("output/fig_y2175/c%s_kin_chisq_all.png",name2.Data()), "png");  
 
   // //  //Copy h1 in a clone h1c. Set range and color for h1c
   // //  TH1F *h_kin_chisq_side = (TH1F*)h_kin_chisq->Clone();
@@ -306,9 +306,9 @@ if(name == "data")
   c_mm2->cd();
   c_mm2->SetLogy();
   TH1F *h_mm2 = new TH1F("h_mm2", "; MM^{2} (GeV/c^{2})^{2}; Counts", 200, -0.05, 0.05);
-  t->Project("h_mm2","mm2","w8*(is_truecombo && kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05 && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55)");// "+cutlist+"
-  TLine *l_mm21 = new TLine(0.035, 0, 0.035, 1);//h_mm2->GetMaximum()
-  TLine *l_mm22 = new TLine(-0.035, 0, -0.035, 1);
+  t->Project("h_mm2","mm2","w8*(kpkm_uni && kpkm_mf>1.0 && kpkm_mf<1.05 && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55)");// "+cutlist+" , is_truecombo
+  TLine *l_mm21 = new TLine(0.035, 0, 0.035, h_mm2->GetMaximum());//h_mm2->GetMaximum()
+  TLine *l_mm22 = new TLine(-0.035, 0, -0.035, h_mm2->GetMaximum());
   l_mm21->SetLineColor(kRed);
   l_mm22->SetLineColor(kRed);
   l_mm21->SetLineWidth(2);
@@ -321,42 +321,42 @@ if(name == "data")
   c_mm2->Print(Form("output/fig_y2175/c%s_mm2.eps",name.Data()), "eps");
   c_mm2->Print(Form("output/fig_y2175/c%s_mm2.png",name.Data()), "png");
 
-  TCanvas *c_mm2_all = new TCanvas("c_mm2_all","c_mm2_all",900,600);
-  c_mm2_all->cd();
-  c_mm2_all->SetLogy();
-  TH1F *h16_mm2 = (TH1F *)outputfig->Get(Form("h%s_16_chi100_mm2",name2.Data()));
-  cout << " ***** h16_mm2 = " << h16_mm2 << endl;
-  h16_mm2->SetLineColor(kRed);
-  TH1F *h17_mm2 = (TH1F *)outputfig->Get(Form("h%s_17_chi100_mm2",name2.Data()));
-  cout << " ***** h17_mm2 = " << h17_mm2 << endl;
-  TH1F *h18_mm2 = (TH1F *)outputfig->Get(Form("h%s_18_chi100_mm2",name2.Data()));
-  cout << " ***** h18_mm2 = " << h18_mm2 << endl;
-  h18_mm2->SetLineColor(kBlue);
-  TH1F *h18l_mm2 = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_mm2",name2.Data()));
-  cout << " ***** h18l_mm2 = " << h18l_mm2 << endl;
-  h18l_mm2->SetLineColor(kMagenta);
-  h18l_mm2->Scale(1.0/h18l_mm2->GetMaximum());
-  h18l_mm2->Draw("hist");
-  h18_mm2->Scale(1.0/h18_mm2->GetMaximum());
-  h18_mm2->Draw("hist same");
-  h17_mm2->Scale(1.0/h17_mm2->GetMaximum());
-  h17_mm2->Draw("hist same");
-  h16_mm2->Scale(1.0/h16_mm2->GetMaximum());
-  h16_mm2->Draw("hist same");
-  l_mm21->Draw("same");
-  l_mm22->Draw("same");
+  // TCanvas *c_mm2_all = new TCanvas("c_mm2_all","c_mm2_all",900,600);
+  // c_mm2_all->cd();
+  // c_mm2_all->SetLogy();
+  // TH1F *h16_mm2 = (TH1F *)outputfig->Get(Form("h%s_16_chi100_mm2",name2.Data()));
+  // cout << " ***** h16_mm2 = " << h16_mm2 << endl;
+  // h16_mm2->SetLineColor(kRed);
+  // TH1F *h17_mm2 = (TH1F *)outputfig->Get(Form("h%s_17_chi100_mm2",name2.Data()));
+  // cout << " ***** h17_mm2 = " << h17_mm2 << endl;
+  // TH1F *h18_mm2 = (TH1F *)outputfig->Get(Form("h%s_18_chi100_mm2",name2.Data()));
+  // cout << " ***** h18_mm2 = " << h18_mm2 << endl;
+  // h18_mm2->SetLineColor(kBlue);
+  // TH1F *h18l_mm2 = (TH1F *)outputfig->Get(Form("h%s_18l_chi100_mm2",name2.Data()));
+  // cout << " ***** h18l_mm2 = " << h18l_mm2 << endl;
+  // h18l_mm2->SetLineColor(kMagenta);
+  // h18l_mm2->Scale(1.0/h18l_mm2->GetMaximum());
+  // h18l_mm2->Draw("hist");
+  // h18_mm2->Scale(1.0/h18_mm2->GetMaximum());
+  // h18_mm2->Draw("hist same");
+  // h17_mm2->Scale(1.0/h17_mm2->GetMaximum());
+  // h17_mm2->Draw("hist same");
+  // h16_mm2->Scale(1.0/h16_mm2->GetMaximum());
+  // h16_mm2->Draw("hist same");
+  // l_mm21->Draw("same");
+  // l_mm22->Draw("same");
 
-  TLegend *lg_mm2 = new TLegend(0.87, 0.80, 0.98, 0.98);
-  lg_mm2->SetTextSize(0.05);
-  lg_mm2->SetBorderSize(0);
-  lg_mm2->AddEntry(h16_mm2, "2016", "l");
-  lg_mm2->AddEntry(h17_mm2, "2017", "l");
-  lg_mm2->AddEntry(h18_mm2, "2018 S", "l");
-  lg_mm2->AddEntry(h18l_mm2, "2018 F", "l");
-  lg_mm2->Draw();
-  c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.root",name2.Data()), "root");
-  c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.eps",name2.Data()), "eps");
-  c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.png",name2.Data()), "png");
+  // TLegend *lg_mm2 = new TLegend(0.87, 0.80, 0.98, 0.98);
+  // lg_mm2->SetTextSize(0.05);
+  // lg_mm2->SetBorderSize(0);
+  // lg_mm2->AddEntry(h16_mm2, "2016", "l");
+  // lg_mm2->AddEntry(h17_mm2, "2017", "l");
+  // lg_mm2->AddEntry(h18_mm2, "2018 S", "l");
+  // lg_mm2->AddEntry(h18l_mm2, "2018 F", "l");
+  // lg_mm2->Draw();
+  // c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.root",name2.Data()), "root");
+  // c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.eps",name2.Data()), "eps");
+  // c_mm2_all->Print(Form("output/fig_y2175/c%s_mm2_all.png",name2.Data()), "png");
 
   // // ********  VertexZ
   // // proton
@@ -377,8 +377,8 @@ if(name == "data")
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.root",name.Data()), "root");
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.eps",name.Data()), "eps");
   // c_p_vertexz->Print(Form("output/fig_y2175/c%s_p_vertexz.png",name.Data()), "png");
-*/
 
+/*
   // ++++++ dE/dx CDC
   TCanvas *c_dedx_cdc = new TCanvas("c_dedx_cdc","c_dedx_cdc",700,500);
   c_dedx_cdc->cd();
@@ -400,7 +400,7 @@ if(name == "data")
   c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.root", "root");
   c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.eps", "eps");
   c_dedx_cdc->Print("output/fig_y2175/c_dedx_cdc.png", "png");
-
+*/
 
 /*
   // pip
