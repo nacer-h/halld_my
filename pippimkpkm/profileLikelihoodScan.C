@@ -1,3 +1,52 @@
+#include "TCanvas.h"
+#include "TFile.h"
+#include "TH2F.h"
+#include "TString.h"
+#include "TTree.h"
+#include "TF1.h"
+#include "TGraphErrors.h"
+#include "TFormula.h"
+#include "TLatex.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
+#include <fstream>
+#include "TStyle.h"
+#include <TMultiGraph.h>
+#include <iostream>
+#include "TSystem.h"
+#include "TLine.h"
+
+#ifndef __CINT__
+#include "RooGlobalFunc.h"
+#endif
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooGaussian.h"
+#include "RooConstVar.h"
+#include "RooChebychev.h"
+#include "RooAddPdf.h"
+#include "RooSimultaneous.h"
+#include "RooCategory.h"
+#include "TCanvas.h"
+#include "TAxis.h"
+#include "RooPlot.h"
+#include "RooAddPdf.h"
+#include "RooFitResult.h"
+#include "RooGaussian.h"
+#include "RooLandau.h"
+#include "RooBreitWigner.h"
+#include "RooChebychev.h"
+#include "RooPolynomial.h"
+#include "RooVoigtian.h"
+#include "RooCBShape.h"
+#include "RooWorkspace.h"
+#include "RooExponential.h"
+#include "RooStats/RooStatsUtils.h"
+#include "RooDataHist.h"
+#include "RooCmdArg.h"
+
+using namespace RooFit;
+
 TGraph* profileLikelihoodScan(RooDataHist &combData, RooAbsPdf &simPdf, RooRealVar *xsec, double xmin = -10, double xmax = 90, double steps=100, double preminll=0)
 {
 	bool verbose = true;

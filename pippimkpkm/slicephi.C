@@ -45,7 +45,7 @@
 using namespace RooFit;
 using namespace RooStats;
 
-TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", double n2k=100, int n=50)
+TGraphErrors *slicephi(TH1F *h1, TH2D *h2d, TString name, double n2k=100, int n=50)
 //, TString cut="kin_chisq<30 && abs(mm2)<0.015") // && -t_kin<1 && beam_p4_kin.E()>6
 {
   TFile *fmc = new TFile(Form("~/lochebe/ahamdi/gluex_root_analysis/workdir/dataout/sim/tree_%s_%s_flat.root", fname_mc.Data(), fname_data.Data()));
@@ -79,53 +79,11 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   // tdata->SetAlias("w4","((abs(delta_t)<2.004)*1.25-0.25)");
 
   // *********************** Phi(1020) MC *********************************
+  cout << "h1 = " <<h1<< endl;
+  h1->Draw("e");
+
   TCanvas *c_PhiMass_postcuts = new TCanvas("c_PhiMass_postcuts", "c_PhiMass_postcuts", 1000, 600);
-  TH1F *h_PhiMass_postcuts = new TH1F("h_PhiMass_postcuts", "; m_{K^{+}K^{-}} (GeV/c^{2}); Counts", 200, m2k_min, m2k_max);
-  tmc->Project("h_PhiMass_postcuts", "kpkm_mf", "w8*(kpkm_uni)");// && is_truecombo +cutlist+" && kin_chisq<25)"
   c_PhiMass_postcuts->cd();
-  h_PhiMass_postcuts->Draw("e");
-
-  // w.factory(Form("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[%f, %f],mean_PhiMass_mc[1.018, 1.021],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])",m2k_min,m2k_max)); //m_PhiMass_mc[1.0, 1.04],mean_PhiMass_mc[1.016,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01]
-  // // w.factory("Voigtian::sig_PhiMass_mc(m_PhiMass_mc[1.0, 1.04],mean_PhiMass_mc[1.016,1.022],width_PhiMass_mc[0.004],sigma_PhiMass_mc[0.0001,0.01])");
-  // w.factory("Chebychev::bkg_PhiMass_mc(m_PhiMass_mc,{c0_PhiMass_mc[-100000,100000], c1_PhiMass_mc[-100000,100000], c2_PhiMass_mc[-100000,100000]})");//[-1000,1000], , c3_PhiMass_mc[-100000,100000]
-  // w.factory("SUM:::model_PhiMass_mc(nsig_PhiMass_mc[0,100000]*sig_PhiMass_mc, nbkg_PhiMass_mc[0,100000]*bkg_PhiMass_mc)");// [0,100000], nbkg_PhiMass_mc[0,100000000]*bkg_PhiMass_mc)"); //nsig[0,100000000]*sig2,
-  // w.var("m_PhiMass_mc")->SetTitle("m_{K^{+}K^{-}} (GeV/c^{2})");
-  // RooDataHist dh_PhiMass_mc("dh_PhiMass_mc", "dh_PhiMass_mc", *w.var("m_PhiMass_mc"), Import(*h_PhiMass_postcuts));
-  // RooPlot *fr_PhiMass_mc = w.var("m_PhiMass_mc")->frame(Title("K^{+}K^{-}"));
-  // // fr_PhiMass_mc->SetTitleOffset(0.90, "X");
-  // // fr_PhiMass_mc->SetTitleSize(0.06, "XYZ");
-  // // fr_PhiMass_mc->SetLabelSize(0.06, "xyz");
-  // w.pdf("model_PhiMass_mc")->fitTo(dh_PhiMass_mc);
-
-  // // //result = w.pdf("model")->fitTo(dh_PhiMass,Extended(kTRUE),Save());
-  // dh_PhiMass_mc.plotOn(fr_PhiMass_mc, RooFit::Name("ldh_PhiMass_mc"));
-  // w.pdf("model_PhiMass_mc")->plotOn(fr_PhiMass_mc, Components(*w.pdf("sig_PhiMass_mc")), LineColor(kRed), RooFit::Name("lsig_PhiMass_mc"));
-  // w.pdf("model_PhiMass_mc")->plotOn(fr_PhiMass_mc, Components(*w.pdf("bkg_PhiMass_mc")), LineStyle(kDashed), LineColor(28), RooFit::Name("lbkg_PhiMass_mc"));
-  // w.pdf("model_PhiMass_mc")->plotOn(fr_PhiMass_mc, RooFit::Name("lmodel_PhiMass_mc"));
-  // // w.pdf("model_PhiMass_mc")->paramOn(fr_PhiMass_mc, Layout(0.5, 0.90, 0.99));//, Parameters(RooArgSet(*w.var("nsig_PhiMass_mc"), *w.var("nbkg_PhiMass_mc")))); //,*w.var("mean_PhiMass_mc"),*w.var("width_PhiMass_mc"),*w.var("sigma_PhiMass_mc"))));
-  // fr_PhiMass_mc->Draw();
-
-  // TLegend *l_phi_mc = new TLegend(0.5, 0.65, 0.6, 0.82);
-  // l_phi_mc->SetTextSize(0.05);
-  // l_phi_mc->SetFillColor(kWhite);
-  // l_phi_mc->SetLineColor(kWhite);
-  // // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("ldh_PhiMass_mc"), "Data", "p");
-  // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lmodel_PhiMass_mc"), "total", "l");
-  // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lsig_PhiMass_mc"), "Voigtian", "l");
-  // l_phi_mc->AddEntry(fr_PhiMass_mc->findObject("lbkg_PhiMass_mc"), "pol 2nd", "l");
-  // l_phi_mc->Draw();
-
-  // TLatex lat_PhiMass_mc;
-  // lat_PhiMass_mc.SetTextSize(0.05);
-  // lat_PhiMass_mc.SetTextAlign(13); //align at top
-  // lat_PhiMass_mc.SetNDC();
-  // lat_PhiMass_mc.SetTextColor(kBlue);
-  // lat_PhiMass_mc.DrawLatex(0.62, 0.80, Form("N_{Sig} = %0.2f#pm%0.2f", w.var("nsig_PhiMass_mc")->getVal(), w.var("nsig_PhiMass_mc")->getError()));
-  // lat_PhiMass_mc.DrawLatex(0.62, 0.73, Form("N_{Bkg} = %0.2f#pm%0.2f", w.var("nbkg_PhiMass_mc")->getVal(), w.var("nbkg_PhiMass_mc")->getError()));
-  // lat_PhiMass_mc.DrawLatex(0.62, 0.66, Form("#mu = %0.3f#pm%0.3f", w.var("mean_PhiMass_mc")->getVal(), w.var("mean_PhiMass_mc")->getError()));
-  // lat_PhiMass_mc.DrawLatex(0.62, 0.59, Form("#Gamma = %0.3f#pm%0.3f", w.var("width_PhiMass_mc")->getVal(), w.var("width_PhiMass_mc")->getError()));
-  // lat_PhiMass_mc.DrawLatex(0.62, 0.52, Form("#sigma = %0.3f#pm%0.3f", w.var("sigma_PhiMass_mc")->getVal(), w.var("sigma_PhiMass_mc")->getError()));
-
   TF1 *fsb_mc = new TF1("fsb_mc", "[0]*TMath::Voigt(x - [1], [2], [3]) + pol4(4)", m2k_min, m2k_max); //4
   fsb_mc->SetLineColor(2);
   fsb_mc->SetParameters(1433, 1.019, 0.003, 0.0042, 1, 1, 1, 1, 1); // voigt
@@ -140,7 +98,7 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   fb_mc->SetLineColor(28);
   fb_mc->SetLineStyle(2);
 
-  h_PhiMass_postcuts->Fit("fsb_mc", "", "", m2k_min, m2k_max);
+  h1->Fit("fsb_mc", "", "", m2k_min, m2k_max);
   double par_mc[fsb_mc->GetNpar()]; //6
   fsb_mc->GetParameters(&par_mc[0]);
   fs_mc->SetParameters(&par_mc[0]);
@@ -164,25 +122,6 @@ TGraphErrors *scanphi(TString name, TString fname_mc="", TString fname_data="", 
   lat_phie_mc.DrawLatex(0.5, 0.48, Form("#Gamma = %0.3f#pm%0.3f", fsb_mc->GetParameter(3), fsb_mc->GetParError(3)));
 
   cphi->cd();
-  TH2D *h2d;
-  if (name == "y")
-  {
-  h2d = new TH2D("h2d",";m_{K^{+}K^{-}#pi^{+}#pi^{-}} (GeV/c^{2});m_{K^{+}K^{-}} (GeV/c^{2});Counts", n, m2pi2k_min, m2pi2k_max, n2k, m2k_min, m2k_max);
-  tdata->Project("h2d", "kpkm_mf:kpkmpippim_mf", "w8*((kpkm_uni || kpkmpippim_uni) && beam_p4_kin.E()>6.5 && beam_p4_kin.E()<11.6)");
-  // && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035, w2*((kpkm_uni || kpkmpippim_uni) && abs(rf_dt)<1.5*4.008, w4*((kpkm_uni || kpkmpippim_uni) && abs(rf_dt)<2.5*4.008, w8*((kpkm_uni || kpkmpippim_uni)
-  // h2d = (TH2D *)fdata->Get("h2_PhiVsYMass_KinFit");
-  // cout << " ***** h2d = " << h2d << endl;
-  // h2d->RebinX(2);
-  }
-  if(name=="fo")
-  {
-  h2d = new TH2D("h2d", ";m_{#pi^{+}#pi^{-}} (GeV/c^{2});m_{K^{+}K^{-}} (GeV/c^{2});Counts", n, m2pi_min, m2pi_max, n2k, m2k_min, m2k_max);
-  tdata->Project("h2d", "kpkm_mf:pippim_mf", "w8*((kpkm_uni || pippim_uni) && beam_p4_kin.E()>6.5 && beam_p4_kin.E()<11.6)");
-  // w8*((kpkm_uni || pippim_uni), w2*((kpkm_uni || pippim_uni) && abs(rf_dt)<1.5*4.008, w4*((kpkm_uni || pippim_uni) && abs(rf_dt)<2.5*4.008,  && (abs(p_dttof)<0.3 || p_dttof == -999) && kin_chisq<55 && abs(mm2)<0.035
-  // h2d = (TH2D *)fdata->Get("h2_PhiVsfoMass_KinFit");
-  // cout << " ***** h2d = " << h2d << endl;
-  // h2d->RebinX(2);  
-  }
   cout << "h2d = " <<h2d<< endl;
 
   h2d->Draw("colz");
